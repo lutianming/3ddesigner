@@ -1,13 +1,41 @@
 <html>
   <head>
     <title>webgl test</title>
+    <script src="js/jquery-1.9.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/three.min.js"></script>
     <script src="js/Detector.js"></script>
     <script src="js/TrackballControls.js"></script>
     <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="css/bootstrap-responsive.min.css"></link>
+    <link rel="stylesheet" href="css/style.css"></link>
   </head>
   <body onload="start()">
-    <canvas id="canvas">
-    </canvas>
+    <div id="menu">
+      <!-- Button to trigger modal -->
+      <a href="#myModal" role="button" class="btn" data-toggle="modal">Launch demo modal</a>
+
+      <!-- Modal -->
+      <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+          <h3 id="myModalLabel">upload your file</h3>
+        </div>
+        <div class="modal-body">
+          <input type="file" id="files" name="files[]"/>
+          <output id="list"></output>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <button onclick="upload()" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Upload</button>
+        </div>
+      </div>
+      <button onclick="load('models/male.js', 'models/male.jpg')">upload</button>
+    </div>
+    <div id="content">
+      <canvas id="canvas">
+      </canvas>
+    </div>
   </body>
 </html>
