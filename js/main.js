@@ -1,4 +1,4 @@
-var camera, scene, renderer, controls, loader;
+var camera, scene, renderer, controls, loader, light;
 var geometry, material, mesh;
 var meshs = [];
 
@@ -10,10 +10,49 @@ function start() {
     animate();
 }
 function initWebGL() {
+    initScene();
+    initCamera();
+    initControls();
+    initLight();
+    initObjects();
+    initRenderer();
+    window.addEventListener( 'resize', onWindowResize, false );
+}
 
+function initLight(){
+    scene.add(new THREE.AmbientLight(0x222222));
+    light = new THREE.DirectionalLight(0xFF0000, 1.0, 0);
+    light.position.set( 100, 100, 200 );
+    scene.add(light);
+}
+
+
+function initScene(){
+    scene = new THREE.Scene();
+}
+
+function initObjects(){
+    geometry = new THREE.CubeGeometry( 200, 200, 200 );
+    material = new THREE.MeshLambertMaterial( { color: 0xff0000, ambient:0xFF0000} );
+
+    mesh = new THREE.Mesh( geometry, material );
+    meshs.push(mesh);
+    scene.add( mesh );
+}
+function initRenderer(){
+    params = {};
+    canvas = document.getElementById("canvas");
+    params.canvas = canvas;
+    renderer = new THREE.WebGLRenderer(params);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function initCamera(){
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
+}
 
+function initControls(){
     controls = new THREE.TrackballControls(camera);
     controls.rotateSpeed = 1.0;
     controls.zoomSpeed = 1.2;
@@ -27,26 +66,6 @@ function initWebGL() {
 
     controls.keys = [ 65, 83, 68];
     controls.addEventListener("change", render);
-
-    scene = new THREE.Scene();
-
-    geometry = new THREE.CubeGeometry( 200, 200, 200 );
-    material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-
-    mesh = new THREE.Mesh( geometry, material );
-    meshs.push(mesh);
-    scene.add( mesh );
-
-    //lights
-    scene.add(new THREE.AmbientLight(0xcccccc));
-
-    params = {};
-    canvas = document.getElementById("canvas");
-    params.canvas = canvas;
-    renderer = new THREE.WebGLRenderer(params);
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-    window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function onWindowResize() {
