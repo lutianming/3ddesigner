@@ -1,7 +1,8 @@
 var camera, scene, renderer, controls, loader, light;
 var geometry, material, mesh;
 var meshs = [];
-
+var animate_objs = [];
+var clock = new THREE.Clock();
 loader = new THREE.JSONLoader();
 
 function start() {
@@ -23,6 +24,10 @@ function initLight(){
     scene.add(new THREE.AmbientLight(0x222222));
     light = new THREE.DirectionalLight(0xFF0000, 1.0, 0);
     light.position.set( 100, 100, 200 );
+    scene.add(light);
+
+    var light = new THREE.PointLight(0xff4400, 5, 30);
+    light.position.set(5, 0, 0);
     scene.add(light);
 }
 
@@ -80,9 +85,15 @@ function onWindowResize() {
 }
 
 function animate() {
-
     // note: three.js includes requestAnimationFrame shim
     requestAnimationFrame( animate );
+
+    if(animate_objs.length > 0){
+        var delta = clock.getDelta();
+        for(var i = 0; i < animate_objs.length; i++){
+            animate_objs[i].updateAnimation(1000 * delta);
+        }
+    }
     render();
     if(controls.enabled){
         controls.update();
@@ -120,13 +131,41 @@ function load(model, textureURL) {
                     material = new THREE.MeshFaceMaterial(materials);
                     mesh = new THREE.Mesh(geometry, material);
 
-                    //clean old meshs
-                    for(var i = 0; i < meshs.length; i++){
-                        m = meshs.pop();
-                        scene.remove(m);
-                    }
+                    clean_scene();
 
                     meshs.push(mesh);
                     scene.add(mesh);
                 });
+}
+
+function clean_scene(){
+    for(var i = 0; i < meshs.length; i++){
+        var m = meshs.pop();
+        scene.remove(m);
+    }
+    for(var i = 0; i <animate_objs.length; i++){
+        var m = animate_objs.pop();
+        scene.remove(m);
+    }
+}
+
+function load_animate(model){
+    loader.load(model, function(geometry, materials){
+        var material = materials[ 0 ];
+        material.morphTargets = true;
+//        material.color.setHex( 0xffaaaa );
+//        material.ambient.setHex( 0x222222 );
+
+        var faceMaterial = new THREE.MeshFaceMaterial(materials);
+        var mesh = new THREE.MorphAnimMesh(geometry, faceMaterial);
+        mesh.duration = 1000;
+        mesh.time = 500;
+        mesh.position.set(0,0,0);
+        mesh.matrixAutoUpdate = false;
+        mesh.updateMatrix();
+
+        clean_scene();
+        animate_objs.push(mesh);
+        scene.add(mesh);
+    });
 }
