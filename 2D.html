@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>webgl 2d</title>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/kinetic.min.js"></script>
+    <script src="js/2D.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="css/bootstrap-responsive.min.css"></link>
+    <link rel="stylesheet" href="css/style.css"></link>
+    <link rel="stylesheet" href="css/2d.css"></link>
+  </head>
+  <body onload="init()">
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div id="toolbox" class="span2">
+          <button onclick="scale(0.5)">+</button>
+          <button onclick="scale(-0.5)">-</button>
+          <div>
+            <img class="furniture img-rounded" src="thumbs/table.png"/>
+          </div>
+        </div>
+        <div id="content" class="span10">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
