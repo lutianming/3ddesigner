@@ -1,3 +1,4 @@
+var stats;
 var camera, scene, renderer, controls, loader, light;
 var geometry, material, mesh;
 var meshs = [];
@@ -17,6 +18,10 @@ function initWebGL() {
     initLight();
     initObjects();
     initRenderer();
+
+    stats = new Stats();
+    document.body.appendChild(stats.domElement);
+
     window.addEventListener( 'resize', onWindowResize, false );
 }
 
@@ -98,6 +103,7 @@ function animate() {
     if(controls.enabled){
         controls.update();
     }
+    stats.update();
 }
 
 function render() {

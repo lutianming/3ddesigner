@@ -1,26 +1,29 @@
-var stats;
-var camera, scene, renderer, controls, loader, light;
-var geometry, material, mesh;
-var meshs = [];
-var animate_objs = [];
+var container, stats;
+var camera, scene, renderer, controls, projector;
+var plane;
+var mouse = new THREE.Vector2(),
+offset = new THREE.Vector3(),
+INTERSECTED, SELECTED;
 var clock = new THREE.Clock();
-loader = new THREE.JSONLoader();
+
 
 var furnitures = [];
 var rooms = [];
 
 
 function start() {
+    container = document.getElementById("content");
     initWebGL();
     animate();
 }
 function initWebGL() {
+    projector = new THREE.Projector();
     initScene();
     initCamera();
-//    initControls();
     initLight();
     initObjects();
     initRenderer();
+    initControls();
 
     stats = new Stats();
     document.body.appendChild(stats.domElement);
@@ -45,6 +48,7 @@ function initScene(){
 }
 
 function initObjects(){
+    //lines
     var geometry1 = new THREE.Geometry();
     geometry1.vertices.push(new THREE.Vector3( - 500, 0, 0 ) );
     geometry1.vertices.push(new THREE.Vector3( 500, 0, 0 ) );
@@ -65,14 +69,31 @@ function initObjects(){
         line.position.x = ( i * 50 ) - 500;
         scene.add( line );
     }
-    scene.add( mesh );
+
+    plane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 8, 8 ),
+                            new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.25, transparent: true, wireframe: true } ) );
+    plane.visible = false;
+    scene.add( plane );
+    // plane for test
+    var geometry = new THREE.PlaneGeometry(50, 50);
+    linesMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
+    var p = new THREE.Mesh(geometry, linesMaterial);
+    p.position.set(0,0,1);
+    scene.add(p);
+    furnitures.push(p);
 }
 function initRenderer(){
     params = {};
     canvas = document.getElementById("canvas");
     params.canvas = canvas;
+    params.antialias = true;
     renderer = new THREE.WebGLRenderer(params);
+    renderer.sortObjects = false;
     renderer.setSize( window.innerWidth, window.innerHeight );
+
+    renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
+    renderer.domElement.addEventListener( 'mousedown', onMouseDown, false );
+    renderer.domElement.addEventListener( 'mouseup', onMouseUp, false );
 }
 
 function initCamera(){
@@ -88,12 +109,14 @@ function initControls(){
 
     controls.noZoom = false;
     controls.noPan = false;
+    controls.noRotate = true;
 
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.3;
 
     controls.keys = [ 65, 83, 68];
     controls.addEventListener("change", render);
+
 }
 
 function onWindowResize() {
@@ -111,12 +134,6 @@ function animate() {
     // note: three.js includes requestAnimationFrame shim
     requestAnimationFrame( animate );
 
-    if(animate_objs.length > 0){
-        var delta = clock.getDelta();
-        for(var i = 0; i < animate_objs.length; i++){
-            animate_objs[i].updateAnimation(1000 * delta);
-        }
-    }
     render();
     if(controls.enabled){
         controls.update();
@@ -128,39 +145,74 @@ function render() {
     renderer.render(scene, camera);
 }
 
-function load(model, textureURL) {
-    if(typeof textureURL == "undefined"){
-        textureURL = null;
+function onMouseDown(event){
+    event.preventDefault();
+    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+    projector.unprojectVector( vector, camera );
+    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+    var intersects = raycaster.intersectObjects( furnitures );
+    console.log(furnitures.length);
+    if ( intersects.length > 0 ) {
+        controls.enabled = false;
+        SELECTED = intersects[ 0 ].object;
+        var intersects = raycaster.intersectObject( plane );
+        offset.copy( intersects[ 0 ].point ).sub( plane.position );
+        container.style.cursor = 'move';
     }
-    if(textureURL != null){
-        var texture = new THREE.Texture();
-        var imageLoader = new THREE.ImageLoader();
-        imageLoader.addEventListener('load', function(event){
-            texture.image = event.content;
-            texture.needsUpdate = true;
-        });
-        imageLoader.load(textureURL);
+
+}
+
+function onMouseUp(event){
+    event.preventDefault();
+    controls.enabled = true;
+    if ( INTERSECTED ) {
+        plane.position.copy( INTERSECTED.position );
+        SELECTED = null;
     }
+    container.style.cursor = 'auto';
 
-    loader.load(model,
-                function(geometry, materials) {
-                    material = new THREE.MeshFaceMaterial(materials);
-                    mesh = new THREE.Mesh(geometry, material);
+}
 
-                    clean_scene();
-
-                    meshs.push(mesh);
-                    scene.add(mesh);
-                });
+function onMouseMove(event){
+    event.preventDefault();
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    //
+    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+    projector.unprojectVector( vector, camera );
+    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+    if ( SELECTED ) {
+        var intersects = raycaster.intersectObject( plane );
+        SELECTED.position.copy( intersects[ 0 ].point.sub( offset ) );
+        return;
+    }
+    var intersects = raycaster.intersectObjects( furnitures );
+    if ( intersects.length > 0 ) {
+        if ( INTERSECTED != intersects[ 0 ].object ) {
+            if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+            INTERSECTED = intersects[ 0 ].object;
+            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+            plane.position.copy( INTERSECTED.position );
+            plane.lookAt( camera.position );
+        }
+        container.style.cursor = 'pointer';
+    } else {
+        if ( INTERSECTED ) {
+            INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+        }
+        INTERSECTED = null;
+        container.style.cursor = 'auto';
+    }
 }
 
 function clean_scene(){
-    for(var i = 0; i < meshs.length; i++){
-        var m = meshs.pop();
+    for(var i = 0; i < rooms.length; i++){
+        var m = rooms.pop();
         scene.remove(m);
     }
-    for(var i = 0; i <animate_objs.length; i++){
-        var m = animate_objs.pop();
+    for(var i = 0; i < furnitures.length; i++){
+        var m = furnitures.pop();
         scene.remove(m);
     }
 }
