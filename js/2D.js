@@ -17,8 +17,6 @@ var g_2d = {
     current_obj: null,
     selected_obj: null,
 };
-//g_2d.width = 800;
-//g_2d.height = 600;
 
 var rooms = [];
 var furnitures = [];
@@ -85,18 +83,41 @@ function onCanvasMouseWheel(event){
 function onCanvasMouseDown(event){
     var pos = g_2d.stage.getUserPosition();
     if(pos == null){
-        console.log("outside");
         return;
     }
     if(g_2d.current_cmd == CMDS.add_room){
-        g_2d.current_obj = new Kinetic.Polygon({
-            points: [pos.x, pos.y, pos.x+1, pos.y,
-                     pos.x+1, pos.y+1, pos.x, pos.y+1],
-            fill: '#00D2FF',
+        var group = new Kinetic.Group({
+            name: 'room',
             draggable: true
         });
-        g_2d.layer.add(g_2d.current_obj);
+
+        var topleft = pos;
+        var topright = {x:pos.x+1, y:pos.y};
+        var bottomright = {x:pos.x+1, y:pos.y+1};
+        var bottomleft = {x:pos.x, y:pos.y+1};
+        var points = [topleft, topright,
+                     bottomright, bottomleft];
+        g_2d.current_obj = new Kinetic.Polygon({
+            name: 'floor',
+            points: points,
+            fill: '#00D2FF'
+        });
+
+        group.add(g_2d.current_obj);
+        var len = points.length;
+        for(var i = 0; i < len; i++){
+            var wall = create_wall([points[i], points[(i+1)%len]], i, group);
+
+        }
+
+        var walls = group.walls;
+        for(var i = 0; i < len; i++){
+            walls[i].left = walls[(i-1+len)%len];
+            walls[i].right = walls[(i+1)%len];
+        }
+        g_2d.layer.add(group);
         g_2d.layer.draw();
+
     }else if(g_2d.current_cmd == CMDS.add_furniture){
         var group = new Kinetic.Group({
             name: 'funiture',
@@ -141,7 +162,7 @@ function onCanvasMouseUp(event){
         var objs = g_2d.stage.getIntersections(g_2d.stage.getUserPosition());
         var obj = objs[0];
         if(obj != null){
-            g_2d.selected_obj
+//            g_2d.selected_obj;
         }
     }
     if(g_2d.current_cmd == CMDS.add_room){
@@ -156,7 +177,7 @@ function onCanvasMouseUp(event){
 
     }
     g_2d.current_cmd = CMDS.normal;
-    g_2d.current_obj = null;
+//    g_2d.current_obj = null;
 }
 
 function onCanvasMouseMove(event){
@@ -171,9 +192,53 @@ function onCanvasMouseMove(event){
         points[2].y = pos.y;
         points[3].y = pos.y;
         g_2d.current_obj.setPoints(points);
+
+        update_walls(g_2d.current_obj);
         g_2d.layer.draw();
     }
 
+}
+
+function update_walls(room){
+    var group = room.getParent();
+
+    var walls = group.walls;
+
+    var points = room.getPoints();
+    var len = points.length;
+    for(var i = 0; i < len; i++){
+        walls[i].setPoints([points[i], points[(i+1)%len]]);
+        walls[i].moveToTop();
+    }
+}
+
+function update_room(wall){
+    var group = wall.getParent();
+    var room = group.get('.floor')[0];
+
+    var left = wall.left;
+    var right = wall.right;
+
+    var position = wall.getPosition();
+
+    var deltax = position.x - wall.pos.x;
+    var deltay = position.y - wall.pos.y;
+
+    var points = wall.getPoints();
+
+    points = left.getPoints();
+    points[1].x += deltax;
+    points[1].y += deltay;
+    left.setPoints(points);
+
+    points = right.getPoints();
+    points[0].x += deltax;
+    points[0].y += deltay;
+    right.setPoints(points);
+
+
+    wall.pos = wall.getPosition();
+    wall.setPosition(0, 0);
 }
 
 function update_furniture(anchor){
@@ -241,6 +306,67 @@ function show_anchors(group){
     bottomleft.show();
 }
 
+function create_wall(points, index, group){
+    function vertical(pos){
+        return {
+            x: this.getAbsolutePosition().x,
+            y: pos.y
+        }
+    }
+    function horizontal(pos){
+        return {
+            x: pos.x,
+            y: this.getAbsolutePosition().y
+        }
+    }
+    var wall = new Kinetic.Line({
+        points: points,
+        stroke: 'black',
+        strokeWidth: 10,
+        lineCap: 'square',
+        draggable: true,
+        dragOnTop: false
+    });
+    if(points[0].x == points[1].x){
+        wall.setDragBoundFunc(horizontal);
+    }else{
+        wall.setDragBoundFunc(vertical);
+    }
+    wall.index = index;
+    wall.on('dragstart', function(){
+        this.pos = this.getPosition();
+    });
+    wall.on('dragmove', function(){
+        update_room(wall);
+        var layer = wall.getLayer();
+        layer.draw();
+    });
+    wall.on('dragend', function(){
+
+    });
+    wall.on('mousedown touchstart', function(){
+        console.log(this.getPosition());
+        console.log(this.getPoints());
+    });
+    wall.on('mouseover', function(){
+        var layer = this.getLayer();
+        this.moveToTop();
+        this.setStroke('blue');
+        layer.draw();
+    });
+    wall.on('mouseout', function(){
+        var layer = this.getLayer();
+        this.setStroke('black');
+        layer.draw();
+    });
+
+    if(group.walls == null){
+        group.walls = [];
+    }
+    group.walls.push(wall);
+    group.add(wall);
+}
+
 function create_anchor(x, y, width, height, name, group){
     var anchor = new Kinetic.Rect({
         name: name,
@@ -251,7 +377,7 @@ function create_anchor(x, y, width, height, name, group){
         fill: 'black',
         draggable: true,
         dragOnTop: false
-    })
+    });
     anchor.on('dragmove', function() {
         update_furniture(this);
         var layer = this.getLayer();
@@ -287,5 +413,4 @@ function scale(delta){
 
 function setCmd(cmd){
     g_2d.current_cmd = cmd;
-    console.log(cmd);
 }
