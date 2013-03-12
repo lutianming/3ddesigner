@@ -87,44 +87,44 @@ function onCanvasMouseDown(event){
         return;
     }
     if(g_2d.current_cmd == CMDS.add_room){
-        var group = new Kinetic.Group({
-            name: 'room',
-            draggable: true
-        });
-
-        var topleft = pos;
-        var topright = {x:pos.x+1, y:pos.y};
-        var bottomright = {x:pos.x+1, y:pos.y+1};
-        var bottomleft = {x:pos.x, y:pos.y+1};
-        var points = [topleft, topright,
-                     bottomright, bottomleft];
-        g_2d.current_obj = new Kinetic.Polygon({
-            name: 'floor',
-            points: points,
-            fill: '#00D2FF'
-        });
-
-        group.add(g_2d.current_obj);
-        var len = points.length;
-        group.corners = [];
-        for(var i = 0; i < len; i++){
-            var corner = create_corner(points[i], group);
-            group.corners.push(corner);
-        }
-        for(var i = 0; i < len; i++){
-            var wall = create_wall([points[i], points[(i+1)%len]], i, group);
-        }
-
-        var walls = group.walls;
-        for(var i = 0; i < len; i++){
-            walls[i].left = walls[(i-1+len)%len];
-            walls[i].right = walls[(i+1)%len];
-        }
-        g_2d.layer.add(group);
-        g_2d.layer.draw();
-
         if(g_2d.house == null){
-            g_2d.house = group;
+            g_2d.house = create_house_group();
+        }
+        var house = g_2d.house;
+        if(g_2d.house.rooms.length == 0){
+            var topleft = pos;
+            var topright = {x:pos.x+1, y:pos.y};
+            var bottomright = {x:pos.x+1, y:pos.y+1};
+            var bottomleft = {x:pos.x, y:pos.y+1};
+            var points = [topleft, topright,
+                          bottomright, bottomleft];
+            house.points.push(topleft);
+            house.points.push(topright);
+            house.points.push(bottomright);
+            house.points.push(bottomleft);
+            g_2d.current_obj = create_room(points, house);
+            g_2d.layer.add(house);
+            g_2d.layer.draw();
+        }else{
+            //to add another room, mouse pos should be on a corner
+            var shapes = g_2d.house.getIntersections(pos);
+            var corner = have_corner(shapes);
+            if(corner != null){
+                house.setDraggable(false);
+                var pos = corner.getPosition();
+                var topleft = pos;
+                var topright = {x:pos.x+1, y:pos.y};
+                var bottomright = {x:pos.x+1, y:pos.y+1};
+                var bottomleft = {x:pos.x, y:pos.y+1};
+                var points = [topleft, topright,
+                              bottomright, bottomleft];
+                house.points.push(topleft);
+                house.points.push(topright);
+                house.points.push(bottomright);
+                house.points.push(bottomleft);
+                g_2d.current_obj = create_room(points, house);
+                g_2d.layer.draw();
+            }
         }
     }else if(g_2d.current_cmd == CMDS.add_furniture){
         var group = new Kinetic.Group({
@@ -161,9 +161,7 @@ function onCanvasMouseDown(event){
         g_2d.layer.add(group);
         g_2d.layer.draw();
     }else if(g_2d.current_cmd == CMDS.add_door){
-        console.log('add door');
         if(g_2d.house == null){
-            console.log('null house');
             return;
         }
 
@@ -183,18 +181,24 @@ function onCanvasMouseUp(event){
         }
     }
     if(g_2d.current_cmd == CMDS.add_room){
+        if(g_2d.current_obj == null){
+            return;
+        }
         var points = g_2d.current_obj.getPoints();
         if(Math.abs(points[0].x - points[2].x) < 10 ||
           Math.abs(points[0].x - points[2].y) < 10){
             g_2d.current_obj.destroy();
             g_2d.layer.draw();
+        }else{
+            update_corners(g_2d.current_obj);
+            g_2d.layer.draw();
         }
-
+        g_2d.house.setDraggable(true);
     }else if(g_2d.current_cmd == CMDS.add_furniture){
 
     }
     g_2d.current_cmd = CMDS.normal;
-//    g_2d.current_obj = null;
+    g_2d.current_obj = null;
 }
 
 function onCanvasMouseMove(event){
@@ -209,15 +213,9 @@ function onCanvasMouseMove(event){
         points[2].y = pos.y;
         points[3].y = pos.y;
         g_2d.current_obj.setPoints(points);
-
-        update_walls(g_2d.current_obj);
-        update_corners(g_2d.current_obj);
         g_2d.layer.draw();
     }
-
 }
-
-
 
 function scale(delta){
     g_2d.stage.setScale(g_2d.stage.getScale().x + delta);
@@ -226,4 +224,15 @@ function scale(delta){
 
 function setCmd(cmd){
     g_2d.current_cmd = cmd;
+}
+
+function have_corner(shapes){
+    var result = null;
+    for(var i = 0; i < shapes.length; i++){
+        if(shapes[i].getName() == 'corner'){
+            result = shapes[i];
+            break;
+        }
+    }
+    return result;
 }
