@@ -105,7 +105,7 @@ function create_wall(points, group){
         points: points,
         stroke: 'black',
         strokeWidth: 10,
-        lineCap: 'square',
+        lineCap: 'round',
         draggable: true,
         dragOnTop: false
     });

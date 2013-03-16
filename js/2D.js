@@ -182,12 +182,12 @@ function onCanvasMouseDown(event){
             var pwall = points[1];
             var room = g_2d.house.rooms[0];
             var ps = room.getPoints();
-            var index = null;
-            for(var i = 0; i < ps.length; i++){
-                if(ps[i] == pwall){
-                    index = i;
-                }
-            }
+            var index = ps.indexOf(pwall);
+            // for(var i = 0; i < ps.length; i++){
+            //     if(ps[i] == pwall){
+            //         index = i;
+            //     }
+            // }
             ps.splice(index, 0, p);
         }
     }
@@ -255,6 +255,7 @@ function have_obj(pos, name){
     if(objs == null){
         return null;
     }
+    var result = null;
     for(var i = 0; i < objs.length; i++){
         if(objs[i].getName() == name){
             result = objs[i];
