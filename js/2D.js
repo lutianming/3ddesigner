@@ -8,7 +8,8 @@ var CMDS = {
     add_room: 2,
     add_door: 3,
     add_window: 4,
-    add_furniture: 5
+    add_furniture: 5,
+    split_wall: 6
 };
 
 var g_2d = {
@@ -107,8 +108,7 @@ function onCanvasMouseDown(event){
             g_2d.layer.draw();
         }else{
             //to add another room, mouse pos should be on a corner
-            var shapes = g_2d.house.getIntersections(pos);
-            var corner = have_corner(shapes);
+            var corner = have_obj(pos, 'corner');
             if(corner != null){
                 house.setDraggable(false);
                 var pos = corner.getPosition();
@@ -167,6 +167,29 @@ function onCanvasMouseDown(event){
 
         create_door(pos.x, pos.y, 90, g_2d.house);
         g_2d.layer.draw();
+    }else if(g_2d.current_cmd == CMDS.split_wall){
+        var wall = have_obj(pos, 'wall');
+        if(wall != null){
+            var points = wall.getPoints();
+            var x = (points[0].x + points[1].x) / 2;
+            var y = (points[0].y + points[1].y) / 2;
+            var p = {x: x, y: y};
+            var w = create_wall([p, points[1]], g_2d.house);
+            wall.setPoints([points[0], p]);
+            g_2d.house.points.push(p);
+            var corner = create_corner(p, g_2d.house);
+
+            var pwall = points[1];
+            var room = g_2d.house.rooms[0];
+            var ps = room.getPoints();
+            var index = null;
+            for(var i = 0; i < ps.length; i++){
+                if(ps[i] == pwall){
+                    index = i;
+                }
+            }
+            ps.splice(index, 0, p);
+        }
     }
 
 }
@@ -222,17 +245,26 @@ function scale(delta){
     g_2d.stage.draw();
 }
 
+
 function setCmd(cmd){
     g_2d.current_cmd = cmd;
 }
 
-function have_corner(shapes){
-    var result = null;
-    for(var i = 0; i < shapes.length; i++){
-        if(shapes[i].getName() == 'corner'){
-            result = shapes[i];
+function have_obj(pos, name){
+    var objs = g_2d.stage.getIntersections(pos);
+    if(objs == null){
+        return null;
+    }
+    for(var i = 0; i < objs.length; i++){
+        if(objs[i].getName() == name){
+            result = objs[i];
             break;
         }
     }
     return result;
+}
+
+function Point(x, y){
+    this.x = x;
+    this.y = y;
 }

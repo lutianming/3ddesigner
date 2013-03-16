@@ -4,7 +4,8 @@ function update_corners(room){
 
     var points = room.getPoints();
     for(var i = 0; i < points.length; i++){
-        corners[i].setPosition(points[i]);
+        var p = points[i];
+        p.corner.setPosition(p);
     }
 }
 
@@ -57,7 +58,7 @@ function create_room(points, group){
         var corner = create_corner(points[i], group);
     }
     for(var i = 0; i < len; i++){
-        var wall = create_wall([points[i], points[(i+1)%len]], i, group);
+        var wall = create_wall([points[i], points[(i+1)%len]], group);
     }
     group.rooms.push(room);
     return room;
@@ -78,6 +79,7 @@ function create_corner(pos, group){
         //     canvas.fillStroke(this);
         // }
       });
+    pos.corner = corner;
     corner.on('mouseover', function(){
 
     });
@@ -85,7 +87,7 @@ function create_corner(pos, group){
     group.corners.push(corner);
     return corner;
 }
-function create_wall(points, index, group){
+function create_wall(points, group){
     function vertical(pos){
         return {
             x: this.getAbsolutePosition().x,
@@ -112,7 +114,6 @@ function create_wall(points, index, group){
     }else{
         wall.setDragBoundFunc(vertical);
     }
-    wall.index = index;
     wall.on('dragstart', function(){
         this.pos = this.getPosition();
     });
