@@ -87,7 +87,10 @@ function onCanvasMouseDown(event){
     if(pos == null){
         return;
     }
-    if(g_2d.current_cmd == CMDS.add_room){
+    if(g_2d.current_cmd == CMDS.normal){
+
+    }
+    else if(g_2d.current_cmd == CMDS.add_room){
         if(g_2d.house == null){
             g_2d.house = create_house_group();
         }
@@ -126,48 +129,22 @@ function onCanvasMouseDown(event){
                 g_2d.layer.draw();
             }
         }
-    }else if(g_2d.current_cmd == CMDS.add_furniture){
-        var group = new Kinetic.Group({
-            name: 'funiture',
-            draggable: true
-        });
-        g_2d.current_obj = new Kinetic.Rect({
-            name: 'obj',
-            x: pos.x,
-            y: pos.y,
-            width: 50,
-            height: 50,
-            fill: 'green'
-        });
-        group.add(g_2d.current_obj);
-        //4 anchors
-        var p = g_2d.current_obj.getAbsolutePosition();
-        var height = g_2d.current_obj.getHeight();
-        var width = g_2d.current_obj.getWidth();
-        var w = 10;
-        var topleft = create_anchor(p.x, p.y,
-                                    -w, -w,
-                                    'topleft', group);
-        var topright = create_anchor(p.x+width, p.y,
-                                     w, -w,
-                                     'topright', group);
-        var bottomright = create_anchor(p.x+width, p.y+height,
-                                        w, w,
-                                        'bottomright', group);
-        var bottomleft = create_anchor(p.x, p.y+height,
-                                       -w, w,
-                                       'bottomleft', group);
-
-        g_2d.layer.add(group);
+    }
+    else if(g_2d.current_cmd == CMDS.add_furniture){
+        var furniture = create_furniture(pos);
+        g_2d.current_obj = furniture;
+        g_2d.layer.add(furniture);
         g_2d.layer.draw();
-    }else if(g_2d.current_cmd == CMDS.add_door){
+    }
+    else if(g_2d.current_cmd == CMDS.add_door){
         if(g_2d.house == null){
             return;
         }
 
         create_door(pos.x, pos.y, 90, g_2d.house);
         g_2d.layer.draw();
-    }else if(g_2d.current_cmd == CMDS.split_wall){
+    }
+    else if(g_2d.current_cmd == CMDS.split_wall){
         var wall = have_obj(pos, 'wall');
         if(wall != null){
             var points = wall.getPoints();
@@ -183,11 +160,7 @@ function onCanvasMouseDown(event){
             var room = g_2d.house.rooms[0];
             var ps = room.getPoints();
             var index = ps.indexOf(pwall);
-            // for(var i = 0; i < ps.length; i++){
-            //     if(ps[i] == pwall){
-            //         index = i;
-            //     }
-            // }
+
             ps.splice(index, 0, p);
         }
     }
@@ -195,13 +168,23 @@ function onCanvasMouseDown(event){
 }
 
 function onCanvasMouseUp(event){
+    var pos = g_2d.stage.getUserPosition();
+
     if(g_2d.current_cmd == CMDS.normal){
         //TODO show anchor when selected, hide when select others
-        var objs = g_2d.stage.getIntersections(g_2d.stage.getUserPosition());
-        var obj = objs[0];
-        if(obj != null){
-//            g_2d.selected_obj;
+        var objs = g_2d.layer.getIntersections(pos);
+        for(var i = 0; i < objs.length; i++){
+            console.log(objs[i].getName());
         }
+        var obj = have_obj(pos, 'furniture');
+        if(g_2d.selected_obj.getName() == 'furniture_group'){
+            hide_anchors(g_2d.selected_obj);
+        }
+        if(obj != null){
+            show_anchors(obj.getParent());
+            g_2d.selected_obj == obj.getParent();
+        }
+        return;
     }
     if(g_2d.current_cmd == CMDS.add_room){
         if(g_2d.current_obj == null){
@@ -218,9 +201,15 @@ function onCanvasMouseUp(event){
         }
         g_2d.house.setDraggable(true);
     }else if(g_2d.current_cmd == CMDS.add_furniture){
-
+        if(g_2d.selected_obj != null &&
+           g_2d.selected_obj.getName() == 'furniture_group'){
+            hide_anchors(g_2d.selected_obj);
+        }
+        show_anchors(g_2d.current_obj);
+        g_2d.furnitures.push(g_2d.current_obj);
     }
     g_2d.current_cmd = CMDS.normal;
+    g_2d.selected_obj = g_2d.current_obj;
     g_2d.current_obj = null;
 }
 
@@ -251,7 +240,7 @@ function setCmd(cmd){
 }
 
 function have_obj(pos, name){
-    var objs = g_2d.stage.getIntersections(pos);
+    var objs = g_2d.layer.getIntersections(pos);
     if(objs == null){
         return null;
     }
@@ -263,9 +252,4 @@ function have_obj(pos, name){
         }
     }
     return result;
-}
-
-function Point(x, y){
-    this.x = x;
-    this.y = y;
 }

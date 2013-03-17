@@ -39,6 +39,39 @@ function update_furniture(anchor){
     }
 }
 
+function create_furniture(pos){
+    var group = new Kinetic.Group({
+        name: 'furniture_group',
+        draggable: true
+    });
+
+    var obj = new Kinetic.Rect({
+        name: 'furniture',
+        x: pos.x,
+        y: pos.y,
+        width: 50,
+        height: 50,
+        fill: 'green'
+    });
+    group.add(obj);
+    var height = obj.getHeight();
+    var width = obj.getWidth();
+    var w = 10;
+    var topleft = create_anchor(pos.x, pos.y,
+                                -w, -w,
+                                'topleft', group);
+    var topright = create_anchor(pos.x+width, pos.y,
+                                 w, -w,
+                                 'topright', group);
+    var bottomright = create_anchor(pos.x+width, pos.y+height,
+                                    w, w,
+                                    'bottomright', group);
+    var bottomleft = create_anchor(pos.x, pos.y+height,
+                                   -w, w,
+                                   'bottomleft', group);
+    return group;
+}
+
 function hide_anchors(group){
     var topleft = group.get('.topleft')[0];
     var topright = group.get('.topright')[0];
