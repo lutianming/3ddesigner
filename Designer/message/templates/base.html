@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<title>Django Messageboard|{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="/site_media/css/style.css" type="text/css">
+		<script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
+		{% block head %}{% endblock %}
+		<script type="text/javascript">
+		tinyMCE.init({
+		 mode:"textareas",
+		 theme:"advanced",
+		 plugins:"emotions",
+		 theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justrifyright,justrifyfull,|,fontselect,fontsizeselect,|,cut,copy,paste,|,undo,redo,|,link,unlink,|,forecolor,backcolor,|,image,emotions",
+		 theme_advanced_buttons2:"",
+		 theme_advanced_toolbar_location:"top",
+		 theme_advanced_toolbar_align:"left",
+		 language:"en",
+		 height:"500px",
+		});
+		</script>
+	</head>
+	<body>
+		<div class="nav">
+			<a href="/">Home</a>|
+			<a href="/post/">Post</a>|
+			{% if user.is_authenticated %}
+			<a href="/user/{{user.username}}/">{{user.username}}</a>|
+			<a href="/accounts/logout/">Logout</a>
+			{% else %}
+			<a href="/accounts/login/">Login</a>|
+			<a href="/accounts/register/">Register</a>
+			{% endif %}
+			{% ifequal user.username "admin" %}
+			|<a href="/admin/">Backstage Management</a>
+			{% endifequal%}
+		</div>
+		{% block content %}{% endblock %}
+	</body>
+</html>

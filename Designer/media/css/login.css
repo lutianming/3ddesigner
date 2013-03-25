@@ -1,0 +1,43 @@
+body { 
+	background: #097c99 url('/site_media/img/bg.png'); 
+	margin: 0; 
+	text-align: center; 
+	}
+
+#puzzle { 
+	margin: 114px auto 0 auto; 
+	width: 900px; 
+	position: absolute;
+	top: 5px;
+	left: 280px;
+	}
+	
+#logo { 
+	background: url('/site_media/img/logo.png') no-repeat; 
+	float: left; 
+	height: 90px; 
+	overflow: hidden; 
+	padding: 188px 0 0 0; 
+	width: 500px; 
+	}
+	
+#login { 
+	background: url('/site_media/img/bgGrid.png'); 
+	float: right; 
+	height: 280px; 
+	padding: 26px; 
+	width: 280px; 
+	}
+
+#login table { 
+	width: 270px; 
+	}
+	
+input {
+	font-size: 18px;
+	}
+input#login_button {
+	width:100px;
+	heigth:40px;
+	font-size:30px;
+	}

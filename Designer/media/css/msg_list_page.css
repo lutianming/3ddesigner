@@ -1,0 +1,22 @@
+#msglist_content {
+	position:absolute;
+	top:100px;
+	left:300px;
+	}
+	
+table.msglist td.summary{
+	width:300px;
+	overflow: hidden;
+}
+table.msglist td.datetime{
+	width:150px;
+}
+
+table#paginator {
+	float: right;
+}
+
+caption {
+	padding: 10px;
+	font-size: 28px;
+}

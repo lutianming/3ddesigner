@@ -1,0 +1,28 @@
+div.nav{float:right;}
+
+table.msglist {
+	border:3 solid black;
+	border-collapse: collapse;
+}
+
+table.msglist th, table.msglist td{
+	border: 2 solid black;
+	width: 100px;
+	font-size: 20px;
+}
+
+input {
+	display:block; border:1 solid black;
+}
+table.noframe, table.noframe td {
+	border:0;
+}
+
+div.comment {
+	margin:1em;
+	padding:5px;
+	border-bottom:1px dashed;
+}
+
+
+

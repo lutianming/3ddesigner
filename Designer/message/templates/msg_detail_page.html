@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load comments %}
+{% block title %}Message content and related comments{% endblock %}
+{% block head %}
+<script type="text/javascript" src="/site_media/js/utils.js"></script>
+<script type="text/javascript" src="/site_media/js/detail_init.js"></script>
+{% endblock %}
+{% block content%}
+<table class="msglist" style="visibility:hidden" id="msg_list">
+	<tr align="left">
+		<th>User:{{msg.user.username}}</th>
+		<th>Time:{{msg.datetime|date:"Y-m-d H:i"}}</th>
+		<th>IP Address:{{msg.ip}}</th>
+	</tr>
+	<tr>
+		<td colspan="3"><b>{{msg.title}}</b></td>
+	</tr>
+	<tr>
+		<td colspan="3" id="msg_content" >{{msg.content}}</td>
+	</tr>
+</table>
+<br>
+{% get_comment_list for message.msg msg.id as comment_list %}
+<div id="comment_list" style="visibility:hidden">
+{% for comment in comment_list %}
+<div class="comment">
+	<p>User:<b>{{comment.user.username}}</b>&nbsp;&nbsp;&nbsp;
+	Time:{{comment.submit_date|date:"Y-m-d H:i"}}&nbsp;&nbsp;&nbsp;
+	IP Address:{{comment.ip_address}}</p>
+	<div class="comment_detail">{{comment.comment}}</div>
+</div>
+{% endfor %}
+</div>
+<article >     
+{% get_comment_form for message.msg msg.id as form %}  
+<form action='{%comment_form_target%}' method='post'>
+    {% csrf_token %}
+    {{form.object_pk}}
+    {{form.content_type}}
+    {{form.timestamp}}
+    {{form.security_hash}}
+    <!--<p><label for="id_name">Name:</label>--><input name="name" id="id_name" value="{{user.username}}" type='hidden'></p>
+    <!--<p><label for="id_email">Email</label>--><input name="email" id="id_email", value="{{user.email}}" type='hidden'></p>
+    <!--<p><label for="id_url">Url:</label><input name="url" id="id_url"></p>-->
+    <p><label for="id_comment">Comment:</label></p>
+    <p><textarea id="id_comment" rows="10" cols="40" name="comment"></textarea></p>
+    <p style="display:none;"><label for="id_honeypot">asxa</label> <input type="text" name="honeypot" id="id_honeypot"></p>
+    <p><input name="post" value="Send" type="submit" /></p>
+    <input type='hidden' name='next' value='/detail/{{msg.id}}'/>
+    
+    <!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to:</span>
+		<a class="jiathis_button_qzone">Qzone</a>
+		<a class="jiathis_button_tsina">Sina Weibo</a>
+		<a class="jiathis_button_tqq">Tecent Weibo</a>
+		<a class="jiathis_button_renren">RenRen</a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">More</a>
+		<a class="jiathis_counter_style"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1363692970301781" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+	<!-- UJian Button BEGIN -->
+	<script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&fade=1"></script>
+	<a href="http://www.ujian.cc" style="border:0;"><img src="http://img.ujian.cc/pixel.png" alt="recommend" style="border:0;padding:0;margin:0;" /></a>
+	<!-- UJian Button END -->
+    <div id="uyan_frame"></div>
+	<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=0" async=""></script>
+    
+</form>
+</article>
+{% endblock %}

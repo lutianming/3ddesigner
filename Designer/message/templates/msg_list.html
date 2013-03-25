@@ -1,0 +1,30 @@
+<tr align="center">
+	<th>Title</th>
+	<th>Summary</th>
+	<th>User</th>
+	<!--<th>IP Address</th>-->
+	<th>Date Time</th>
+	<th>Click Count</th>
+	<th>Comment Count</th>
+</tr>
+{% if msg_list %}
+	{% load comments %}
+	{% for msg in msg_list %}
+		<tr align="center">
+			<td align="left">
+				<a href="/detail/{{msg.id}}/">{{msg.title}}</a>
+			</td>
+			<td align="left" class="summary">
+			    <a href="/detail/{{msg.id}}/">{{msg.content|striptags|truncatewords:3}}</a>
+			</td>
+			<td>
+				<a href="/user/{{msg.user.username}}/">{{msg.user.username}}</a>
+			</td>
+			<!--<td>{{msg.ip}}</td>-->
+			<td class="datetime">{{msg.datetime|date:"Y-m-d H:i"}}</td>
+			<td>{{msg.clickcount}}</td>
+			<td>{% get_comment_count for message.msg msg.id as comment_count %}{{comment_count}}</td>
+	{% endfor %}
+{% else %}
+	<tr align="center"><td colspan="8">No message far now!</td></tr>
+{% endif %}
