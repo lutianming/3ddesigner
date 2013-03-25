@@ -1,39 +1,39 @@
 function update_furniture(anchor){
     var group = anchor.getParent();
 
-    var topleft = group.get('.topleft')[0];
-    var topright = group.get('.topright')[0];
-    var bottomright = group.get('.bottomright')[0];
-    var bottomleft = group.get('.bottomleft')[0];
-    var obj = group.get('.obj')[0];
+    // var topleft = group.get('.topleft')[0];
+    // var topright = group.get('.topright')[0];
+    // var bottomright = group.get('.bottomright')[0];
+    // var bottomleft = group.get('.bottomleft')[0];
+//    var obj = group.get('.funiture')[0];
 
     var x = anchor.getX();
     var y = anchor.getY();
-
+    var obj = group.furniture;
     switch(anchor.getName()){
     case 'topleft':
-        topright.setY(y);
-        bottomleft.setX(x);
+        obj.topright.setY(y);
+        obj.bottomleft.setX(x);
         break;
     case 'topright':
-        topleft.setY(y);
-        bottomright.setX(x);
+        obj.topleft.setY(y);
+        obj.bottomright.setX(x);
         break;
     case 'bottomright':
-        topright.setX(x);
-        bottomleft.setY(y);
+        obj.topright.setX(x);
+        obj.bottomleft.setY(y);
         break;
     case 'bottomleft':
-        topleft.setX(x);
-        bottomright.setY(y);
+        obj.topleft.setX(x);
+        obj.bottomright.setY(y);
         break;
     default:
         break;
     }
 
-    obj.setPosition(topleft.getPosition());
-    var width = topright.getX() - topleft.getX();
-    var height = bottomleft.getY() - topleft.getY();
+    obj.setPosition(obj.topleft.getPosition());
+    var width = obj.topright.getX() - obj.topleft.getX();
+    var height = obj.bottomleft.getY() - obj.topleft.getY();
     if (width && height){
         obj.setSize(width, height);
     }
@@ -54,46 +54,45 @@ function create_furniture(pos){
         fill: 'green'
     });
     group.add(obj);
+    group.furniture = obj;
     var height = obj.getHeight();
     var width = obj.getWidth();
     var w = 10;
-    var topleft = create_anchor(pos.x, pos.y,
+    obj.topleft = create_anchor(pos.x, pos.y,
                                 -w, -w,
                                 'topleft', group);
-    var topright = create_anchor(pos.x+width, pos.y,
+    obj.topright = create_anchor(pos.x+width, pos.y,
                                  w, -w,
                                  'topright', group);
-    var bottomright = create_anchor(pos.x+width, pos.y+height,
+    obj.bottomright = create_anchor(pos.x+width, pos.y+height,
                                     w, w,
                                     'bottomright', group);
-    var bottomleft = create_anchor(pos.x, pos.y+height,
+    obj.bottomleft = create_anchor(pos.x, pos.y+height,
                                    -w, w,
                                    'bottomleft', group);
-    return group;
+    return obj;
 }
 
-function hide_anchors(group){
-    var topleft = group.get('.topleft')[0];
-    var topright = group.get('.topright')[0];
-    var bottomright = group.get('.bottomright')[0];
-    var bottomleft = group.get('.bottomleft')[0];
-
-    topleft.hide();
-    topright.hide();
-    bottomright.hide();
-    bottomleft.hide();
+function hide_anchors(obj){
+    if(obj.getName() != 'furniture'){
+        return;
+    }
+    obj.topleft.hide();
+    obj.topright.hide();
+    obj.bottomright.hide();
+    obj.bottomleft.hide();
+    obj.getParent().draw();
 }
 
-function show_anchors(group){
-    var topleft = group.get('.topleft')[0];
-    var topright = group.get('.topright')[0];
-    var bottomright = group.get('.bottomright')[0];
-    var bottomleft = group.get('.bottomleft')[0];
-
-    topleft.show();
-    topright.show();
-    bottomright.show();
-    bottomleft.show();
+function show_anchors(obj){
+    if(obj.getName() != 'furniture'){
+        return;
+    }
+    obj.topleft.show();
+    obj.topright.show();
+    obj.bottomright.show();
+    obj.bottomleft.show();
+    obj.getParent().draw();
 }
 
 function create_anchor(x, y, width, height, name, group){

@@ -29,8 +29,11 @@ AddFurnitureCommand.prototype = new BaseCommand();
 AddFurnitureCommand.prototype.mousedown = function(pos){
     var furniture = create_furniture(pos);
     this.obj = furniture;
+    if(g_2d.current_obj != null){
+        hide_anchors(g_2d.current_obj);
+    }
     g_2d.current_obj = furniture;
-    g_2d.layer.add(furniture);
+    g_2d.layer.add(furniture.getParent());
     g_2d.layer.draw();
 }
 
@@ -149,4 +152,29 @@ ResizeCommand.prototype.mousedown = function(pos){
 }
 ResizeCommand.prototype.mouseup = function(pos){
 
+}
+
+function SplitWallCommand(){
+
+}
+SplitWallCommand.prototype = new BaseCommand();
+SplitWallCommand.prototype.mouseup = function(pos){
+    var wall = have_obj(pos, 'wall');
+    if(wall != null){
+        var points = wall.getPoints();
+        var x = (points[0].x + points[1].x) / 2;
+        var y = (points[0].y + points[1].y) / 2;
+        var p = {x: x, y: y};
+        var w = create_wall([p, points[1]], g_2d.house);
+        wall.setPoints([points[0], p]);
+        g_2d.house.points.push(p);
+        var corner = create_corner(p, g_2d.house);
+
+        var pwall = points[1];
+        var room = g_2d.house.rooms[0];
+        var ps = room.getPoints();
+        var index = ps.indexOf(pwall);
+
+        ps.splice(index, 0, p);
+    }
 }
