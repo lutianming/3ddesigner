@@ -1,6 +1,5 @@
 function update_corners(room){
-    var group = room.getParent();
-    var corners = group.corners;
+    var corners = room.corners;
 
     var points = room.getPoints();
     for(var i = 0; i < points.length; i++){
@@ -9,12 +8,9 @@ function update_corners(room){
     }
 }
 
-function update_room(wall){
-    var group = wall.getParent();
-    var room = group.get('.floor')[0];
-
-    var left = wall.left;
-    var right = wall.right;
+function update_rooms(wall){
+//    var group = wall.getParent();
+//    var room = group.get('.floor')[0];
 
     var position = wall.getPosition();
 
@@ -30,7 +26,9 @@ function update_room(wall){
 
     wall.pos = wall.getPosition();
     wall.setPosition(0, 0);
-    update_corners(room);
+//    update_corners(room);
+    wall.corners[0].setPosition(points[0]);
+    wall.corners[1].setPosition(points[1]);
 }
 
 function create_house_group(){
@@ -53,12 +51,19 @@ function create_room(points, group){
         fill: '#00D2FF'
     });
     group.add(room);
+    room.walls = [];
+    room.corners = [];
     var len = points.length;
     for(var i = 0; i < len; i++){
         var corner = create_corner(points[i], group);
+        corner.room = room;
+        room.corners.push(corner);
     }
     for(var i = 0; i < len; i++){
         var wall = create_wall([points[i], points[(i+1)%len]], group);
+        wall.rooms.push(room);
+        wall.corners = [room.corners[i], room.corners[(i+1)%len]];
+        room.walls.push(wall);
     }
     group.rooms.push(room);
     return room;
@@ -109,6 +114,7 @@ function create_wall(points, group){
         draggable: true,
         dragOnTop: false
     });
+    wall.rooms = [];
     if(points[0].x == points[1].x){
         wall.setDragBoundFunc(horizontal);
     }else{
@@ -118,7 +124,7 @@ function create_wall(points, group){
         this.pos = this.getPosition();
     });
     wall.on('dragmove', function(){
-        update_room(wall);
+        update_rooms(wall);
         var layer = wall.getLayer();
         layer.draw();
     });
@@ -214,5 +220,50 @@ function init_events(obj){
     obj.on('mousedown touchstart', function(){
 
     });
+
+}
+
+function merge_walls(w1, w2)
+{
+    var points1 = w1.getPoints();
+    var points2 = w2.getPoints();
+
+    var w2_p1_in_w1 = w1.interact(points2[0]);
+    var w2_p2_in_w1 = w1.interact(points2[1]);
+    var w1_p1_in_w2 = w2.interact(points1[0]);
+    var w1_p2_in_w2 = w2.interact(points2[1]);
+    //three possibility
+    //w2 in w1, w1 in w2, w1w2 interact
+    if(w2_p1_in_w1 && w2_p2_in_w1){
+        var room1 = w1.room;
+
+
+    }
+
+}
+
+function split_wall(wall, pos)
+{
+    var corner = create_corner(pos, g_2d.house);
+
+    var points = wall.getPoints();
+    var new_wall = create_wall([pos, points[1]], g_2d.house);
+    new_wall.rooms = wall.rooms.slice();
+    new_wall.corners = [corner, wall.corners[1]];
+
+    wall.setPoints([points[0], pos]);
+    wall.corners[1] = corner;
+    g_2d.house.points.push(pos);
+
+    for(var i = 0; i < wall.rooms.length; i++){
+        var room = wall.rooms[i];
+        var rpoints = room.getPoints();
+        var index = rpoints.indexOf(points[1]);
+        rpoints.splice(index, 0, pos);
+    }
+}
+
+function replace_wall(w1, w2)
+{
 
 }
