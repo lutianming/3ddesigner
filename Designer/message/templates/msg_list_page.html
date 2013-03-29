@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Message List{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/site_media/css/msg_list_page.css" type="text/css">
+{% endblock %}	
+{% block content %}
+<div id="msglist_content">
+	<table class="msglist">
+		<caption><h1>3DDesigner BBS</h1></caption>
+		{% include "msg_list.html" %}
+	</table>
+	{% include "paginator.html" %}
+	
+	<a href="javascript:(function(){window.open('http://v.t.sina.com.cn/share/share.php?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent('http://127.0.0.1:8000/site_media/css/style.css')+'&source=bookmark','_blank','width=450,height=400');})()" title="weibo_share"><img src="http://t.sina.com.cn/favicon.ico"  alt="weibo_share" border="0"></a>
+	<a href="javascript:(function(){window.open('http://t.163.com/article/user/checkLogin.do?link=http://news.163.com/&source='+'tudaou'+ '&info='+encodeURIComponent(document.title)+' '+encodeURIComponent(location.href),'_blank','width=450,height=400');})()" title="wangyi_share"><img src="http://www.taoba123.com/images/resource_10544871274700952v.png" alt="wangyi_share" border="0"></a> 
+</div>
+{% endblock %}

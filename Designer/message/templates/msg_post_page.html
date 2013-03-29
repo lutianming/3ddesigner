@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Leave Message{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/site_media/css/msg_post_page.css" type="text/css">
+{% endblock %}
+{% block content %}
+<form method="post" action=".">{% csrf_token %}
+	{{form.as_p}}
+	<input type="submit" value="Send">
+</form>
+{% endblock%}

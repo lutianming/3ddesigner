@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Comment successfully{% endblock %}
+{% block head %}Comment successfully!{% endblock %}
+{% block content %}
+	<p>Thanks for your comment!</p>
+	{% if object %}
+	<p><a href="/detail/{{object.id}}/">View your comment</a></p>
+	{% endif %}
+{% endblock %}
