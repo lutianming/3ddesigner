@@ -235,9 +235,22 @@ function merge_walls(w1, w2)
     //three possibility
     //w2 in w1, w1 in w2, w1w2 interact
     if(w2_p1_in_w1 && w2_p2_in_w1){
-        var room1 = w1.room;
+        var p0, p1;
+        var order;
+        if(dist(points1[0], points2[0]) < dist(points1[0], points2[1])){
+            p0 = points2[0];
+            p1 = points2[1];
+            order = [0, 1];
+        }
+        else{
+            p0 = points2[1];
+            p1 = points1[0];
+            order = [1, 0];
+        }
 
-
+        var new_wall = split_wall(w1, p0);
+        var index = room.walls.indexOf(new_wall);
+        insert_wall(w1.room, wall, order, index);
     }
 
 }
@@ -261,9 +274,61 @@ function split_wall(wall, pos)
         var index = rpoints.indexOf(points[1]);
         rpoints.splice(index, 0, pos);
     }
+    return new_wall;
 }
 
+function insert_wall(room, wall, order, index)
+{
+    var walls = room.walls;
+    var w1 = walls[(index-1+walls.length)%walls.length];
+    var w2 = walls[index];
+
+    var old_corner = w1.corners[1];
+    var index = g_2d.house.corners.indexOf(old_corner);
+    g_2d.house.corners.splice(index, 1);
+    old_corner.remove();
+
+    w1.getPoints()[1] = wall.getPoints()[order[0]];
+    w1.corners[1] = wall.corners[order[0]];
+
+    w2.getPoints()[0] = wall.getPoints()[order[1]];
+    w2.corners[0] = wall.corners[order[1]];
+
+    room.walls.splice(index, 0, wall);
+    var points = room.getPoints();
+    points[index] = wall.getPoints()[order[1]];
+    points.splice(index, 0, wall.getPoints()[order[0]]);
+}
 function replace_wall(w1, w2)
 {
+    var room = w1.room;
+    var index = room.walls.indexOf(w1);
+    room.walls[index] = w2;
 
+    var points = room.getPoints();
+    var w2_ps = w2.getPoints();
+
+    var walls = room.walls;
+    var w = walls[(index-1+walls.length)%walls.length];
+    w.getPoints()[1] = w2_ps[0];
+    w.corners[1] = w2_ps.corners[0];
+
+    w = walls[(index+1)%walls.length];
+    w.getPoints()[0] = w2_ps[1];
+    w.corners[0] = w2_ps.corners[1];
+
+    points[index] = w2_ps[0];
+    points[(index+1)%points.len] = w2_ps[1];
+
+    //destroy old wall
+    w1.corners[0].destroy();
+    w1.corners[1].destroy();
+    w1.destroy();
+}
+
+function dist(p1, p2)
+{
+    var dx = Math.abs(p1.x - p2.x);
+    var dy = Math.abs(p1.y - p2.y);
+    return Math.sqrt(Math.pow(dx, 2)+ Math.pow(dy, 2));
 }

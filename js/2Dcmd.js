@@ -79,6 +79,12 @@ AddRoomCommand.prototype.mousedown = function(pos){
             house.points.push(bottomleft);
             g_2d.current_obj = create_room(points, house);
             g_2d.layer.draw();
+
+            //test insert wall
+            insert_wall(g_2d.house.rooms[0],
+                        g_2d.house.rooms[1].walls[3],
+                        [1,0],1);
+
         }
     }
     this.obj = g_2d.current_obj;
