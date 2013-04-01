@@ -26,9 +26,17 @@ function update_rooms(wall){
 
     wall.pos = wall.getPosition();
     wall.setPosition(0, 0);
-//    update_corners(room);
+
     wall.corners[0].setPosition(points[0]);
     wall.corners[1].setPosition(points[1]);
+
+    //update doors and windows on this wall
+    for(var i = 0; i < wall.doors.length; i++){
+        var door = wall.doors[i];
+        var x = door.getX();
+        var y = door.getY();
+        door.setPosition(x+deltax, y+deltay);
+    }
 }
 
 function create_house_group(){
@@ -115,6 +123,8 @@ function create_wall(points, group){
         dragOnTop: false
     });
     wall.rooms = [];
+    wall.doors = [];
+    wall.windows = [];
     if(points[0].x == points[1].x){
         wall.setDragBoundFunc(horizontal);
     }else{
@@ -171,11 +181,29 @@ function create_door(x, y, deg, group){
         stroke: 'gray',
         strokeWidth: 2,
         rotationDeg: deg,
-        draggable: true
+        draggable: true,
+        dragBoundFunc: function(pos){
+            console.log(pos);
+            var p = intersection_pos_wall(pos,
+                                          this.wall);
+            console.log(p);
+            return p;
+        }
     });
     init_events(door);
     group.add(door);
     return door;
+}
+
+function wall_direction(w)
+{
+    var points = w.getPoints();
+    var dx = points[1].x - points[0].x;
+    var dy = points[1].y - points[0].y;
+
+    var diret = Math.atan2(dy, dx) / Math.PI * 180;
+    return diret;
+
 }
 
 function create_window(points, group){
@@ -210,7 +238,7 @@ function init_events(obj){
     });
     obj.on('dragmove', function(){
 
-    });
+    });3
     obj.on('dragend', function(){
         var group = obj.getParent();
         var walls = group.get('.wall');
@@ -331,4 +359,49 @@ function dist(p1, p2)
     var dx = Math.abs(p1.x - p2.x);
     var dy = Math.abs(p1.y - p2.y);
     return Math.sqrt(Math.pow(dx, 2)+ Math.pow(dy, 2));
+}
+
+function dist_pos_wall(pos, wall)
+{
+    var points = wall.getPoints();
+    var p1 = points[0];
+    var p2 = points[1];
+    var A = p1.y - p2.y;
+    var B = p2.x - p2.x;
+    var C = p1.y * (p1.x - p2.x) - p1.x * (p1.y - p2.y);
+    var a = A * pos.x + B * pos.y + C;
+    var b = Math.pow(A, 2) + Math.pow(B, 2);
+    var dist = Math.abs(a) / Math.sqrt(b);
+    return dist;
+}
+
+function intersection_pos_wall(pos, wall)
+{
+    var points = wall.getPoints();
+    var x1 = points[0].x;
+    var y1 = points[0].y;
+    var x2 = points[1].x;
+    var y2 = points[1].y;
+    var x3 = pos.x;
+    var y3 = pos.y;
+    //refer to http://en.wikipedia.org/wiki/Line-line_intersection
+    var x4 = 0;
+    var y4;
+    if((y1-y2) == 0){
+        y4 = y3 + 10;  //10 is random picked
+    }
+    else{
+        y4 = (x3 - x4) * (x1 - x2) / (y1-y2) + y3;
+    }
+
+    //ready, calc intersection point
+    var a = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    var b = x1*y2 - y1*x2;
+    var c = x3*y4 - y3*x4;
+
+    var x = (b*(x3-x4) - (x1-x2)*c) / a;
+    var y = (b*(y3-y4) - (y1-y2)*c) / a;
+
+    var p = {x:x, y:y};
+    return p;
 }

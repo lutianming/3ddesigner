@@ -126,8 +126,16 @@ AddDoorCommand.prototype.mousedown = function(pos){
     if(g_2d.house == null){
         return;
     }
-    this.obj = create_door(pos.x, pos.y, 90, g_2d.house);
-    g_2d.layer.draw();
+    var wall = have_obj(pos, 'wall');
+    if(wall != null){
+
+        var diret = wall_direction(wall);
+        pos = intersection_pos_wall(pos, wall);
+        this.obj = create_door(pos.x, pos.y, diret, g_2d.house);
+        wall.doors.push(this.obj);
+        this.obj.wall = wall;
+        g_2d.layer.draw();
+    }
 }
 AddDoorCommand.prototype.mousemove = function(pos){
 
@@ -168,21 +176,4 @@ SplitWallCommand.prototype.mouseup = function(pos){
     var wall = have_obj(pos, 'wall');
 
     split_wall(wall, pos);
-    // if(wall != null){
-    //     var points = wall.getPoints();
-    //     var x = (points[0].x + points[1].x) / 2;
-    //     var y = (points[0].y + points[1].y) / 2;
-    //     var p = {x: x, y: y};
-    //     var w = create_wall([p, points[1]], g_2d.house);
-    //     wall.setPoints([points[0], p]);
-    //     g_2d.house.points.push(p);
-    //     var corner = create_corner(p, g_2d.house);
-
-    //     var pwall = points[1];
-    //     var room = g_2d.house.rooms[0];
-    //     var ps = room.getPoints();
-    //     var index = ps.indexOf(pwall);
-
-    //     ps.splice(index, 0, p);
-    // }
 }
