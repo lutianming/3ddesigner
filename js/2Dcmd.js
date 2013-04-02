@@ -65,6 +65,7 @@ AddRoomCommand.prototype.mousedown = function(pos){
         //to add another room, mouse pos should be on a corner
         var corner = have_obj(pos, 'corner');
         if(corner != null){
+//            g_2d.stage.setDraggable(false);
             house.setDraggable(false);
             var pos = corner.getPosition();
             var topleft = pos;
@@ -114,7 +115,8 @@ AddRoomCommand.prototype.mouseup = function(pos){
         update_corners(g_2d.current_obj);
         g_2d.layer.draw();
     }
-    g_2d.house.setDraggable(true);
+//    g_2d.house.setDraggable(true);
+//    g_2d.stage.setDraggable(true);
 }
 
 //add door command
