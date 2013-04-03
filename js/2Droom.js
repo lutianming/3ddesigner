@@ -36,6 +36,16 @@ function update_rooms(wall){
     }
 }
 
+function update_length_mark(text, p1, p2){
+
+    var d = distance(p1, p2);
+    var direc = direction(p1, p2);
+    text.setText(d.toString());
+    text.setRotationDeg(direc);
+    text.setX((p1.x + p2.x) / 2);
+    text.setY((p1.y + p2.y) / 2);
+}
+
 function create_house_group(){
     var group = new Kinetic.Group({
         name: 'house',
@@ -120,14 +130,32 @@ function create_wall(points, group){
         draggable: true,
         dragOnTop: false
     });
+
+    //wall length shower
+    var d = distance(points[0], points[1]);
+    var deg = wall_direction(wall);
+    var text = new Kinetic.Text({
+        x: points[0].x,
+        y: points[0].y,
+        fontSize: 10,
+        fontFamily: 'Calibri',
+        fill: 'red',
+        align: 'center',
+        text: d.toString(),
+        rotationDeg: deg
+    });
+    wall.lengthMark = text;
+
     wall.rooms = [];
     wall.doors = [];
     wall.windows = [];
+
     if(points[0].x == points[1].x){
         wall.setDragBoundFunc(horizontal);
     }else{
         wall.setDragBoundFunc(vertical);
     }
+
     wall.on('dragstart', function(){
         this.pos = this.getPosition();
     });
@@ -151,6 +179,10 @@ function create_wall(points, group){
             corner.moveToTop();
             corner.show();
         });
+        var points = wall.getPoints();
+        update_length_mark(wall.lengthMark, points[0], points[1]);
+        wall.lengthMark.moveToTop();
+        wall.lengthMark.show();
         layer.draw();
     });
     wall.on('mouseout', function(){
@@ -160,10 +192,12 @@ function create_wall(points, group){
         var corners = group.corners;
         corners.forEach(function(corner){
             corner.hide();
-        })
+        });
+        wall.lengthMark.hide();
         layer.draw();
     });
     group.add(wall);
+    group.add(wall.lengthMark);
     group.walls.push(wall);
     return wall;
 }
@@ -183,7 +217,7 @@ function create_door(x, y, deg, group){
             if(this.wall == null){
                 return pos;
             }
-            var dist = dist_pos_wall(pos, this.wall);
+            var dist = distance_pos_wall(pos, this.wall);
             if(dist > 20){
                 this.wall = null;
                 return pos;
@@ -210,6 +244,12 @@ function wall_direction(w)
 
 }
 
+function direction(p1, p2){
+    var dx = p1.x - p2.x;
+    var dy = p1.y - p2.y;
+    var d = Math.atan2(dy, dx) / Math.PI * 180;
+    return d;
+}
 function create_window(points, group){
     var window = new Kinetic.Line({
         name: 'window',
@@ -286,7 +326,7 @@ function merge_walls(w1, w2)
     if(w2_p1_in_w1 && w2_p2_in_w1){
         var p0, p1;
         var order;
-        if(dist(points1[0], points2[0]) < dist(points1[0], points2[1])){
+        if(distance(points1[0], points2[0]) < distance(points1[0], points2[1])){
             p0 = points2[0];
             p1 = points2[1];
             order = [0, 1];
@@ -366,23 +406,23 @@ function replace_wall(w1, w2)
     w.getPoints()[0] = w2_ps[1];
     w.corners[0] = w2_ps.corners[1];
 
-    points[index] = w2_ps[0];
-    points[(index+1)%points.len] = w2_ps[1];
+    Points[Index] = W2_Ps[0];
+    Points[(Index+1)%Points.Len] = W2_Ps[1];
 
-    //destroy old wall
-    w1.corners[0].destroy();
-    w1.corners[1].destroy();
-    w1.destroy();
+    //Destroy Old Wall
+    W1.Corners[0].Destroy();
+    W1.Corners[1].Destroy();
+    W1.Destroy();
 }
 
-function dist(p1, p2)
+function distance(p1, p2)
 {
     var dx = Math.abs(p1.x - p2.x);
     var dy = Math.abs(p1.y - p2.y);
     return Math.sqrt(Math.pow(dx, 2)+ Math.pow(dy, 2));
 }
 
-function dist_pos_wall(pos, wall)
+function distance_pos_wall(pos, wall)
 {
     //in most cases, wall is vertical or horizon
     var dist;
