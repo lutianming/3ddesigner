@@ -34,9 +34,11 @@ SceneViewer.prototype.init = function(param) {
 	// create camera control
 	this.createTrackballCameraControls();
 
+	// create objects in the scene
 	this.createWalls();
-
 	this.createFloor();
+	this.createDoors();
+	this.createObjects();
 }
 
 /**
@@ -99,7 +101,7 @@ SceneViewer.prototype.update = function() {
 }
 
 SceneViewer.prototype.createWalls = function() {
-	for ( i in threeSceneData.walls ) {
+	for (i in threeSceneData.walls) {
 		var wallParam = threeSceneData.walls[i];
 		var wall = ObjectFactory.createMesh(wallParam);
 		this.walls.push(wall);
@@ -108,12 +110,26 @@ SceneViewer.prototype.createWalls = function() {
 }
 
 SceneViewer.prototype.createFloor = function() {
-	for ( i in threeSceneData.floor ) {
+	for (i in threeSceneData.floor) {
 		var floorParam = threeSceneData.floor[i];
 		var floor = ObjectFactory.createMesh(floorParam);
 		this.floors.push(floor);
 		this.scene.add(floor);
 	}
+}
+
+SceneViewer.prototype.createDoors = function() {
+	for (i in threeSceneData.doors) {
+		var doorParam = threeSceneData.doors[i];
+		var door = ObjectFactory.createMesh(doorParam);
+		this.doors.push(door);
+		this.scene.add(door);
+	}
+}
+
+SceneViewer.prototype.createObjects = function () {
+	var cube = ObjectFactory.createCube();
+	this.scene.add(cube);
 }
 
 /**
@@ -131,7 +147,6 @@ SceneViewer.DAMPING_FACTOR = 0.3;
  * class for creating 3d objects by config data in json format
  */
 ObjectFactory = function() {
-	ThreeExt.Object.call(this);
 }
 
 /**
@@ -140,7 +155,7 @@ ObjectFactory = function() {
  * @param  {[type]} param [description]
  * @return {[type]}       [description]
  */
-ObjectFactory.createMesh = function (param) {
+ObjectFactory.createMesh = function(param) {
 	var geometry = new THREE.CubeGeometry(param.size[0], param.size[1], param.size[2]);
 
 	var map = THREE.ImageUtils.loadTexture(param.texture.url);
@@ -153,7 +168,7 @@ ObjectFactory.createMesh = function (param) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
-	mesh.position.set(param.position[0] , param.position[1] , param.position[2]);
+	mesh.position.set(param.position[0], param.position[1], param.position[2]);
 	return mesh;
 }
 
@@ -162,6 +177,23 @@ ObjectFactory.createMesh = function (param) {
  * @param  {[type]} param [description]
  * @return {[type]}       [description]
  */
-ObjectFactory.prototype.createModel = function (param) {
+ObjectFactory.createModel = function(param) {
 
+}
+
+/**
+ * create Cube as a 3D Object
+ * @param  {[type]} param [description]
+ * @return {[type]}       [description]
+ */
+ObjectFactory.createCube = function() {
+	var len = Math.sqrt(2);
+	var geometry = new THREE.CubeGeometry(2, 2, 2);
+	var cubematerial = new THREE.MeshPhongMaterial({
+		color: 0x0055ff
+	});
+	var cube = new THREE.Mesh(geometry, cubematerial);
+	cube.position.set(0, 1, -5);
+
+	return cube;
 }
