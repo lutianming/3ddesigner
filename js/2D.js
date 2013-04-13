@@ -162,3 +162,44 @@ function have_obj(pos, name){
     }
     return result;
 }
+
+function exportJSON(){
+    var house = g_2d.house;
+    var furnitures =  g_2d.furnitures;
+    var data = {
+        walls: [],
+        furnitures: []
+    };
+
+    //walls
+    for(var i = 0; i < house.walls.length; i++){
+        var wall = house.walls[i];
+        var w = {
+            doors: [],
+            points: []
+        };
+        var points = wall.getPoints();
+        for(var j = 0; j < points.length; j++){
+            var p = points[j];
+            w.points.push({x: p.x, y: p.y});
+        }
+
+        for(var j = 0; j < wall.doors.length; j++){
+            var door = wall.doors[j];
+            var d = {};
+            d.position = door.getPosition();
+            d.width = door.getRadius();
+            w.doors.push(d);
+        }
+        data.walls.push(w);
+    }
+
+    //furnitures
+    for(var i = 0; i < furnitures.length; i++){
+        var furniture = furnitures[i];
+        var f = {};
+        f.position = furniture.getPosition();
+    }
+
+    return JSON.stringify(data);
+}
