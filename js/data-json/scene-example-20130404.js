@@ -5,6 +5,7 @@ var threeSceneData = {
 			url: 'img/red-brick-seamless-512-x-512.jpg',
 			repeat: 3
 		},
+		rotation : 0,
 		size: [0.1, 20, 66]
 	}, {
 		position: [33, 10, 0],

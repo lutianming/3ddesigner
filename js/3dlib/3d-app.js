@@ -9,6 +9,8 @@ SceneViewer = function() {
 	this.ceilings = [];
 	this.windows = [];
 	this.doors = [];
+
+	this.zoomObjects = [];
 }
 
 /**
@@ -33,12 +35,14 @@ SceneViewer.prototype.init = function(param) {
 
 	// create camera control
 	this.createTrackballCameraControls();
+	// this.createFirstPersonControls();
+
+	var dataTransformer = new _DataTransformer();
+	threeSceneData = dataTransformer();
 
 	// create objects in the scene
 	this.createWalls();
-	this.createFloor();
-	this.createDoors();
-	this.createObjects();
+	// this.createFloor();
 }
 
 /**
@@ -54,14 +58,14 @@ SceneViewer.prototype.createLight = function() {
 	/*var amb = new THREE.AmbientLight(0xffffff);
 	this.scene.add(amb);*/
 
-	var ptlight = new THREE.PointLight(0xffffff, 1, 1000);
+	var ptlight = new THREE.PointLight(0xffffff, 1, 10000000);
 	ptlight.position.set(0, 33, 0);
 	this.scene.add(ptlight);
 }
 
 
 SceneViewer.prototype.createCamera = function() {
-	this.camera.position.set(0, 100, 200);
+	this.camera.position.set(0, 100, 100);
 	this.camera.lookAt(this.root.position);
 }
 
@@ -84,8 +88,24 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 
 	controls.minDistance = radius * SceneViewer.MIN_DISTANCE_FACTOR;
 	controls.maxDistance = radius * SceneViewer.MAX_DISTANCE_FACTOR;
+	// controls.radius = radius;
+	controls.keys = [ 65, 83, 68 ];
 
 	this.controls = controls;
+}
+
+SceneViewer.prototype.createFirstPersonControls = function() {
+	var controls = new THREE.FirstPersonControls( this.camera );
+
+	controls.movementSpeed = 13;
+	controls.lookSpeed = 0.01;
+	
+	// Don't allow tilt up/down
+	controls.lookVertical = false;
+
+	this.controls = controls;
+	
+	this.clock = new THREE.Clock();
 }
 
 /**
@@ -109,37 +129,16 @@ SceneViewer.prototype.createWalls = function() {
 	}
 }
 
-SceneViewer.prototype.createFloor = function() {
-	for (i in threeSceneData.floor) {
-		var floorParam = threeSceneData.floor[i];
-		var floor = ObjectFactory.createMesh(floorParam);
-		this.floors.push(floor);
-		this.scene.add(floor);
-	}
-}
-
-SceneViewer.prototype.createDoors = function() {
-	for (i in threeSceneData.doors) {
-		var doorParam = threeSceneData.doors[i];
-		var door = ObjectFactory.createMesh(doorParam);
-		this.doors.push(door);
-		this.scene.add(door);
-	}
-}
-
-SceneViewer.prototype.createObjects = function () {
-	var cube = ObjectFactory.createCube();
-	this.scene.add(cube);
-}
-
 /**
  * constant variables for the scene
  */
-SceneViewer.CAMERA_RADIUS = 7;
-SceneViewer.MIN_DISTANCE_FACTOR = 1.1;
-SceneViewer.MAX_DISTANCE_FACTOR = 10;
+SceneViewer.CAMERA_RADIUS = 8.0;
+SceneViewer.MAX_CAMERA_RADIUS = 16.0;
+SceneViewer.MIN_CAMERA_RADIUS = 2.0;
+SceneViewer.MIN_DISTANCE_FACTOR = 0.8;
+SceneViewer.MAX_DISTANCE_FACTOR = 11.0;
 SceneViewer.ROTATE_SPEED = 1.0;
-SceneViewer.ZOOM_SPEED = 3;
+SceneViewer.ZOOM_SPEED = 3.0;
 SceneViewer.PAN_SPEED = 0.2;
 SceneViewer.DAMPING_FACTOR = 0.3;
 
@@ -169,6 +168,10 @@ ObjectFactory.createMesh = function(param) {
 	var mesh = new THREE.Mesh(geometry, material);
 
 	mesh.position.set(param.position[0], param.position[1], param.position[2]);
+	if (typeof(param.rotation)!=='undefined') {
+		mesh.rotation.y -= param.rotation;
+	}
+
 	return mesh;
 }
 
