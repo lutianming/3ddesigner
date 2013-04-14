@@ -8,10 +8,16 @@ function _DataTransformer() {
 	 * CONSTANT VALUES FOR SCENE
 	 * @type {Number}
 	 */
-	var _WALL_THICK = 0.1;
-	var _WALL_HEIGHT = 20;
-	var _DOOR_THICK = 0.2;
-	var _DOOR_HEIGHT = 16;
+	var _WALL_THICK = 0.2;
+	var _WALL_HEIGHT = 16;
+	var _DOOR_THICK = 0.1;
+	var _DOOR_HEIGHT = 12;
+
+	var _DOOR_TYPE = 1;
+	var _WINDOW_TYPE = 2;
+	var _WALL_TYPE = 0;
+
+	var _DEFAULT_TEXTURE_REPEAT = 2;
 
 	/**
 	 * CONSTANT VALUE
@@ -19,6 +25,8 @@ function _DataTransformer() {
 	 * @type {Number}
 	 */
 	var _CONVERT_ZOOM_FACTOR = 6;
+
+
 
 	// var editData;
 
@@ -78,6 +86,36 @@ function _DataTransformer() {
 	}
 
 	/**
+	 * generate devider according to data of window or door
+	 * @param  {[type]} tmpDoor [description]
+	 * @param  {int} type    [description]
+	 * @param {float}  wallRotation angle of wall
+	 * @return {[type]}         [description]
+	 */
+
+	function getDevider(tmpDoor, type, wallRotation) {
+		var deltaX = Math.cos(wallRotation) * tmpDoor.width;
+		var deltaY = Math.sin(wallRotation) * tmpDoor.width;
+
+		var p1 = {
+			x: (tmpDoor.position.x) - deltaX / 2,
+			y: (tmpDoor.position.y) - deltaY / 2
+		}
+
+		var p2 = {
+			x: (tmpDoor.position.x) + deltaX / 2,
+			y: (tmpDoor.position.y) + deltaY / 2
+		}
+
+		return {
+			'p1': p1,
+			'p2': p2,
+			'type': type
+		};
+	}
+
+
+	/**
 	 * generate 3d data wall from tmpWall params
 	 * @return {[type]} [description]
 	 */
@@ -89,43 +127,166 @@ function _DataTransformer() {
 			return false;
 		}
 
-		// calculate postion of the wall
-		var wallX = (tmpWall.points[0].x + tmpWall.points[1].x) / 2 - shift.shift_x;
-		var wallY = _WALL_HEIGHT / 2;
-		var wallZ = (tmpWall.points[0].y + tmpWall.points[1].y) / 2 - shift.shift_z;
-		newWall.position = [wallX / _CONVERT_ZOOM_FACTOR, wallY / _CONVERT_ZOOM_FACTOR, wallZ / _CONVERT_ZOOM_FACTOR];
+		newWall.blocks = [];
 
-		// caculate rotaition of the wall
-		newWall.rotation = getRotation(tmpWall.points[0], tmpWall.points[1]);
+		var wallRotation = getRotation(tmpWall.points[0], tmpWall.points[1]);
 
-		// caculate length of the wall
-		var wallLength = getDistance(tmpWall.points[0], tmpWall.points[1]);
-		newWall.size = [wallLength / _CONVERT_ZOOM_FACTOR, _WALL_HEIGHT, _WALL_THICK];
-		newWall.texture = {
-			url: 'img/red-brick-seamless-512-x-512.jpg',
-			repeat: 3
-		};
+		var noDoors = typeof(tmpWall.doors) === 'undefined' || tmpWall.doors.length === 0;
+		var noWindows = typeof(tmpWall.windows) === 'undefined' || tmpWall.windows.length === 0;
 
-		if (typeof(tmpWall.doors) === 'undefined') {
-			return newWall;
-		}
+		// no doors & windows on the wall
+		// make the wall as a whole block
+		if (noDoors && noWindows) {
+			var newBlock = generateWallBlock(tmpWall, shift, wallRotation, _WALL_HEIGHT ,_WALL_HEIGHT / 2,  _DEFAULT_TEXTURE_REPEAT);
+			newWall.blocks.push(newBlock);
+		} else {
+			var wallDeviders = [];
+			if (!noDoors) {
+				// convert data of doors
+				newWall.doors = [];
+				for (i in tmpWall.doors) {
+					var tmpDoor = tmpWall.doors[i];
+					var newDoor = generateDoor(tmpDoor, shift, wallRotation, _DOOR_HEIGHT);
+					newWall.doors.push(newDoor);
 
-		// convert data of doors
-		newWall.doors = [];
-		for (i in tmpWall.doors) {
-			var tmpDoor = tmpWall.doors[i];
-			var newDoor = {};
+					wallDeviders.push(getDevider(tmpDoor, _DOOR_TYPE, wallRotation));
+				}
+			}
 
-			// caculate postion of door
-			var doorX = tmpDoor.position.x - shift.shift_x;
-			var doorY = _DOOR_HEIGHT / 2;
-			var doorZ = tmpDoor.position.y - shift.shift_z;
+			if (!noWindows) {
+				// covert data of windows
+				for (i in tmpWall.windows) {
+					// code here...
+				}
+			}
 
-			newDoor.position = [doorX, doorY , doorZ];
-			newWall.doors.push(newDoor);
+			// sortDevider(wallDeviders);
+			var devidedBlocks = genenrateDevidedWallBlocks(tmpWall, wallDeviders, shift, wallRotation);
+			for ( i in devidedBlocks) {
+				newWall.blocks.push(devidedBlocks[i]);
+			}
 		}
 
 		return newWall;
+	}
+
+	/**
+	 * genenrate door according to data
+	 * @param  {[type]} tmpDoor      [description]
+	 * @param  {[type]} shift        [description]
+	 * @param  {[type]} wallRotation [description]
+	 * @return {[type]}              [description]
+	 */
+
+	function generateDoor(tmpDoor, shift, wallRotation, height) {
+		var newDoor = {};
+
+		// caculate position of door
+		var doorX = (tmpDoor.position.x - shift.shift_x);
+		var doorY = height / 2;
+		var doorZ = tmpDoor.position.y - shift.shift_z;
+
+		newDoor.position = [doorX / _CONVERT_ZOOM_FACTOR, doorY, doorZ / _CONVERT_ZOOM_FACTOR];
+
+		newDoor.texture = {
+			url: 'img/Sand_002.JPG',
+			repeat: 3
+		};
+
+		newDoor.rotation = wallRotation;
+		newDoor.size = [tmpDoor.width / _CONVERT_ZOOM_FACTOR, _DOOR_HEIGHT, _DOOR_THICK];
+
+		return newDoor;
+	}
+
+
+	/**
+	 * generate wall block
+	 * @param  {[type]} tmpWall      [description]
+	 * @param  {[type]} shift        [description]
+	 * @param  {[type]} wallRotation [description]
+	 * @return {[type]}              [description]
+	 */
+
+	function generateWallBlock(tmpWall, shift, wallRotation, height , y, textureRepeat) {
+		var newBlock = {};
+
+		// calculate postion of the wall
+		var wallX = (tmpWall.points[0].x + tmpWall.points[1].x) / 2 - shift.shift_x;
+		var wallY = y;
+		var wallZ = (tmpWall.points[0].y + tmpWall.points[1].y) / 2 - shift.shift_z;
+		newBlock.position = [wallX / _CONVERT_ZOOM_FACTOR, wallY, wallZ / _CONVERT_ZOOM_FACTOR];
+
+		// caculate rotaition of the wall
+		newBlock.rotation = wallRotation;
+
+		// caculate length of the wall
+		var wallLength = getDistance(tmpWall.points[0], tmpWall.points[1]);
+		newBlock.size = [wallLength / _CONVERT_ZOOM_FACTOR,height, _WALL_THICK];
+		newBlock.texture = {
+			url: 'img/red-brick-seamless-512-x-512.jpg',
+			repeat: textureRepeat
+		};
+
+		return newBlock;
+	}
+
+	/**
+	 * generate devided block of wall which has doors or windows
+	 * @param  {[type]} tmpWall      [description]
+	 * @param  {[type]} wallDeviders [description]
+	 * @param  {[type]} shift        [description]
+	 * @param  {[type]} wallRotation [description]
+	 * @return {[type]}              [description]
+	 */
+
+	function genenrateDevidedWallBlocks(tmpWall, wallDeviders, shift, wallRotation) {
+		var blocks = [];
+
+		var deviderCount = wallDeviders.length;
+
+		// array of points and types
+		var wallType = [];
+		var wallPoints = [];
+
+		wallPoints.push(tmpWall.points[0]);
+		wallType.push(_WALL_TYPE);
+
+		for (i in wallDeviders) {
+			wallPoints.push(wallDeviders[i].p1);
+			wallType.push(wallDeviders[i].type);
+			wallPoints.push(wallDeviders[i].p2);
+			wallType.push(_WALL_TYPE);
+		}
+		wallPoints.push(tmpWall.points[1]);
+
+		var ptCount = wallPoints.length - 1;
+
+		for (var i = 0; i < ptCount; i++) {
+			var wallParam = {
+				points: [wallPoints[i], wallPoints[i + 1]]
+			}
+
+			var height = 0;
+			var y = 0;
+			var repeat = 0;
+			switch (wallType[i]) {
+				case _WALL_TYPE:
+					height = _WALL_HEIGHT;
+					y = _WALL_HEIGHT / 2;
+					repeat = _DEFAULT_TEXTURE_REPEAT;
+				break;
+				case _DOOR_TYPE:
+					height = _WALL_HEIGHT - _DOOR_HEIGHT;
+					y = (_WALL_HEIGHT + _DOOR_HEIGHT) / 2;
+					repeat = _DEFAULT_TEXTURE_REPEAT * (parseFloat(height) / _WALL_HEIGHT);
+				break;
+			}
+			var newBlock = generateWallBlock(wallParam, shift, wallRotation, height , y, repeat);
+			blocks.push(newBlock);
+		}
+
+		return blocks;
 	}
 
 	/**

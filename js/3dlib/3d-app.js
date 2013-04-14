@@ -123,8 +123,21 @@ SceneViewer.prototype.update = function() {
 SceneViewer.prototype.createWalls = function() {
 	for (i in threeSceneData.walls) {
 		var wallParam = threeSceneData.walls[i];
-		var wall = ObjectFactory.createMesh(wallParam);
-		this.walls.push(wall);
+		var wall = new Wall;
+		// wall.root.rotation.y -= wallParam.rotation;
+
+		for ( j in  wallParam.blocks) {
+			var blockParam = wallParam.blocks[j];
+			var block = ObjectFactory.createMesh(blockParam);
+			wall.add(block);
+		}
+
+		for ( j in wallParam.doors) {
+			var doorParam = wallParam.doors[j];
+			var door = ObjectFactory.createMesh(doorParam);
+			wall.add(door);
+		}
+
 		this.scene.add(wall);
 	}
 }
@@ -141,6 +154,14 @@ SceneViewer.ROTATE_SPEED = 1.0;
 SceneViewer.ZOOM_SPEED = 3.0;
 SceneViewer.PAN_SPEED = 0.2;
 SceneViewer.DAMPING_FACTOR = 0.3;
+
+Wall = function () {
+	// this.blocks = [];
+	// this.doors = [];
+	// this.windows = [];
+}
+
+Wall.prototype = new THREE.Scene();
 
 /**
  * class for creating 3d objects by config data in json format
