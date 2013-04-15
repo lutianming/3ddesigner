@@ -114,6 +114,99 @@ function _DataTransformer() {
 		};
 	}
 
+	/**
+	 * sortDeviders according to params
+	 * @param  {array} deviders    array to be sorted
+	 * @param  {boolean} flag        true to asc, false to desc
+	 * @param  {Object} tmpWall  decide sort order by point1 and piont2
+	 * @return {[type]}          [description]
+	 */
+
+	function sortDeviders(deviders, tmpWall) {
+		if (typeof(deviders) === 'undefined' || deviders.lengt <= 0) {
+			return;
+		}
+
+
+		// decide which axis to sort , x or y
+		var axis = true;
+		if (tmpWall.points[0].x == tmpWall.points[1].x) {
+			axis = false;
+		}
+
+		var p1, p2;
+		if (axis) {
+			p1 = tmpWall.points[0].x;
+			p2 = tmpWall.points[1].x;
+		} else {
+			p1 = tmpWall.points[0].y;
+			p2 = tmpWall.points[1].y;
+		}
+
+		var flag = p1 < p2;
+
+		_sort(deviders, flag, axis);
+	}
+
+	/**
+	 * _sort  sort deviders p1 ,p2
+	 * then call subroutine to sort array with bubble sort
+	 * @param  {array} deviders array to sort
+	 * @param  {boolean} flag     true to asc, false to desc
+	 * @param  {[type]} axis     true to sort x, flase to sort y
+	 * @return {[type]}          [description]
+	 */
+
+	function _sort(deviders, flag, axis) {
+
+		var len = deviders.length;
+
+		for (var i = 0; i < len; i++) {
+			var sortThis = false;
+			if (axis) {
+				sortThis = (deviders[i].p1.x < deviders[i].p2.x) ^ flag;
+			} else {
+				sortThis = (deviders[i].p1.y < deviders[i].p2.y) ^ flag;
+			}
+
+			if (sortThis) {
+				var tmp = deviders[i].p1;
+				deviders[i].p1 = deviders[i].p2;
+				deviders[i].p2 = tmp;
+			}
+		}
+
+		_subsort(deviders, flag, axis);
+	}
+
+	function _subsort(deviders, flag, axis) {
+
+		var tag = false;
+
+		var len = deviders.length;
+
+		for (var i = 0; i < len - 1; i++) {
+			var e1, e2;
+			if (axis) {
+				e1 = deviders[i].p1.x;
+				e2 = deviders[i + 1].p1.x;
+			} else {
+				e1 = deviders[i].p1.y;
+				e2 = deviders[i + 1].p1.y;
+			}
+
+			if ((e1 < e2) ^ flag) {
+				var tmp = deviders[i];
+				deviders[i] = deviders[i + 1];
+				deviders[i + 1] = tmp;
+				tag = true;
+			}
+		}
+
+		if (tag) {
+			_subsort(deviders, flag, axis);
+		}
+	}
 
 	/**
 	 * generate 3d data wall from tmpWall params
@@ -137,7 +230,7 @@ function _DataTransformer() {
 		// no doors & windows on the wall
 		// make the wall as a whole block
 		if (noDoors && noWindows) {
-			var newBlock = generateWallBlock(tmpWall, shift, wallRotation, _WALL_HEIGHT ,_WALL_HEIGHT / 2,  _DEFAULT_TEXTURE_REPEAT);
+			var newBlock = generateWallBlock(tmpWall, shift, wallRotation, _WALL_HEIGHT, _WALL_HEIGHT / 2, _DEFAULT_TEXTURE_REPEAT);
 			newWall.blocks.push(newBlock);
 		} else {
 			var wallDeviders = [];
@@ -160,9 +253,9 @@ function _DataTransformer() {
 				}
 			}
 
-			// sortDevider(wallDeviders);
+			sortDeviders(wallDeviders, tmpWall);
 			var devidedBlocks = genenrateDevidedWallBlocks(tmpWall, wallDeviders, shift, wallRotation);
-			for ( i in devidedBlocks) {
+			for (i in devidedBlocks) {
 				newWall.blocks.push(devidedBlocks[i]);
 			}
 		}
@@ -189,8 +282,8 @@ function _DataTransformer() {
 		newDoor.position = [doorX / _CONVERT_ZOOM_FACTOR, doorY, doorZ / _CONVERT_ZOOM_FACTOR];
 
 		newDoor.texture = {
-			url: 'img/Sand_002.JPG',
-			repeat: 3
+			url: 'img/europe_door_texture.jpg',
+			repeat: 1
 		};
 
 		newDoor.rotation = wallRotation;
@@ -208,7 +301,7 @@ function _DataTransformer() {
 	 * @return {[type]}              [description]
 	 */
 
-	function generateWallBlock(tmpWall, shift, wallRotation, height , y, textureRepeat) {
+	function generateWallBlock(tmpWall, shift, wallRotation, height, y, textureRepeat) {
 		var newBlock = {};
 
 		// calculate postion of the wall
@@ -222,7 +315,7 @@ function _DataTransformer() {
 
 		// caculate length of the wall
 		var wallLength = getDistance(tmpWall.points[0], tmpWall.points[1]);
-		newBlock.size = [wallLength / _CONVERT_ZOOM_FACTOR,height, _WALL_THICK];
+		newBlock.size = [wallLength / _CONVERT_ZOOM_FACTOR, height, _WALL_THICK];
 		newBlock.texture = {
 			url: 'img/red-brick-seamless-512-x-512.jpg',
 			repeat: textureRepeat
@@ -275,14 +368,14 @@ function _DataTransformer() {
 					height = _WALL_HEIGHT;
 					y = _WALL_HEIGHT / 2;
 					repeat = _DEFAULT_TEXTURE_REPEAT;
-				break;
+					break;
 				case _DOOR_TYPE:
 					height = _WALL_HEIGHT - _DOOR_HEIGHT;
 					y = (_WALL_HEIGHT + _DOOR_HEIGHT) / 2;
 					repeat = _DEFAULT_TEXTURE_REPEAT * (parseFloat(height) / _WALL_HEIGHT);
-				break;
+					break;
 			}
-			var newBlock = generateWallBlock(wallParam, shift, wallRotation, height , y, repeat);
+			var newBlock = generateWallBlock(wallParam, shift, wallRotation, height, y, repeat);
 			blocks.push(newBlock);
 		}
 
