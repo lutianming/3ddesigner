@@ -82,7 +82,7 @@ function onCanvasMouseWheel(event){
 }
 
 function onCanvasMouseDown(event){
-    var pos = g_2d.stage.getUserPosition();
+    var pos = g_2d.stage.getPointerPosition();
     if(pos == null){
         return;
     }
@@ -92,28 +92,37 @@ function onCanvasMouseDown(event){
 }
 
 function onCanvasMouseUp(event){
-    var pos = g_2d.stage.getUserPosition();
+    var pos = g_2d.stage.getPointerPosition();
     if(g_2d.cmd != null){
         g_2d.cmd.mouseup(pos);
         g_2d.cmd = null;
-        if(g_2d.current_obj != null){
-            show_anchors(g_2d.current_obj);
+        if(g_2d.current_obj){
+            var p = g_2d.current_obj.getParent();
+            if('show_anchors' in p){
+            p.show_anchors();
+            }
         }
     }
     else{
         var obj = have_obj(pos, 'furniture');
-        if(g_2d.current_obj != null){
-            hide_anchors(g_2d.current_obj);
+
+        if(g_2d.current_obj){
+            var p = g_2d.current_obj.getParent();
+            if('hide_anchors' in p){
+                p.hide_anchors();
+            }
         }
-        if(obj != null){
-            show_anchors(obj);
+        if(obj){
+            if('show_anchors' in obj.getParent()){
+                obj.getParent().show_anchors();
+            }
             g_2d.current_obj = obj;
         }
     }
 }
 
 function onCanvasMouseMove(event){
-    var pos = g_2d.stage.getUserPosition();
+    var pos = g_2d.stage.getPointerPosition();
     if(pos == null){
         return;
     }
@@ -199,6 +208,9 @@ function exportJSON(){
         var furniture = furnitures[i];
         var f = {};
         f.position = furniture.getPosition();
+        var w = furniture.getWidth();
+        var h = furniture.getHeight();
+        f.size = {x: w, y: h};
     }
 
     return JSON.stringify(data);

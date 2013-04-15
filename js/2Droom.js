@@ -269,16 +269,16 @@ function init_events(obj){
     obj.on('dragstart', function(){
         var group = obj.getParent();
         var walls = group.get('.wall');
-        walls.apply('setDrawHitFunc', function(canvas){
-            var context = canvas.getContext();
-            var points = this.getPoints();
+        // walls.each('setDrawHitFunc', function(canvas){
+        //     var context = canvas.getContext();
+        //     var points = this.getPoints();
 
-            context.beginPath();
-            context.moveTo(points[0].x, points[0].y);
-            context.lineTo(points[1].x, points[1].y);
-            context.lineWidth = 20;
-            context.stroke();
-        })
+        //     context.beginPath();
+        //     context.moveTo(points[0].x, points[0].y);
+        //     context.lineTo(points[1].x, points[1].y);
+        //     context.lineWidth = 20;
+        //     context.stroke();
+        // });
     });
     obj.on('dragmove', function(){
         //if leaved from wall, search new door to attach
