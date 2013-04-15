@@ -52,7 +52,7 @@ SceneViewer.prototype.init = function(param) {
 SceneViewer.prototype.createLight = function() {
 	// set light
 	this.headlight = new THREE.DirectionalLight(0xffffff, 1);
-	this.headlight.position.set(0, 33, 0);
+	this.headlight.position.set(0, 100, 100);
 	this.scene.add(this.headlight);
 
 	/*var amb = new THREE.AmbientLight(0xffffff);
@@ -156,9 +156,6 @@ SceneViewer.PAN_SPEED = 0.2;
 SceneViewer.DAMPING_FACTOR = 0.3;
 
 Wall = function () {
-	// this.blocks = [];
-	// this.doors = [];
-	// this.windows = [];
 }
 
 Wall.prototype = new THREE.Scene();
