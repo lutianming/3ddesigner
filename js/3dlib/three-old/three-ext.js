@@ -1,13 +1,13 @@
-// Designer.js - A Designerple Designerulator for WebGL (based on Three.js)
+// ThreeExt.js - A ThreeExtple ThreeExtulator for WebGL (based on Three.js)
 
-Designer = {};
+ThreeExt = {};
 
-// Designer.Publisher - base class for event publishers
-Designer.Publisher = function() {
+// ThreeExt.Publisher - base class for event publishers
+ThreeExt.Publisher = function() {
 	this.messageTypes = {};
 }
 
-Designer.Publisher.prototype.subscribe = function(message, subscriber, callback) {
+ThreeExt.Publisher.prototype.subscribe = function(message, subscriber, callback) {
 	var subscribers = this.messageTypes[message];
 	if (subscribers) {
 		if (this.findSubscriber(subscribers, subscriber) != -1) {
@@ -24,7 +24,7 @@ Designer.Publisher.prototype.subscribe = function(message, subscriber, callback)
 	});
 }
 
-Designer.Publisher.prototype.unsubscribe = function(message, subscriber, callback) {
+ThreeExt.Publisher.prototype.unsubscribe = function(message, subscriber, callback) {
 	if (subscriber) {
 		var subscribers = this.messageTypes[message];
 
@@ -39,7 +39,7 @@ Designer.Publisher.prototype.unsubscribe = function(message, subscriber, callbac
 	}
 }
 
-Designer.Publisher.prototype.publish = function(message) {
+ThreeExt.Publisher.prototype.publish = function(message) {
 	var subscribers = this.messageTypes[message];
 
 	if (subscribers) {
@@ -53,7 +53,7 @@ Designer.Publisher.prototype.publish = function(message) {
 	}
 }
 
-Designer.Publisher.prototype.findSubscriber = function(subscribers, subscriber) {
+ThreeExt.Publisher.prototype.findSubscriber = function(subscribers, subscriber) {
 	for (var i = 0; i < subscribers.length; i++) {
 		if (subscribers[i] == subscriber) {
 			return i;
@@ -63,9 +63,9 @@ Designer.Publisher.prototype.findSubscriber = function(subscribers, subscriber) 
 	return -1;
 }
 
-// Designer.App - application class (singleton)
-Designer.App = function() {
-	Designer.Publisher.call(this);
+// ThreeExt.App - application class (singleton)
+ThreeExt.App = function() {
+	ThreeExt.Publisher.call(this);
 
 	this.renderer = null;
 	this.scene = null;
@@ -73,9 +73,9 @@ Designer.App = function() {
 	this.objects = [];
 }
 
-Designer.App.prototype = new Designer.Publisher;
+ThreeExt.App.prototype = new ThreeExt.Publisher;
 
-Designer.App.prototype.init = function(param) {
+ThreeExt.App.prototype.init = function(param) {
 	param = param || {};
 	var container = param.container;
 	var canvas = param.canvas;
@@ -121,7 +121,7 @@ Designer.App.prototype.init = function(param) {
 }
 
 //Core run loop
-Designer.App.prototype.run = function() {
+ThreeExt.App.prototype.run = function() {
 	this.update();
 	this.renderer.render(this.scene, this.camera);
 	var that = this;
@@ -131,7 +131,7 @@ Designer.App.prototype.run = function() {
 }
 
 // Update method - called once per tick
-Designer.App.prototype.update = function() {
+ThreeExt.App.prototype.update = function() {
 	var i, len;
 	len = this.objects.length;
 	for (i = 0; i < len; i++) {
@@ -140,7 +140,7 @@ Designer.App.prototype.update = function() {
 }
 
 // Add/remove objects
-Designer.App.prototype.addObject = function(obj) {
+ThreeExt.App.prototype.addObject = function(obj) {
 	this.objects.push(obj);
 
 	// If this is a renderable object, add it to the root scene
@@ -149,7 +149,7 @@ Designer.App.prototype.addObject = function(obj) {
 	}
 }
 
-Designer.App.prototype.removeObject = function(obj) {
+ThreeExt.App.prototype.removeObject = function(obj) {
 	var index = this.objects.indexOf(obj);
 	if (index != -1) {
 		this.objects.splice(index, 1);
@@ -161,7 +161,7 @@ Designer.App.prototype.removeObject = function(obj) {
 }
 
 // Event handling
-Designer.App.prototype.initMouse = function() {
+ThreeExt.App.prototype.initMouse = function() {
 	var dom = this.renderer.domElement;
 
 	var that = this;
@@ -191,7 +191,7 @@ Designer.App.prototype.initMouse = function() {
 	this.clickedObject = null;
 }
 
-Designer.App.prototype.initKeyboard = function() {
+ThreeExt.App.prototype.initKeyboard = function() {
 	var dom = this.renderer.domElement;
 
 	var that = this;
@@ -216,14 +216,14 @@ Designer.App.prototype.initKeyboard = function() {
 	dom.style.outline = 'none';
 }
 
-Designer.App.prototype.addDomHandlers = function() {
+ThreeExt.App.prototype.addDomHandlers = function() {
 	var that = this;
 	window.addEventListener('resize', function(event) {
 		that.onWindowResize(event);
 	}, false);
 }
 
-Designer.App.prototype.onDocumentMouseMove = function(event) {
+ThreeExt.App.prototype.onDocumentMouseMove = function(event) {
 	event.preventDefault();
 
 	if (this.clickedObject && this.clickedObject.handleMouseMove) {
@@ -270,7 +270,7 @@ Designer.App.prototype.onDocumentMouseMove = function(event) {
 	}
 }
 
-Designer.App.prototype.onDocumentMouseDown = function(event) {
+ThreeExt.App.prototype.onDocumentMouseDown = function(event) {
 	event.preventDefault();
 
 	var handled = false;
@@ -289,7 +289,7 @@ Designer.App.prototype.onDocumentMouseDown = function(event) {
 	}
 }
 
-Designer.App.prototype.onDocumentMouseUp = function(event) {
+ThreeExt.App.prototype.onDocumentMouseUp = function(event) {
 	event.preventDefault();
 
 	var handled = false;
@@ -309,7 +309,7 @@ Designer.App.prototype.onDocumentMouseUp = function(event) {
 	this.clickedObject = null;
 }
 
-Designer.App.prototype.onDocumentMouseScroll = function(event, delta) {
+ThreeExt.App.prototype.onDocumentMouseScroll = function(event, delta) {
 	event.preventDefault();
 
 	if (this.handleMouseScroll) {
@@ -317,7 +317,7 @@ Designer.App.prototype.onDocumentMouseScroll = function(event, delta) {
 	}
 }
 
-Designer.App.prototype.objectFromMouse = function(pagex, pagey) {
+ThreeExt.App.prototype.objectFromMouse = function(pagex, pagey) {
 	// Translate page coords to element coords
 	var offset = $(this.renderer.domElement).offset();
 	var eltx = pagex - offset.left;
@@ -356,7 +356,7 @@ Designer.App.prototype.objectFromMouse = function(pagex, pagey) {
 	}
 }
 
-Designer.App.prototype.findObjectFromIntersected = function(object, point, normal) {
+ThreeExt.App.prototype.findObjectFromIntersected = function(object, point, normal) {
 	if (object.data) {
 		return {
 			object: object.data,
@@ -375,7 +375,7 @@ Designer.App.prototype.findObjectFromIntersected = function(object, point, norma
 }
 
 
-Designer.App.prototype.onKeyDown = function(event) {
+ThreeExt.App.prototype.onKeyDown = function(event) {
 	// N.B.: Chrome doesn't deliver keyPress if we don't bubble... keep an eye on this
 	event.preventDefault();
 
@@ -384,7 +384,7 @@ Designer.App.prototype.onKeyDown = function(event) {
 	}
 }
 
-Designer.App.prototype.onKeyUp = function(event) {
+ThreeExt.App.prototype.onKeyUp = function(event) {
 	// N.B.: Chrome doesn't deliver keyPress if we don't bubble... keep an eye on this
 	event.preventDefault();
 
@@ -393,7 +393,7 @@ Designer.App.prototype.onKeyUp = function(event) {
 	}
 }
 
-Designer.App.prototype.onKeyPress = function(event) {
+ThreeExt.App.prototype.onKeyPress = function(event) {
 	// N.B.: Chrome doesn't deliver keyPress if we don't bubble... keep an eye on this
 	event.preventDefault();
 
@@ -402,7 +402,7 @@ Designer.App.prototype.onKeyPress = function(event) {
 	}
 }
 
-Designer.App.prototype.onWindowResize = function(event) {
+ThreeExt.App.prototype.onWindowResize = function(event) {
 
 	this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
 
@@ -411,45 +411,45 @@ Designer.App.prototype.onWindowResize = function(event) {
 
 }
 
-Designer.App.prototype.focus = function() {
+ThreeExt.App.prototype.focus = function() {
 	if (this.renderer && this.renderer.domElement) {
 		this.renderer.domElement.focus();
 	}
 }
 
 
-// Designer.Object - base class for all objects in our Designerulation
-Designer.Object = function() {
-	Designer.Publisher.call(this);
+// ThreeExt.Object - base class for all objects in our ThreeExtulation
+ThreeExt.Object = function() {
+	ThreeExt.Publisher.call(this);
 
 	this.object3D = null;
 	this.children = [];
 }
 
-Designer.Object.prototype = new Designer.Publisher;
+ThreeExt.Object.prototype = new ThreeExt.Publisher;
 
-Designer.Object.prototype.init = function() {}
+ThreeExt.Object.prototype.init = function() {}
 
-Designer.Object.prototype.update = function() {
+ThreeExt.Object.prototype.update = function() {
 	this.updateChildren();
 }
 
 // setPosition - move the object to a new position
-Designer.Object.prototype.setPosition = function(x, y, z) {
+ThreeExt.Object.prototype.setPosition = function(x, y, z) {
 	if (this.object3D) {
 		this.object3D.position.set(x, y, z);
 	}
 }
 
 //setScale - scale the object
-Designer.Object.prototype.setScale = function(x, y, z) {
+ThreeExt.Object.prototype.setScale = function(x, y, z) {
 	if (this.object3D) {
 		this.object3D.scale.set(x, y, z);
 	}
 }
 
 //setScale - scale the object
-Designer.Object.prototype.setVisible = function(visible) {
+ThreeExt.Object.prototype.setVisible = function(visible) {
 	function setVisible(obj, visible) {
 		obj.visible = visible;
 		var i, len = obj.children.length;
@@ -464,7 +464,7 @@ Designer.Object.prototype.setVisible = function(visible) {
 }
 
 // updateChildren - update all child objects
-Designer.Object.prototype.update = function() {
+ThreeExt.Object.prototype.update = function() {
 	var i, len;
 	len = this.children.length;
 	for (i = 0; i < len; i++) {
@@ -472,13 +472,13 @@ Designer.Object.prototype.update = function() {
 	}
 }
 
-Designer.Object.prototype.setObject3D = function(object3D) {
+ThreeExt.Object.prototype.setObject3D = function(object3D) {
 	object3D.data = this;
 	this.object3D = object3D;
 }
 
 //Add/remove children
-Designer.Object.prototype.addChild = function(child) {
+ThreeExt.Object.prototype.addChild = function(child) {
 	this.children.push(child);
 
 	// If this is a renderable object, add its object3D as a child of mine
@@ -487,7 +487,7 @@ Designer.Object.prototype.addChild = function(child) {
 	}
 }
 
-Designer.Object.prototype.removeChild = function(child) {
+ThreeExt.Object.prototype.removeChild = function(child) {
 	var index = this.children.indexOf(child);
 	if (index != -1) {
 		this.children.splice(index, 1);
@@ -499,7 +499,7 @@ Designer.Object.prototype.removeChild = function(child) {
 }
 
 // Some utility methods
-Designer.Object.prototype.getScene = function() {
+ThreeExt.Object.prototype.getScene = function() {
 	var scene = null;
 	if (this.object3D) {
 		var obj = this.object3D;
@@ -513,7 +513,7 @@ Designer.Object.prototype.getScene = function() {
 	return scene;
 }
 
-Designer.Object.prototype.getApp = function() {
+ThreeExt.Object.prototype.getApp = function() {
 	var scene = this.getScene();
 	return scene ? scene.data : null;
 }
@@ -526,8 +526,32 @@ Designer.Object.prototype.getApp = function() {
 39: right
 40: down
 */
-Designer.KeyCodes = {};
-Designer.KeyCodes.KEY_LEFT = 37;
-Designer.KeyCodes.KEY_UP = 38;
-Designer.KeyCodes.KEY_RIGHT = 39;
-Designer.KeyCodes.KEY_DOWN = 40;
+ThreeExt.KeyCodes = {};
+ThreeExt.KeyCodes.KEY_LEFT = 37;
+ThreeExt.KeyCodes.KEY_UP = 38;
+ThreeExt.KeyCodes.KEY_RIGHT = 39;
+ThreeExt.KeyCodes.KEY_DOWN = 40;
+
+
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+ */
+
+if ( !window.requestAnimationFrame ) {
+
+	window.requestAnimationFrame = ( function() {
+
+		return window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
+
+			window.setTimeout( callback, 1000 / 60 );
+
+		};
+
+	} )();
+
+}
