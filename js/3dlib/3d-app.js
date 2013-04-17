@@ -30,10 +30,8 @@ SceneViewer.prototype.init = function(param) {
 	// create light
 	this.createLight();
 
-	// create camera
-	this.createCamera();
-
 	// create camera control
+
 	this.createTrackballCameraControls();
 	// this.createFirstPersonControls();
 
@@ -42,7 +40,9 @@ SceneViewer.prototype.init = function(param) {
 
 	// create objects in the scene
 	this.createWalls();
-	// this.createFloor();
+	this.createFloors();
+
+	this.createModels();
 }
 
 /**
@@ -52,29 +52,26 @@ SceneViewer.prototype.init = function(param) {
 SceneViewer.prototype.createLight = function() {
 	// set light
 	this.headlight = new THREE.DirectionalLight(0xffffff, 1);
-	this.headlight.position.set(0, 100, 100);
+	this.headlight.position.set(0, 100, 0);
 	this.scene.add(this.headlight);
 
 	/*var amb = new THREE.AmbientLight(0xffffff);
 	this.scene.add(amb);*/
 
-	var ptlight = new THREE.PointLight(0xffffff, 1, 10000000);
+	var ptlight = new THREE.PointLight(0xffffff, 1, 1000);
 	ptlight.position.set(0, 33, 0);
 	this.scene.add(ptlight);
 }
-
-
-SceneViewer.prototype.createCamera = function() {
-	this.camera.position.set(0, 100, 100);
-	this.camera.lookAt(this.root.position);
-}
-
 
 /**
  * create camera control
  * @return {[type]}
  */
 SceneViewer.prototype.createTrackballCameraControls = function() {
+
+	this.camera.position.set(0, 100, 100);
+	this.camera.lookAt(this.root.position);
+
 	var controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
 	var radius = SceneViewer.CAMERA_RADIUS;
 
@@ -89,22 +86,24 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 	controls.minDistance = radius * SceneViewer.MIN_DISTANCE_FACTOR;
 	controls.maxDistance = radius * SceneViewer.MAX_DISTANCE_FACTOR;
 	// controls.radius = radius;
-	controls.keys = [ 65, 83, 68 ];
+	controls.keys = [65, 83, 68];
 
 	this.controls = controls;
 }
 
 SceneViewer.prototype.createFirstPersonControls = function() {
-	var controls = new THREE.FirstPersonControls( this.camera );
+	this.camera.position.set(0, 25, 0);
+
+	var controls = new THREE.FirstPersonControls(this.camera, this.container);
 
 	controls.movementSpeed = 13;
 	controls.lookSpeed = 0.01;
-	
+
 	// Don't allow tilt up/down
 	controls.lookVertical = false;
 
 	this.controls = controls;
-	
+
 	this.clock = new THREE.Clock();
 }
 
@@ -126,15 +125,15 @@ SceneViewer.prototype.createWalls = function() {
 		var wall = new Wall;
 		// wall.root.rotation.y -= wallParam.rotation;
 
-		for ( j in  wallParam.blocks) {
+		for (j in wallParam.blocks) {
 			var blockParam = wallParam.blocks[j];
-			var block = ObjectFactory.createMesh(blockParam);
+			var block = ObjectFactory.createCubeMesh(blockParam);
 			wall.add(block);
 		}
 
-		for ( j in wallParam.doors) {
+		for (j in wallParam.doors) {
 			var doorParam = wallParam.doors[j];
-			var door = ObjectFactory.createMesh(doorParam);
+			var door = ObjectFactory.createCubeMesh(doorParam);
 			wall.add(door);
 		}
 
@@ -142,29 +141,39 @@ SceneViewer.prototype.createWalls = function() {
 	}
 }
 
+SceneViewer.prototype.createFloors = function() {
+	for (i in threeSceneData.floors) {
+		var points = threeSceneData.floors[i];
+		var floor = ObjectFactory.createPlaneMesh(points);
+		this.scene.add(floor);
+	}
+}
+
+SceneViewer.prototype.createModels = function() {
+	// ObjectFactory.createModel({}, this.scene);
+}
+
 /**
  * constant variables for the scene
  */
-SceneViewer.CAMERA_RADIUS = 8.0;
+SceneViewer.CAMERA_RADIUS = 12.0;
 SceneViewer.MAX_CAMERA_RADIUS = 16.0;
 SceneViewer.MIN_CAMERA_RADIUS = 2.0;
-SceneViewer.MIN_DISTANCE_FACTOR = 0.8;
-SceneViewer.MAX_DISTANCE_FACTOR = 11.0;
+SceneViewer.MIN_DISTANCE_FACTOR = 0.6;
+SceneViewer.MAX_DISTANCE_FACTOR = 8.0;
 SceneViewer.ROTATE_SPEED = 1.0;
 SceneViewer.ZOOM_SPEED = 3.0;
 SceneViewer.PAN_SPEED = 0.2;
 SceneViewer.DAMPING_FACTOR = 0.3;
 
-Wall = function () {
-}
+Wall = function() {}
 
 Wall.prototype = new THREE.Scene();
 
 /**
  * class for creating 3d objects by config data in json format
  */
-ObjectFactory = function() {
-}
+ObjectFactory = function() {}
 
 /**
  * create Mesh Object
@@ -172,8 +181,9 @@ ObjectFactory = function() {
  * @param  {[type]} param [description]
  * @return {[type]}       [description]
  */
-ObjectFactory.createMesh = function(param) {
-	var geometry = new THREE.CubeGeometry(param.size[0], param.size[1], param.size[2]);
+ObjectFactory.createCubeMesh = function(param) {
+	var geometry = new THREE.CubeGeometry(param.size.x, param.size.y, param.size.z);
+	// var geometry = new THREE.PlaneGeometry(100, 100, 1, 1);
 
 	var map = THREE.ImageUtils.loadTexture(param.texture.url);
 	map.wrapS = map.wrapT = THREE.RepeatWrapping;
@@ -185,12 +195,44 @@ ObjectFactory.createMesh = function(param) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
-	mesh.position.set(param.position[0], param.position[1], param.position[2]);
-	if (typeof(param.rotation)!=='undefined') {
+	mesh.position.set(param.position.x, param.position.y, param.position.z);
+	if (typeof(param.rotation) !== 'undefined') {
 		mesh.rotation.y -= param.rotation;
 	}
 
 	return mesh;
+}
+
+ObjectFactory.createPlaneMesh = function(param) {
+	var geometry = new THREE.Geometry();
+	var len = param.length;
+
+	for (i in param) {
+		geometry.vertices.push(new THREE.Vector3(param[i].x, param[i].y, param[i].z));
+	}
+
+	for (var i = 0; i < len - 2; i++) {
+		geometry.faces.push(new THREE.Face3(0, 1, 2));
+	}
+
+	var map = THREE.ImageUtils.loadTexture('img/red-brick-seamless-512-x-512.jpg');
+	map.wrapS = map.wrapT = THREE.RepeatWrapping;
+	map.repeat.set(3, 3);
+
+	var material = new THREE.MeshLambertMaterial({
+		map: map
+	});
+
+	var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+		color: 0xFFFFFF
+	}));
+	mesh.doubleSided = true;
+	mesh.overdraw = true;
+	mesh.rotation.x += Math.PI*0.5;
+	mesh.rotation.y += Math.PI*0.5;
+
+	return mesh;
+
 }
 
 /**
@@ -198,23 +240,25 @@ ObjectFactory.createMesh = function(param) {
  * @param  {[type]} param [description]
  * @return {[type]}       [description]
  */
-ObjectFactory.createModel = function(param) {
+ObjectFactory.createModel = function(param, scene) {
+	if (param === undefined) {
+		return;
+	}
 
-}
+	var loader = new THREE.ColladaLoader();
 
-/**
- * create Cube as a 3D Object
- * @param  {[type]} param [description]
- * @return {[type]}       [description]
- */
-ObjectFactory.createCube = function() {
-	var len = Math.sqrt(2);
-	var geometry = new THREE.CubeGeometry(2, 2, 2);
-	var cubematerial = new THREE.MeshPhongMaterial({
-		color: 0x0055ff
+	loader.load(param.url, function(collada) {
+		var dae = collada.scene;
+
+		dae.scale.x = param.scale.x;
+		dae.scale.y = param.scale.y;
+		dae.scale.z = param.scale.z;
+
+		dae.rotation.x -= param.rotation.x;
+		dae.rotation.y -= param.rotation.y;
+		dae.rotation.z -= param.rotation.z;
+
+		dae.position.set(param.position.x, param.position.y, param.position.z);
+		scene.add(dae);
 	});
-	var cube = new THREE.Mesh(geometry, cubematerial);
-	cube.position.set(0, 1, -5);
-
-	return cube;
 }
