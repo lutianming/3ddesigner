@@ -98,6 +98,7 @@ function update_furniture(anchor){
     var topright = obj.topright.getPosition();
     var bottomleft = obj.bottomleft.getPosition();
     var bottomright = obj.bottomright.getPosition();
+
     switch(anchor.getName()){
     case 'topleft':
         obj.topright.setY(y);
@@ -119,6 +120,15 @@ function update_furniture(anchor){
         break;
     }
 
+    //force topleft to be at (0,0)
+    var deltax = -obj.topleft.getX();
+    var deltay = -obj.topleft.getY();
+
+    obj.topright.move(deltax, deltay);
+    obj.bottomleft.move(deltax, deltay);
+    obj.bottomright.move(deltax, deltay);
+    obj.topleft.move(deltax, deltay);
+
     var center = center_point(topleft, topright);
     obj.top.setPosition(center);
     center = center_point(bottomleft, bottomright);
@@ -136,14 +146,11 @@ function update_furniture(anchor){
         furniture.setSize(width, height);
     }
 
-    var group = furniture.getParent();
-    var offset = group.getOffset();
+    var offset = obj.getOffset();
     var dx = width/2 - offset.x;
     var dy = height/2 - offset.y;
-
-    group.setX(group.getX()+dx);
-    group.setY(group.getY()+dy);
-    group.setOffset(width/2, height/2);
+   obj.move(-deltax + dx, -deltay + dy);
+   obj.setOffset(width/2, height/2);
 }
 
 function Anchor(x, y, width, height, name, furniture){

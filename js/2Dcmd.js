@@ -192,7 +192,6 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
         value : function(pos){
             this.rotate(pos);
             this.obj.getParent().draw();
-            console.log(this.obj.topleft.getAbsolutePosition());
         }
     },
     mouseup : {
