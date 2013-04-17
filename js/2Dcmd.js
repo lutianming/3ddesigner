@@ -165,10 +165,59 @@ function SplitWallCommand(){
 
 }
 SplitWallCommand.prototype = Object.create(BaseCommand.prototype, {
-   mouseup : {
-       value : function(pos){
-           var wall = have_obj(pos, 'wall');
-           split_wall(wall, pos);
-       }
-   }
+    mouseup : {
+        value : function(pos){
+            var wall = have_obj(pos, 'wall');
+            split_wall(wall, pos);
+        }
+    }
+});
+
+function RotationCommand(obj){
+    this.obj = obj;
+}
+
+RotationCommand.prototype = Object.create(BaseCommand.prototype, {
+    mousedown : {
+        value : function(pos){
+            this.startPos = pos;
+            this.prePos = pos;
+
+            var furniture = this.obj.furniture;
+            this.center = furniture.getPosition();
+            this.obj.setDraggable(false);
+        }
+    },
+    mousemove : {
+        value : function(pos){
+            this.rotate(pos);
+            this.obj.getParent().draw();
+            console.log(this.obj.topleft.getAbsolutePosition());
+        }
+    },
+    mouseup : {
+      value : function(pos){
+          this.rotate(pos);
+          this.obj.getParent().draw();
+          this.endPos = pos;
+          this.obj.setDraggable(true);
+      }
+    },
+    rotate : {
+        value : function(pos){
+            var x1 = this.prePos.x - this.center.x;
+            var y1 = this.prePos.y - this.center.y;
+            var x2 = pos.x - this.center.x;
+            var y2 = pos.y - this.center.y;
+
+            var a = x1*x2 + y1*y2;
+            var b =  Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
+            var v = a / b;
+            var d = Math.acos(v);
+
+            var deg = d / Math.PI * 180;
+            this.obj.rotate(deg);
+            this.prePos = pos;
+        }
+    }
 });
