@@ -279,7 +279,10 @@ function _DataTransformer() {
 		var doorY = height / 2;
 		var doorZ = tmpDoor.position.y - shift.shift_z;
 
-		newDoor.position = [doorX / _CONVERT_ZOOM_FACTOR, doorY, doorZ / _CONVERT_ZOOM_FACTOR];
+		newDoor.position = {};
+		newDoor.position.x = doorX / _CONVERT_ZOOM_FACTOR;
+		newDoor.position.y = doorY;
+		newDoor.position.z = doorZ / _CONVERT_ZOOM_FACTOR;
 
 		newDoor.texture = {
 			url: 'img/europe_door_texture.jpg',
@@ -287,7 +290,10 @@ function _DataTransformer() {
 		};
 
 		newDoor.rotation = wallRotation;
-		newDoor.size = [tmpDoor.width / _CONVERT_ZOOM_FACTOR, _DOOR_HEIGHT, _DOOR_THICK];
+		newDoor.size  = {};
+		newDoor.size.x = tmpDoor.width / _CONVERT_ZOOM_FACTOR;
+		newDoor.size.y = _DOOR_HEIGHT;
+		newDoor.size.z =  _DOOR_THICK;
 
 		return newDoor;
 	}
@@ -308,14 +314,20 @@ function _DataTransformer() {
 		var wallX = (tmpWall.points[0].x + tmpWall.points[1].x) / 2 - shift.shift_x;
 		var wallY = y;
 		var wallZ = (tmpWall.points[0].y + tmpWall.points[1].y) / 2 - shift.shift_z;
-		newBlock.position = [wallX / _CONVERT_ZOOM_FACTOR, wallY, wallZ / _CONVERT_ZOOM_FACTOR];
+		newBlock.position =  {};
+		newBlock.position.x = wallX / _CONVERT_ZOOM_FACTOR;
+		newBlock.position.y = wallY;
+		newBlock.position.z = wallZ / _CONVERT_ZOOM_FACTOR;
 
 		// caculate rotaition of the wall
 		newBlock.rotation = wallRotation;
 
 		// caculate length of the wall
 		var wallLength = getDistance(tmpWall.points[0], tmpWall.points[1]);
-		newBlock.size = [wallLength / _CONVERT_ZOOM_FACTOR, height, _WALL_THICK];
+		newBlock.size = {};
+		newBlock.size.x = wallLength / _CONVERT_ZOOM_FACTOR;
+		newBlock.size.y = height;
+		newBlock.size.z = _WALL_THICK;
 		newBlock.texture = {
 			url: 'img/red-brick-seamless-512-x-512.jpg',
 			repeat: textureRepeat
@@ -382,6 +394,23 @@ function _DataTransformer() {
 		return blocks;
 	}
 
+
+	function generateFloor(params) {
+		return [[{
+			x: 10,
+			y: 10,
+			z: 10
+		}, {
+			x: -10,
+			y: 10,
+			z: 10
+		}, {
+			x: -10,
+			y: 10,
+			z: -10
+		}]];
+	}
+
 	/**
 	 * get 3D editing data in json format
 	 * @return {[type]} [description]
@@ -400,12 +429,18 @@ function _DataTransformer() {
 		// generate 3d data for walls
 		sceneData.walls = [];
 
-		// loop to convert 2d data
+		// loop to convert wall 2d data
 		for (i in editData.walls) {
 			var tmpWall = editData.walls[i];
 			var newWall = generateWall(tmpWall, shift);
 			if (newWall) sceneData.walls.push(newWall);
 		}
+
+		// convert floor data from wall data
+		sceneData.floors = [];
+		var floors = generateFloor(editData.walls);
+		sceneData.floors = floors;
+
 		return sceneData;
 	}
 
