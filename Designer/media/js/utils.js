@@ -37,3 +37,42 @@ function getElementsByClassName(node,classname) {
     })(classname, node);
   }
 }
+
+function getFormQueryString(frmID)
+{ 
+	   var frmID=document.getElementById(frmID); 
+       var i,queryString = "", and = "";
+       var item; 
+       var itemValue;
+       for( i=0;i<frmID.length;i++ ) 
+       {
+              item = frmID[i];
+              if ( item.name!='' ) 
+              {
+                     if ( item.type == 'select-one' ) 
+                     {
+                            itemValue = item.options[item.selectedIndex].value;
+                     }
+                     else if ( item.type=='checkbox' || item.type=='radio') 
+                     {
+                            if ( item.checked == false )
+                            {
+                                   continue;    
+                            }
+                            itemValue = item.value;
+                     }	
+					 else if ( item.type == 'button' || item.type == 'submit' || item.type == 'reset' || item.type == 'image')
+                     {
+                            continue;
+                     }
+                     else 
+                     {
+                            itemValue = item.value;
+                     }
+                     itemValue = escape(itemValue);
+                     queryString += and + itemValue;
+                     and="&";
+              }
+       }
+       return queryString;
+}

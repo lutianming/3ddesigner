@@ -1,0 +1,31 @@
+body {
+	background-color: #b2daf2;
+}
+div.left {
+	float: left;
+}
+div.blueband {
+	background: url('/site_media/img/blueband-middle.png');
+	height: 162px;
+	margin-left: -78px;
+	width: 958px;	
+}
+div.center {
+	color: #FFFF00;
+	padding:30px;
+}
+h1 {
+	margin-left:360px;
+}
+div.right {
+	float: right;
+	position:relative;
+	top:-130px;
+	left:15px;
+}
+.thumbnails li {
+	margin:30px;
+}
+.hero-unit {
+	padding-top: 40px;
+}
