@@ -211,25 +211,41 @@ ObjectFactory.createPlaneMesh = function(param) {
 		geometry.vertices.push(new THREE.Vector3(param[i].x, param[i].y, param[i].z));
 	}
 
-	for (var i = 0; i < len - 2; i++) {
-		geometry.faces.push(new THREE.Face3(0, 1, 2));
-	}
+	/*for (var i = 0; i < len; i++) {
+		geometry.faces.push(new THREE.Face3(i % len, (i + 1) % len, (i + 2)%len));
+		geometry.faceVertexUvs[0].push([new THREE.Vector2(0, 1),
+		new THREE.Vector2(1, 1),
+		new THREE.Vector2(1, 0)]);
+	}*/
+	var face = new THREE.Face4(0,1,2,3,null,null,0);
+	var normal = new THREE.Vector3(0,1,0);
+	face.normal.copy(normal);
+	face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone(), normal.clone());
+	// face.faceVertexUvs
+
+	geometry.faces.push(face);
+	geometry.faceVertexUvs[0].push([
+			new THREE.Vector2(0,1),
+			new THREE.Vector2(0,0),
+			new THREE.Vector2(1,0),
+			new THREE.Vector2(1,1)
+		]);
+
+
+	geometry.computeCentroids();
+	geometry.computeFaceNormals();
 
 	var map = THREE.ImageUtils.loadTexture('img/red-brick-seamless-512-x-512.jpg');
 	map.wrapS = map.wrapT = THREE.RepeatWrapping;
-	map.repeat.set(3, 3);
+	map.repeat.set(1, 1);
 
-	var material = new THREE.MeshLambertMaterial({
-		map: map
+	var material = new THREE.MeshBasicMaterial({
+		map: map,
+		side: THREE.DoubleSide
 	});
 
-	var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
-		color: 0xFFFFFF
-	}));
-	mesh.doubleSided = true;
-	mesh.overdraw = true;
-	mesh.rotation.x += Math.PI*0.5;
-	mesh.rotation.y += Math.PI*0.5;
+	var mesh = new THREE.Mesh(geometry, material);
+
 
 	return mesh;
 

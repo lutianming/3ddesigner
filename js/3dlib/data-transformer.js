@@ -398,16 +398,20 @@ function _DataTransformer() {
 	function generateFloor(params) {
 		return [[{
 			x: 10,
-			y: 10,
+			y: 0,
 			z: 10
 		}, {
-			x: -10,
-			y: 10,
-			z: 10
-		}, {
-			x: -10,
-			y: 10,
+			x: 20,
+			y: 0,
 			z: -10
+		}, {
+			x: -10,
+			y: 0,
+			z: -10
+		},{
+			x: -10,
+			y: 0,
+			z :10
 		}]];
 	}
 
