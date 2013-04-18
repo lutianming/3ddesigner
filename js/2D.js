@@ -176,9 +176,18 @@ function exportJSON(){
     var house = g_2d.house;
     var furnitures =  g_2d.furnitures;
     var data = {
+        rooms: [],
         walls: [],
         furnitures: []
     };
+
+    //rooms
+    for(var i = 0; i < house.rooms.length; i++){
+        var room = house.rooms[i];
+        var r = {};
+        r.points = room.getPoints();
+        data.rooms.push(r);
+    }
 
     //walls
     for(var i = 0; i < house.walls.length; i++){
