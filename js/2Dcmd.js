@@ -173,18 +173,17 @@ SplitWallCommand.prototype = Object.create(BaseCommand.prototype, {
     }
 });
 
-function RotationCommand(obj){
-    this.obj = obj;
+function RotationCommand(anchor){
+    this.anchor = anchor;
+    this.obj = anchor.getParent();
 }
 
 RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value : function(pos){
-            this.startPos = pos;
-            this.prePos = pos;
-
-            var furniture = this.obj.furniture;
-            this.center = furniture.getPosition();
+            this.startPos = this.anchor.getPosition();
+            this.prePos = this.startPos;
+            this.center = this.obj.getOffset();
             this.obj.setDraggable(false);
         }
     },
@@ -196,14 +195,20 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mouseup : {
       value : function(pos){
+
           this.rotate(pos);
           this.obj.getParent().draw();
           this.endPos = pos;
           this.obj.setDraggable(true);
+          console.log(this.obj.getRotationDeg());
       }
     },
     rotate : {
         value : function(pos){
+            //change absolute pos to relative pos;
+            pos.x = pos.x - this.obj.getX() + this.center.x;
+            pos.y = pos.y - this.obj.getY() + this.center.y;
+
             var x1 = this.prePos.x - this.center.x;
             var y1 = this.prePos.y - this.center.y;
             var x2 = pos.x - this.center.x;
@@ -215,7 +220,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             var d = Math.acos(v);
 
             var deg = d / Math.PI * 180;
-            this.obj.rotate(deg);
+            this.obj.rotateDeg(deg);
             this.prePos = pos;
         }
     }

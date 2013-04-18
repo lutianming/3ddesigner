@@ -211,6 +211,8 @@ function exportJSON(){
         var w = furniture.getWidth();
         var h = furniture.getHeight();
         f.size = {x: w, y: h};
+        f.rotation = f.getRotation();
+        f.rotateDeg = f.getRotationDeg();
     }
 
     return JSON.stringify(data);

@@ -297,7 +297,7 @@ function create_rotate_anchor(x, y, name, furniture){
     });
     anchor.on('mousedown', function(){
         this.mousehold = true;
-        g_2d.cmd = new RotationCommand(anchor.getParent());
+        g_2d.cmd = new RotationCommand(this);
         g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     anchor.on('mousemove', function(){
