@@ -1,0 +1,42 @@
+body {
+	background-color: #b2daf2;
+}
+table#msg_list th, table#msg_list td{
+	border: 1 solid black;
+	width: 700px;
+	height:50px;
+	font-size: 18px;
+}
+
+div#detail_comment {
+	position: absolute;
+	top:100px;
+	left:250px;
+	width:60%;
+	border: 1 solid black;
+	padding: 15px;
+	background-color: white;
+}
+
+table#msg_list td#msg_owner {
+	width:100px;
+}
+div#footer {
+	height:150px;
+	background: url('/site_media/img/bg-footer.jpg') repeat-x;
+	position: absolute;
+	left: 0px;
+	bottom: -1460px;
+	width: 100%;
+}
+div#subfooter {
+	background: url('/site_media/img/bg-subfooter.jpg') repeat-x;
+	position: absolute;
+	bottom: -1500px;
+	left: 0px;
+	width: 100%;
+	height:40px;
+}
+
+
+

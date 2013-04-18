@@ -1,17 +1,18 @@
 {% if is_paginated %}
-	<table class="noframe" id="paginator">
+	<table class="noframe pagination" id="paginator">
 		<tr>
 		{% if has_previous %}
-			<td><a href="/msg/{{previous}}">&lt;&lt;Previous Page</a></td>
+			<td><a href="/msg/{{previous }}" class="page_nav">&lt;&lt;Previous</a></td>
 		{% endif %}
+			<td class="page_word">&nbsp;&nbsp;Numer {{page}} of {{pages}}&nbsp;&nbsp;</td>
 		{% if has_next %}
-			<td><a href="/msg/{{next}}">Next Page&gt;&gt;</a></td>
+			<td><a href="/msg/{{next}}" class="page_nav">Next&gt;&gt;</a></td>
 		{% endif %}
-			<td>Numer {{page}} of {{pages}}</td>
 			<form action="." method="post">{% csrf_token %}
-				<td>&nbsp;&nbsp;To page</td>
-				<td><input name="page" type="text" size="2"></td>
-				<td><input type="submit" value="Jump"></td>
+				<td class="page_word">&nbsp;&nbsp;To page:&nbsp;</td>
+				<td><input name="page" type="text" size="2" class="input-small"></td>
+				<td><input type="submit" value="Jump" class="btn btn-mini"></td>
 		</tr>
 	</table>
+	
 {% endif %}

@@ -1,5 +1,56 @@
 {% extends "home/base.html" %}
 {% block title %}Leave Message{% endblock %}
 {% block content %}
-This is home page!
+<div id="myCarousel" class="carousel slide">
+  	<ol class="carousel-indicators">
+   		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+   		<li data-target="#myCarousel" data-slide-to="1"></li>
+   		<li data-target="#myCarousel" data-slide-to="2"></li>
+  	</ol>
+ 	<!-- Carousel items -->
+  	<div class="carousel-inner">
+    	<div class="active item">
+    		<img src="/site_media/img/bootstrap-mdo-sfmoma-01.jpg" alt="" style="width:940px;">
+    		<div class="carousel-caption">
+    			<h4>First example</h4>
+    			<p>Say something about it.</p>
+    		</div>
+    	</div>
+    	<div class="item">
+    		<img src="/site_media/img/bootstrap-mdo-sfmoma-02.jpg" alt="" style="width:940px;">
+    		<div class="carousel-caption">
+    			<h4>Second example</h4>
+    			<p>Say something about it.</p>
+    		</div>
+    	</div>
+   		<div class="item">
+   			<img src="/site_media/img/bootstrap-mdo-sfmoma-03.jpg" alt="" style="width:940px;">
+   			<div class="carousel-caption">
+    			<h4>Third example</h4>
+    			<p>Say something about it.</p>
+    		</div>
+   		</div>
+  	</div>
+  	<!-- Carousel nav -->
+  	<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  	<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+</div>
+<div class="row"> 
+	<div class="span4"> 
+        <h2>Design</h2> 
+        <p>You can design your own 3D works, like interior design with chairs and doors, landscape design with trees and flowing water and so on. You can view and show your final work as soon as possible.You can fully demonstrate your creativity here. </p> 
+        <p><a class="btn btn-warning" href="#">View details &raquo;</a></p> 
+    </div> 
+    <div class="span4"> 
+        <h2>BBS</h2> 
+        <p>This is a place where users can communicate with each other, exchanging ideas and experience. If you are not a registered user of 3DDesigner, you still can comment with your other social website account. You can make friends and learn things here.</p> 
+        <p><a class="btn btn-warning" href="/msg/">View details &raquo;</a></p> 
+    </div> 
+    <div class="span4"> 
+   	    <h2>Gallery</h2> 
+        <p>It is like an online 3D gallery. All users' posted 3D works are shown here. You can view your and others' design here and comment your opinoin. You can like or dislike the design. Show your original 3d work here, compare with others and get advices from others to progress.</p> 
+        <p><a class="btn btn-warning" href="/gallery/">View details &raquo;</a></p> 
+    </div> 
+</div> 
+<div style="height:50px;"></div>
 {% endblock%}

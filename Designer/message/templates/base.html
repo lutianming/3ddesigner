@@ -1,38 +1,74 @@
 <html>
 	<head>
 		<title>Django Messageboard|{% block title %}{% endblock %}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="/site_media/css/style.css" type="text/css">
+		<link href="/site_media/css/bootstrap.min.css" rel="stylesheet" media="screen">
 		<script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
 		{% block head %}{% endblock %}
-		<script type="text/javascript">
-		tinyMCE.init({
-		 mode:"textareas",
-		 theme:"advanced",
-		 plugins:"emotions",
-		 theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justrifyright,justrifyfull,|,fontselect,fontsizeselect,|,cut,copy,paste,|,undo,redo,|,link,unlink,|,forecolor,backcolor,|,image,emotions",
-		 theme_advanced_buttons2:"",
-		 theme_advanced_toolbar_location:"top",
-		 theme_advanced_toolbar_align:"left",
-		 language:"en",
-		 height:"500px",
-		});
-		</script>
+		
 	</head>
 	<body>
-		<div class="nav">
-			<a href="/">Home</a>|
-			<a href="/post/">Post</a>|
-			{% if user.is_authenticated %}
-			<a href="/user/{{user.username}}/">{{user.username}}</a>|
-			<a href="/accounts/logout/">Logout</a>
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="/site_media/js/bootstrap.min.js"></script>
+	<div class="navbar navbar-inverse navbar-fixed-top"> 
+      <div class="navbar-inner"> 
+        <div class="container"> 
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> 
+            <span class="icon-bar"></span> 
+            <span class="icon-bar"></span> 
+            <span class="icon-bar"></span> 
+          </button> 
+          <a class="brand" href="/">3DDesigner</a> 
+          <div class="nav-collapse collapse"> 
+            <ul class="nav"> 
+              <li class="divider-vertical"></li>
+              <li><a href="/">Home</a></li>
+              <li class="divider-vertical"></li>
+              <li><a href="/msg/">Design</a></li>
+              <li class="divider-vertical"></li>
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">BBS<b class="caret"></b></a> 
+                <ul class="dropdown-menu"> 
+                  <li><a href="/msg/">View</a></li> 
+                  <li><a href="/post/">Post</a></li> 
+                </ul> 
+              </li> 
+              <li class="divider-vertical"></li>
+              <li><a href="/gallery/">Gallery</a></li>
+              <li class="divider-vertical"></li>
+            </ul> 
+            {% if user.is_authenticated %}
+            <ul class="nav pull-right">
+				<li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>
+				<li class="divider-vertical"></li>
+				<li><a href="/accounts/password/change/">Change Password</a></li>
+				<li class="divider-vertical"></li>
+				<li><a href="/accounts/logout/">Logout</a></li>
+			</ul>
 			{% else %}
-			<a href="/accounts/login/">Login</a>|
-			<a href="/accounts/register/">Register</a>
-			{% endif %}
-			{% ifequal user.username "admin" %}
-			|<a href="/admin/">Backstage Management</a>
-			{% endifequal%}
-		</div>
-		{% block content %}{% endblock %}
+            <ul class="nav pull-right">
+            	<li><a href="/accounts/login/">Login</a></li>
+            	<li><a href="/accounts/register/">Register</a></li>
+            </ul>
+            {% endif %}
+          </div><!--/.nav-collapse --> 
+        </div> 
+      </div> 
+    </div> 
+    <div class="container" style="padding:40px;"> 
+	{% block content %}{% endblock %}
+	</div>	
+	<div id="footer"></div>
+	<div id='subfooter'> 
+		<div class='content'> 
+			<a href="http://www.facebook.com/floorplanner" class="facebook"></a> 
+			<a href="http://www.twitter.com/floorplanner" class="twitter"></a> 
+			<a href="http://www.youtube.com/floorplanner" class="youtube"></a> 
+			<span>Copyright 2013 3DDesigner</span> 
+			<span>Nanjing University</span> 
+			<a href="http://software.nju.edu.cn/" class="terms">Software Institute</a> 
+		</div> 		
+	</div>
 	</body>
 </html>

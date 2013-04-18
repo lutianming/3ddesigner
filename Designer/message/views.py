@@ -9,8 +9,11 @@ from django.shortcuts import get_object_or_404
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import simplejson
 
-ITEMS_PER_PAGE = 2
+ITEMS_PER_PAGE = 5
 
 def msg_list_page(request, page):
     #return list_detail.object_list(
@@ -167,3 +170,48 @@ def msg_detail_page(request, message_id):
             template_name='msg_detail_page.html',
             template_object_name='msg',
             )
+
+@csrf_exempt
+def autosave(request):
+    #response = HttpResponse()
+    #response['Content-Type']="text/javascript" 
+    #title = str(request.POST.get('title'))
+    #file = open("D:/Workspace/Designer/media/autosave/tmp.txt","w")
+    #file.write(title)
+    #file.close()
+    #response.write("Saved successfully!")
+    #return response;
+    info=" "
+    result = {}
+    try:
+        if request.method == 'POST':
+            req = simplejson.loads(request.raw_post_data)
+            if req['action']=="save":
+                title = req['title']
+                file = open("D:/Workspace/Designer/media/autosave/tmp.txt","w")
+                file.write(title)
+                file.close()
+                result['result'] = "save successfully!"
+            elif req['action']=="restore":
+                file = open("D:/Workspace/Designer/media/autosave/tmp.txt","r")
+                title = file.readline()
+                result['result'] = title
+            else:
+                result['result'] = "none"
+    except:
+        import sys
+        info = "%s || %s" % (sys.exc_info()[0], sys.exc_info()[1])
+
+    result['message']=info
+    json=simplejson.dumps(result)
+    return HttpResponse(json)
+        
+
+def restore(request):
+    result = {}
+    file = open("D:/Workspace/Designer/media/autosave/tmp.txt","r")
+    title = file.readline()
+    result['result'] = title
+    json=simplejson.dumps(result)
+    return HttpResponse(json)
+    
