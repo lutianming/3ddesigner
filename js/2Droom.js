@@ -48,7 +48,7 @@ function update_length_mark(text, p1, p2){
 
 function create_house_group(){
     var group = new Kinetic.Group({
-        name: 'house',
+        name: 'house'
     });
     group.on('dragstart', function(){
 
@@ -79,13 +79,15 @@ function create_room(points, group){
     var len = points.length;
     for(var i = 0; i < len; i++){
         var corner = create_corner(points[i], group);
-        corner.room = room;
+        corner.rooms.push(room);
         room.corners.push(corner);
     }
     for(var i = 0; i < len; i++){
         var wall = create_wall([points[i], points[(i+1)%len]], group);
         wall.rooms.push(room);
         wall.corners = [room.corners[i], room.corners[(i+1)%len]];
+        room.corners[i].walls.push(wall);
+        room.corners[(i+1)%len].walls.push(wall);
         room.walls.push(wall);
     }
     group.rooms.push(room);
@@ -98,8 +100,10 @@ function create_corner(pos, group){
         y: pos.y,
         radius: 3,
         fill: 'white',
-        visible: false,
+        visible: false
       });
+    corner.walls = [];
+    corner.rooms = [];
     pos.corner = corner;
     corner.on('mouseover', function(){
 
@@ -113,13 +117,13 @@ function create_wall(points, group){
         return {
             x: this.getAbsolutePosition().x,
             y: pos.y
-        }
+        };
     }
     function horizontal(pos){
         return {
             x: pos.x,
             y: this.getAbsolutePosition().y
-        }
+        };
     }
     var wall = new Kinetic.Line({
         name: 'wall',
@@ -157,12 +161,11 @@ function create_wall(points, group){
     }
 
     wall.on('dragstart', function(){
-        this.pos = this.getPosition();
+        g_2d.cmd = new DragWallCommand(this);
+        g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     wall.on('dragmove', function(){
-        update_rooms(wall);
-        var layer = wall.getLayer();
-        layer.draw();
+
     });
     wall.on('dragend', function(){
 
@@ -388,6 +391,7 @@ function insert_wall(room, wall, order, index)
     points[index] = wall.getPoints()[order[1]];
     points.splice(index, 0, wall.getPoints()[order[0]]);
 }
+
 function replace_wall(w1, w2)
 {
     var room = w1.room;
@@ -406,13 +410,13 @@ function replace_wall(w1, w2)
     w.getPoints()[0] = w2_ps[1];
     w.corners[0] = w2_ps.corners[1];
 
-    Points[Index] = W2_Ps[0];
-    Points[(Index+1)%Points.Len] = W2_Ps[1];
+    points[index] = w2_ps[0];
+    points[(index+1)%points.len] = w2_ps[1];
 
-    //Destroy Old Wall
-    W1.Corners[0].Destroy();
-    W1.Corners[1].Destroy();
-    W1.Destroy();
+    //destroy old wall
+    w1.corners[0].destroy();
+    w1.corners[1].destroy();
+    w1.Destroy();
 }
 
 function distance(p1, p2)
@@ -441,7 +445,7 @@ function distance_pos_wall(pos, wall)
         var C = p1.y * (p1.x - p2.x) - p1.x * (p1.y - p2.y);
         var a = A * pos.x + B * pos.y + C;
         var b = Math.pow(A, 2) + Math.pow(B, 2);
-        var dist = Math.abs(a) / Math.sqrt(b);
+        dist = Math.abs(a) / Math.sqrt(b);
     }
     return dist;
 }

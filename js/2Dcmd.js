@@ -22,6 +22,7 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value: function(pos){
             var furniture = new Furniture(pos);
+            g_2d.furnitures.push(furniture);
             this.obj = furniture;
             // if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
             //     g_2d.current_obj.hide_anchors();
@@ -38,45 +39,43 @@ function AddRoomCommand(){
 
 }
 AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
+    _init_room : {
+        value : function(pos){
+            var house = g_2d.house;
+            var topleft, topright;
+            var bottomleft, bottomright;
+            var points;
+
+            topleft = pos;
+            topright = {x:pos.x+1, y:pos.y};
+            bottomright = {x:pos.x+1, y:pos.y+1};
+            bottomleft = {x:pos.x, y:pos.y+1};
+            points = [topleft, topright,
+                      bottomright, bottomleft];
+            house.points.push(topleft);
+            house.points.push(topright);
+            house.points.push(bottomright);
+            house.points.push(bottomleft);
+            g_2d.current_obj = create_room(points, house);
+            g_2d.layer.add(house);
+            g_2d.layer.draw();
+
+        }
+    },
     mousedown : {
         value : function(pos){
             if(g_2d.house == null){
                 g_2d.house = create_house_group();
             }
-            var house = g_2d.house;
+
             if(g_2d.house.rooms.length == 0){
-                var topleft = pos;
-                var topright = {x:pos.x+1, y:pos.y};
-                var bottomright = {x:pos.x+1, y:pos.y+1};
-                var bottomleft = {x:pos.x, y:pos.y+1};
-                var points = [topleft, topright,
-                              bottomright, bottomleft];
-                house.points.push(topleft);
-                house.points.push(topright);
-                house.points.push(bottomright);
-                house.points.push(bottomleft);
-                g_2d.current_obj = create_room(points, house);
-                g_2d.layer.add(house);
-                g_2d.layer.draw();
+                this._init_room(pos);
             }else{
                 //to add another room, mouse pos should be on a corner
                 var corner = have_obj(pos, 'corner');
                 if(corner != null){
-                    //            g_2d.stage.setDraggable(false);
-                    house.setDraggable(false);
-                    var pos = corner.getPosition();
-                    var topleft = pos;
-                    var topright = {x:pos.x+1, y:pos.y};
-                    var bottomright = {x:pos.x+1, y:pos.y+1};
-                    var bottomleft = {x:pos.x, y:pos.y+1};
-                    var points = [topleft, topright,
-                                  bottomright, bottomleft];
-                    house.points.push(topleft);
-                    house.points.push(topright);
-                    house.points.push(bottomright);
-                    house.points.push(bottomleft);
-                    g_2d.current_obj = create_room(points, house);
-                    g_2d.layer.draw();
+                    g_2d.house.setDraggable(false);
+                    this._init_room(corner.getPosition());
 
                     //test insert wall
                     insert_wall(g_2d.house.rooms[0],
@@ -115,8 +114,7 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                 update_corners(g_2d.current_obj);
                 g_2d.layer.draw();
             }
-            //    g_2d.house.setDraggable(true);
-            //    g_2d.stage.setDraggable(true);
+
         }
     }
 });
@@ -200,7 +198,6 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
           this.obj.getParent().draw();
           this.endPos = pos;
           this.obj.setDraggable(true);
-          console.log(this.obj.getRotationDeg());
       }
     },
     rotate : {
@@ -222,6 +219,94 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             var deg = d / Math.PI * 180;
             this.obj.rotateDeg(deg);
             this.prePos = pos;
+        }
+    }
+});
+
+function DragWallCommand(wall){
+    this.obj = wall;
+}
+
+DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
+    _update_house : {
+        value : function(){
+            var wall = this.obj;
+            var position = wall.getPosition();
+
+            var deltax = position.x - this.prePos.x;
+            var deltay = position.y - this.prePos.y;
+
+            var points = wall.getPoints();
+            points[0].x += deltax;
+            points[0].y += deltay;
+            points[1].x += deltax;
+            points[1].y += deltay;
+            wall.setPoints(points);
+
+            this.prePos = wall.getPosition();
+            wall.setPosition(0, 0);
+
+            wall.corners[0].setPosition(points[0]);
+            wall.corners[1].setPosition(points[1]);
+
+            //update doors and windows on this wall
+            for(var i = 0; i < wall.doors.length; i++){
+                var door = wall.doors[i];
+                var x = door.getX();
+                var y = door.getY();
+                door.setPosition(x+deltax, y+deltay);
+            }
+        }
+    },
+    mousedown : {
+        value : function(pos){
+            this.startPos = this.obj.getPosition();
+            this.prePos = this.startPos;
+
+            var points = this.obj.getPoints();
+            var x1 = points[0].x - points[1].x;
+            var y1 = points[0].y - points[1].y;
+            //test if need to add new walls
+            var result = false;
+            for(var i = 0; i < this.obj.corners.length; i++){
+                var corner = this.obj.corners[i];
+                for(var j = 0; j < corner.walls.length; j++){
+                    var wall = corner.walls[i];
+                    if(wall == this.obj){
+                        continue;
+                    }
+
+                    //if two wall vertical, no need to add new wall
+                    points = wall.getPoints();
+                    var x2 = points[0].x - points[1].x;
+                    var y2 = points[0].y - points[1].y;
+                    var r = x1*x2 + y1*y2;
+                    if(r != 0){
+                        result = true;
+                        break;
+                    }
+                }
+
+                if(result){
+                    //add temp wall
+                    var x = corner.getX();
+                    var y = corner.getY();
+
+                }
+                result = false;
+            }
+        }
+    },
+    mousemove : {
+        value : function(pos){
+            this._update_house();
+            var layer = this.obj.getLayer();
+            layer.draw();
+        }
+    },
+    mouseup : {
+        value : function(pos){
+
         }
     }
 });

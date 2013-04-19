@@ -182,46 +182,55 @@ function exportJSON(){
     };
 
     //rooms
-    for(var i = 0; i < house.rooms.length; i++){
-        var room = house.rooms[i];
-        var r = {};
-        r.points = room.getPoints();
-        data.rooms.push(r);
-    }
-
-    //walls
-    for(var i = 0; i < house.walls.length; i++){
-        var wall = house.walls[i];
-        var w = {
-            doors: [],
-            points: []
-        };
-        var points = wall.getPoints();
-        for(var j = 0; j < points.length; j++){
-            var p = points[j];
-            w.points.push({x: p.x, y: p.y});
+    if(house){
+        for(var i = 0; i < house.rooms.length; i++){
+            var room = house.rooms[i];
+            var r = {
+                points : []
+            };
+            var points = room.getPoints();
+            for(var j = 0; j < points.length; i++){
+                var p = points[j];
+                r.points.push({x: p.x, y: p.y});
+            }
+            data.rooms.push(r);
         }
 
-        for(var j = 0; j < wall.doors.length; j++){
-            var door = wall.doors[j];
-            var d = {};
-            d.position = door.getPosition();
-            d.width = door.getRadius();
-            w.doors.push(d);
-        }
-        data.walls.push(w);
-    }
+        //walls
+        for(var i = 0; i < house.walls.length; i++){
+            var wall = house.walls[i];
+            var w = {
+                doors: [],
+                points: []
+            };
+            var points = wall.getPoints();
+            for(var j = 0; j < points.length; j++){
+                var p = points[j];
+                w.points.push({x: p.x, y: p.y});
+            }
 
+            for(var j = 0; j < wall.doors.length; j++){
+                var door = wall.doors[j];
+                var d = {};
+                d.position = door.getPosition();
+                d.width = door.getRadius();
+                w.doors.push(d);
+            }
+            data.walls.push(w);
+        }
+    }
     //furnitures
     for(var i = 0; i < furnitures.length; i++){
         var furniture = furnitures[i];
         var f = {};
         f.position = furniture.getPosition();
-        var w = furniture.getWidth();
-        var h = furniture.getHeight();
+        var w = furniture.furniture.getWidth();
+        var h = furniture.furniture.getHeight();
         f.size = {x: w, y: h};
-        f.rotation = f.getRotation();
-        f.rotateDeg = f.getRotationDeg();
+        f.rotation = furniture.getRotation();
+        f.rotateDeg = furniture.getRotationDeg();
+        console.log(f);
+        data.furnitures.push(f);
     }
 
     return JSON.stringify(data);
