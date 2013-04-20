@@ -159,6 +159,14 @@ def user_msg_list_page(request,username,page):
         
     return render_to_response('user_msg_list_page.html', c)
 
+def user_work_list_page(request, username, page):
+    user = get_object_or_404(User, username=username)
+    c = RequestContext(request, {
+            'username':username,
+            'user':user
+        })
+    return render_to_response('user_work_list_page.html',context_instance=RequestContext(request))
+
 def msg_detail_page(request, message_id):   
     msg = get_object_or_404(Msg, id=message_id)
     msg.clickcount += 1

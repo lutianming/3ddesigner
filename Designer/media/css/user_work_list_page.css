@@ -1,9 +1,6 @@
 body {
 	background-color: #b2daf2;
 }
-.thumbnails li {
-	margin:30px;
-}
 div.left {
 	float: left;
 }
@@ -29,6 +26,9 @@ div.right {
 .hero-unit {
 	padding-top: 20px;
 }
-div.more a {
+table#paginator {
 	float: right;
+}
+.thumbnails li {
+	margin:30px;
 }

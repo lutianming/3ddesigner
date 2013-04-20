@@ -45,6 +45,9 @@
 				<li><a href="/accounts/password/change/">Change Password</a></li>
 				<li class="divider-vertical"></li>
 				<li><a href="/accounts/logout/">Logout</a></li>
+				{% ifequal user.username 'admin' %}
+				<li><a href="/admin/">Backstage</a></li>
+				{% endifequal %}
 			</ul>
 			{% else %}
             <ul class="nav pull-right">
