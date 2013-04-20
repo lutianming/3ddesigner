@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from message.views import *
 from home.views import *
 from gallery.views import *
+from scene.views import *
 import settings
 import os
 # Uncomment the next two lines to enable the admin:
@@ -42,4 +43,5 @@ urlpatterns = patterns('',
     url(r'^post/autosave/$', autosave),
     url(r'^post/restore/$', restore),
     url(r'^gallery/$', gallery_page),
+    url(r'^scene/$',view_scene)
 )

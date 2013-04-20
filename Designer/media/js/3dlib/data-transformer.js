@@ -296,7 +296,7 @@ function _DataTransformer() {
 		newDoor.position.z = doorZ / _CONVERT_ZOOM_FACTOR;
 
 		newDoor.texture = {
-			url: 'img/europe_door_texture.jpg',
+			url: '/site_media/img/europe_door_texture.jpg',
 			repeat: {
 				x: 1,
 				y: 1
@@ -343,7 +343,7 @@ function _DataTransformer() {
 		newBlock.size.y = height;
 		newBlock.size.z = _WALL_THICK;
 		newBlock.texture = {
-			url: 'img/red-brick-seamless-512-x-512.jpg',
+			url: '/site_media/img/red-brick-seamless-512-x-512.jpg',
 			repeat: {
 				x: (newBlock.size.x * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_WIDTH,
 				y: (newBlock.size.y * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_HEIGHT
@@ -474,7 +474,7 @@ function _DataTransformer() {
 				z: 10
 			}],
 			texture : {
-				url : 'img/mudiban063.jpg',
+				url : '/site_media/img/mudiban063.jpg',
 				repeat : {
 					x:1,
 					y:1
@@ -482,6 +482,73 @@ function _DataTransformer() {
 			}
 		}];
 	}
+
+	/**
+	 * generate 3d model data by params
+	 * @param  {[type]} params [description]
+	 * @return {[type]}        [description]
+	 */
+	function generateModels(params) {
+		return [
+			{
+				url : '/site_media/models/sofa.dae',
+				scale : {
+					x : 3,
+					y : 3,
+					z : 3
+				},
+				rotation : {
+					x : Math.PI / 2,
+					y : 0,
+					z : 0
+				},
+				position : {
+					x : 0,
+					y : 1.5,
+					z : 10
+				},
+				originSize : {
+					x : 50,
+					y : 10,
+					z : 20
+				},
+				size : {
+					x : 40,
+					y : 10,
+					z : 30
+				}
+			},
+			{
+				url : '/site_media/models/sofa.dae',
+				scale : {
+					x : 3,
+					y : 3,
+					z : 3
+				},
+				rotation : {
+					x : Math.PI / 2,
+					y : 0,
+					z : 0
+				},
+				position : {
+					x : 20,
+					y : 1.5,
+					z : 10
+				},
+				originSize : {
+					x : 50,
+					y : 10,
+					z : 20
+				},
+				size : {
+					x : 40,
+					y : 10,
+					z : 30
+				}
+			}
+		];
+	}
+
 
 	/**
 	 * get 3D editing data in json format
@@ -512,6 +579,10 @@ function _DataTransformer() {
 		// sceneData.floors = [];
 		var floors = generateFloor(editData.walls);
 		sceneData.floors = floors;
+
+
+		var models = generateModels(editData.furnitures);
+		sceneData.models = models;
 
 		return sceneData;
 	}

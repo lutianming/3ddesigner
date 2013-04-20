@@ -151,6 +151,10 @@ SceneViewer.prototype.createFloors = function() {
 
 SceneViewer.prototype.createModels = function() {
 	// ObjectFactory.createModel({}, this.scene);
+	for (i in threeSceneData.models) {
+		var param = threeSceneData.models[i];
+		var model = ObjectFactory.createModel(param, this.scene);
+	}
 }
 
 /**
@@ -273,5 +277,7 @@ ObjectFactory.createModel = function(param, scene) {
 
 		dae.position.set(param.position.x, param.position.y, param.position.z);
 		scene.add(dae);
+
+		SCENE = scene;
 	});
 }
