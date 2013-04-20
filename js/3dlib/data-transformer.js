@@ -18,6 +18,8 @@ function _DataTransformer() {
 	var _WALL_TYPE = 0;
 
 	var _DEFAULT_TEXTURE_REPEAT = 2;
+	var _DEFAULT_TEXTURE_WIDTH = 50.0;
+	var _DEFAULT_TEXTURE_HEIGHT = 25.0;
 
 	/**
 	 * CONSTANT VALUE
@@ -25,7 +27,6 @@ function _DataTransformer() {
 	 * @type {Number}
 	 */
 	var _CONVERT_ZOOM_FACTOR = 6;
-
 
 
 	// var editData;
@@ -56,6 +57,16 @@ function _DataTransformer() {
 
 	function getDistance(p1, p2) {
 		return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+	}
+
+	/**
+	 * convert point to hashmap key
+	 * @param  {[type]} point [description]
+	 * @return {[type]}       [description]
+	 */
+
+	function getPointKey(point) {
+		return point.x + ":" + point.y;
 	}
 
 	/**
@@ -286,14 +297,17 @@ function _DataTransformer() {
 
 		newDoor.texture = {
 			url: 'img/europe_door_texture.jpg',
-			repeat: 1
+			repeat: {
+				x: 1,
+				y: 1
+			}
 		};
 
 		newDoor.rotation = wallRotation;
-		newDoor.size  = {};
+		newDoor.size = {};
 		newDoor.size.x = tmpDoor.width / _CONVERT_ZOOM_FACTOR;
 		newDoor.size.y = _DOOR_HEIGHT;
-		newDoor.size.z =  _DOOR_THICK;
+		newDoor.size.z = _DOOR_THICK;
 
 		return newDoor;
 	}
@@ -314,7 +328,7 @@ function _DataTransformer() {
 		var wallX = (tmpWall.points[0].x + tmpWall.points[1].x) / 2 - shift.shift_x;
 		var wallY = y;
 		var wallZ = (tmpWall.points[0].y + tmpWall.points[1].y) / 2 - shift.shift_z;
-		newBlock.position =  {};
+		newBlock.position = {};
 		newBlock.position.x = wallX / _CONVERT_ZOOM_FACTOR;
 		newBlock.position.y = wallY;
 		newBlock.position.z = wallZ / _CONVERT_ZOOM_FACTOR;
@@ -330,7 +344,10 @@ function _DataTransformer() {
 		newBlock.size.z = _WALL_THICK;
 		newBlock.texture = {
 			url: 'img/red-brick-seamless-512-x-512.jpg',
-			repeat: textureRepeat
+			repeat: {
+				x: (newBlock.size.x * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_WIDTH,
+				y: (newBlock.size.y * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_HEIGHT
+			}
 		};
 
 		return newBlock;
@@ -388,31 +405,82 @@ function _DataTransformer() {
 					break;
 			}
 			var newBlock = generateWallBlock(wallParam, shift, wallRotation, height, y, repeat);
+			// if (height !== _WALL_HEIGHT) {
 			blocks.push(newBlock);
+			// }
+
 		}
 
 		return blocks;
 	}
 
+	/**
+	 * genenrate Floor points by wall data
+	 * @param  array walls [data of walls]
+	 * @return {array}       [description]
+	 */
 
-	function generateFloor(params) {
-		return [[{
-			x: 10,
-			y: 0,
-			z: 10
-		}, {
-			x: 20,
-			y: 0,
-			z: -10
-		}, {
-			x: -10,
-			y: 0,
-			z: -10
-		},{
-			x: -10,
-			y: 0,
-			z :10
-		}]];
+	function generateFloor(walls) {
+		if (walls === undefined) {
+			return [];
+		}
+
+		// generate hashmap for further algorithm 
+		var hashMap = {};
+		for (i in walls) {
+			for (j in walls[i].points) {
+				var key = getPointKey(walls[i].points[j]);
+				var value = walls[i].points[1 - j];
+
+				if (hashMap[key] === undefined) {
+					hashMap[key] = [];
+				}
+				hashMap[key].push(value);
+			}
+		}
+
+		/*var rooms = [];
+		var startKey = getPointKey(walls[0].points[0]);
+		var room = {
+			start : walls[0].points[0],
+			points : [walls[0].points[0]],
+			next : walls[0].points[0]
+		}
+		rooms.push(room);
+
+		for (i in rooms) {
+			var changed = false;
+		}*/
+
+		return [{
+			points: [{
+				x: 10,
+				y: 0,
+				z: 10
+			},
+			{
+				x: 10,
+				y: 0,
+				z: -10
+			},
+			{
+				x: -10,
+				y: 0,
+				z: -10
+			},
+			{
+				x: -10,
+				y: 0,
+				z: 10
+			}],
+			texture : {
+				url : 'img/mudiban063.jpg',
+				repeat : {
+					x:1,
+					y:1
+				}
+			}
+		}];
 	}
 
 	/**
@@ -441,7 +509,7 @@ function _DataTransformer() {
 		}
 
 		// convert floor data from wall data
-		sceneData.floors = [];
+		// sceneData.floors = [];
 		var floors = generateFloor(editData.walls);
 		sceneData.floors = floors;
 

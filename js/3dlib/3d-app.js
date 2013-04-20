@@ -143,8 +143,8 @@ SceneViewer.prototype.createWalls = function() {
 
 SceneViewer.prototype.createFloors = function() {
 	for (i in threeSceneData.floors) {
-		var points = threeSceneData.floors[i];
-		var floor = ObjectFactory.createPlaneMesh(points);
+		var param = threeSceneData.floors[i];
+		var floor = ObjectFactory.createPlaneMesh(param);
 		this.scene.add(floor);
 	}
 }
@@ -187,7 +187,8 @@ ObjectFactory.createCubeMesh = function(param) {
 
 	var map = THREE.ImageUtils.loadTexture(param.texture.url);
 	map.wrapS = map.wrapT = THREE.RepeatWrapping;
-	map.repeat.set(param.texture.repeat, param.texture.repeat);
+	map.repeat.set(param.texture.repeat.x, param.texture.repeat.y);
+	// map.offset.set(param.texture.offset_x, param.offset_y);
 
 	var material = new THREE.MeshLambertMaterial({
 		map: map
@@ -205,18 +206,14 @@ ObjectFactory.createCubeMesh = function(param) {
 
 ObjectFactory.createPlaneMesh = function(param) {
 	var geometry = new THREE.Geometry();
-	var len = param.length;
 
-	for (i in param) {
-		geometry.vertices.push(new THREE.Vector3(param[i].x, param[i].y, param[i].z));
+	var points = param.points;
+	var len = points.length;
+
+	for (i in points) {
+		geometry.vertices.push(new THREE.Vector3(points[i].x, points[i].y, points[i].z));
 	}
 
-	/*for (var i = 0; i < len; i++) {
-		geometry.faces.push(new THREE.Face3(i % len, (i + 1) % len, (i + 2)%len));
-		geometry.faceVertexUvs[0].push([new THREE.Vector2(0, 1),
-		new THREE.Vector2(1, 1),
-		new THREE.Vector2(1, 0)]);
-	}*/
 	var face = new THREE.Face4(0,1,2,3,null,null,0);
 	var normal = new THREE.Vector3(0,1,0);
 	face.normal.copy(normal);
@@ -235,9 +232,9 @@ ObjectFactory.createPlaneMesh = function(param) {
 	geometry.computeCentroids();
 	geometry.computeFaceNormals();
 
-	var map = THREE.ImageUtils.loadTexture('img/red-brick-seamless-512-x-512.jpg');
+	var map = THREE.ImageUtils.loadTexture(param.texture.url);
 	map.wrapS = map.wrapT = THREE.RepeatWrapping;
-	map.repeat.set(1, 1);
+	map.repeat.set(param.texture.repeat.x, param.texture.repeat.y);
 
 	var material = new THREE.MeshBasicMaterial({
 		map: map,

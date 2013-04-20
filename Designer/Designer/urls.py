@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from message.views import *
 from home.views import *
 from gallery.views import *
+from scene.views import *
 import settings
 import os
 # Uncomment the next two lines to enable the admin:
@@ -35,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^accounts/password/reset/done/$', 'django.contrib.auth.views.password_reset_done',{'template_name':'registration/password_reset_success.html'}),
     url(r'^post/$', msg_post_page),
     url(r'^user/(?P<username>\w+)/msg/(?P<page>\d*)$', user_msg_list_page),
+    url(r'^user/(?P<username>\w+)/work/(?P<page>\d*)$', user_work_list_page),
     url(r'^detail/(\d+)/$', msg_detail_page),
     #url(r'^detail/site_media/js/tiny_mce/plugins/emotions/img/(?P<path>.*)$','django.views.static.serve',{'document_root':site_media2}),
     url(r'^comments/',include('django.contrib.comments.urls')),
@@ -42,4 +44,5 @@ urlpatterns = patterns('',
     url(r'^post/autosave/$', autosave),
     url(r'^post/restore/$', restore),
     url(r'^gallery/$', gallery_page),
+    url(r'^scene/$',view_scene),
 )

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load comments %}
+{% block title %}{{username}}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/site_media/css/user_work_list_page.css" type="text/css">
+{% endblock %}	
+{% block content%}
+<div class="hero-unit">
+		<div class='purpleband'> 
+			<div class='left'><img alt="Purpleband-left" src="/site_media/img/purpleband-left1.png" /></div> 
+			<div class='center'><h2>{{username}}'s all messages</h2><span></span></div>
+			<div class='right'><img alt="Purpleband-right" src="/site_media/img/purpleband-right1.png" /></div> 
+			<div class='clear'></div> 
+		</div>
+
+			{% include "profile/work_list.html" %}
+
+		{% include "user_paginator.html" %}
+</div>
+{% endblock %}

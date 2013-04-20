@@ -13,7 +13,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'D:\\Workspace\\Designer\\sqlite.db',                      # Or path to database file if using sqlite3.
+        'NAME': 'sqlite.db',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -51,7 +51,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = 'D:/Workspace/Designer/media'
+MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '../media').replace('\\','/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'home',
     'management',
     'gallery',
+    'scene',
 )
 
 # A sample logging configuration. The only tangible logging
