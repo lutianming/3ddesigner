@@ -36,7 +36,7 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
 
 //add room command
 function AddRoomCommand(){
-
+    this.obj = null;
 }
 AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
     _init_room : {
@@ -59,7 +59,7 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             g_2d.current_obj = create_room(points, house);
             g_2d.layer.add(house);
             g_2d.layer.draw();
-
+            return g_2d.current_obj;
         }
     },
     mousedown : {
@@ -69,21 +69,15 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             }
 
             if(g_2d.house.rooms.length == 0){
-                this._init_room(pos);
+                this.obj = this._init_room(pos);
             }else{
                 //to add another room, mouse pos should be on a corner
                 var corner = have_obj(pos, 'corner');
                 if(corner != null){
-                    g_2d.house.setDraggable(false);
-                    this._init_room(corner.getPosition());
-
-                    //test insert wall
-                    insert_wall(g_2d.house.rooms[0],
-                                g_2d.house.rooms[1].walls[3],
-                                [1,0],1);
+                    this.startCorner = corner;
+                    this.obj = this._init_room(corner.getPosition());
                 }
             }
-            this.obj = g_2d.current_obj;
         }
     },
     mousemove : {
@@ -105,16 +99,92 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                 return;
             }
             var points = this.obj.getPoints();
-            //    var points = g_2d.current_obj.getPoints();
+            var house = g_2d.house;
             if(Math.abs(points[0].x - points[2].x) < 10 ||
                Math.abs(points[0].x - points[2].y) < 10){
-                g_2d.current_obj.destroy();
+                //clean room
+                var walls = this.obj.walls;
+                for(var i = 0; i < walls.length; i++){
+                    walls[i].lengthMark.destroy();
+                    walls[i].destroy();
+                }
+
+                for(var j = 0; j < points.length; j++){
+                    points[j].corner.destroy();
+                }
+                this.obj.destroy();
                 g_2d.layer.draw();
-            }else{
-                update_corners(g_2d.current_obj);
-                g_2d.layer.draw();
+                return;
             }
 
+            if(house.rooms.length > 0){
+                for(var i = 0; i < this.obj.walls.length; i++){
+                    var w1 = this.obj.walls[i];
+                    var points1 = w1.getPoints();
+                    for(var j = 0; j < house.walls.length; j++){
+                        //if wall overlaped, merge
+                        var w2 = house.walls[j];
+                        var points2 = w2.getPoints();
+                        var share_p;
+                        if(distance(points1[0], points2[0]) == 0){
+                            share_p = [0, 0];
+                        }
+                        else if(distance(points1[1], points2[0]) == 0){
+                            share_p = [1, 0];
+                        }
+                        else if(distance(points1[0], points2[1]) == 0){
+                            share_p = [0, 1];
+                        }
+                        else if(distance(points1[1], points2[1]) == 0){
+                            share_p = [1, 1];
+                        }
+                        else{
+                            //no share points;
+                            //next
+                            continue;
+                        }
+
+                        if(w2.intersects(points1[1-share_p[0]])){
+                            //w1 in w2
+                            console.log(share_p);
+                            var p = points1[1-share_p[0]];
+                            var w3 = split_wall(w2, p);
+                            var map = function(points1, points2){
+                                if(distance(points1[0],
+                                            points2[0]) == 0){
+                                    return [0, 1];
+                                }
+                                else{
+                                    return [1, 0];
+                                }
+                            };
+                            if(w2.compare(w1) == 0){
+                                replace_wall(w2, w1,
+                                            map(w2.getPoints(),
+                                               w1.getPoints()));
+                            }else{
+                                replace_wall(w3, w1,
+                                             map(w3.getPoints(),
+                                                w1.getPoints()));
+                            }
+                        }
+                        else{
+                            //w2 in w1
+                        }
+                    }
+                }
+            }
+            house.rooms.push(this.obj);
+            var walls = this.obj.walls;
+            for(var i = 0; i < walls.length; i++){
+                house.walls.push(walls[i]);
+            }
+
+            for(var j = 0; j < points.length; j++){
+                house.points.push(points[j]);
+            }
+            update_corners(this.obj);
+            g_2d.layer.draw();
         }
     }
 });
@@ -246,8 +316,8 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
             this.prePos = wall.getPosition();
             wall.setPosition(0, 0);
 
-            wall.corners[0].setPosition(points[0]);
-            wall.corners[1].setPosition(points[1]);
+            points[0].corner.setPosition(points[0]);
+            points[1].corner.setPosition(points[1]);
 
             //update doors and windows on this wall
             for(var i = 0; i < wall.doors.length; i++){
@@ -267,34 +337,34 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
             var x1 = points[0].x - points[1].x;
             var y1 = points[0].y - points[1].y;
             //test if need to add new walls
-            var result = false;
-            for(var i = 0; i < this.obj.corners.length; i++){
-                var corner = this.obj.corners[i];
-                for(var j = 0; j < corner.walls.length; j++){
-                    var wall = corner.walls[i];
-                    if(wall == this.obj){
-                        continue;
-                    }
+            // var result = false;
+            // for(var i = 0; i < this.obj.corners.length; i++){
+            //     var corner = this.obj.corners[i];
+            //     for(var j = 0; j < corner.walls.length; j++){
+            //         var wall = corner.walls[i];
+            //         if(wall == this.obj){
+            //             continue;
+            //         }
 
-                    //if two wall vertical, no need to add new wall
-                    points = wall.getPoints();
-                    var x2 = points[0].x - points[1].x;
-                    var y2 = points[0].y - points[1].y;
-                    var r = x1*x2 + y1*y2;
-                    if(r != 0){
-                        result = true;
-                        break;
-                    }
-                }
+            //         //if two wall vertical, no need to add new wall
+            //         points = wall.getPoints();
+            //         var x2 = points[0].x - points[1].x;
+            //         var y2 = points[0].y - points[1].y;
+            //         var r = x1*x2 + y1*y2;
+            //         if(r != 0){
+            //             result = true;
+            //             break;
+            //         }
+            //     }
 
-                if(result){
-                    //add temp wall
-                    var x = corner.getX();
-                    var y = corner.getY();
+            //     if(result){
+            //         //add temp wall
+            //         var x = corner.getX();
+            //         var y = corner.getY();
 
-                }
-                result = false;
-            }
+            //     }
+            //result = false;
+//            }
         }
     },
     mousemove : {

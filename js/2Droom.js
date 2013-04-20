@@ -1,6 +1,4 @@
 function update_corners(room){
-    var corners = room.corners;
-
     var points = room.getPoints();
     for(var i = 0; i < points.length; i++){
         var p = points[i];
@@ -75,22 +73,26 @@ function create_room(points, group){
     });
     group.add(room);
     room.walls = [];
-    room.corners = [];
     var len = points.length;
     for(var i = 0; i < len; i++){
-        var corner = create_corner(points[i], group);
+        var p = points[i];
+        var corner;
+        if('corner' in points[i]){
+            corner = p.corner;
+        }
+        else{
+            corner = create_corner(points[i], group);
+        }
         corner.rooms.push(room);
-        room.corners.push(corner);
     }
     for(var i = 0; i < len; i++){
         var wall = create_wall([points[i], points[(i+1)%len]], group);
         wall.rooms.push(room);
-        wall.corners = [room.corners[i], room.corners[(i+1)%len]];
-        room.corners[i].walls.push(wall);
-        room.corners[(i+1)%len].walls.push(wall);
+        // wall.corners = [room.corners[i], room.corners[(i+1)%len]];
+        // room.corners[i].walls.push(wall);
+        // room.corners[(i+1)%len].walls.push(wall);
         room.walls.push(wall);
     }
-    group.rooms.push(room);
     return room;
 }
 function create_corner(pos, group){
@@ -109,7 +111,6 @@ function create_corner(pos, group){
 
     });
     group.add(corner);
-    group.corners.push(corner);
     return corner;
 }
 function create_wall(points, group){
@@ -177,10 +178,10 @@ function create_wall(points, group){
         var layer = this.getLayer();
         this.setStroke('blue');
         var group = this.getParent();
-        var corners = group.corners;
-        corners.forEach(function(corner){
-            corner.moveToTop();
-            corner.show();
+        var points = group.points;
+        points.forEach(function(p){
+            p.corner.moveToTop();
+            p.corner.show();
         });
         var points = wall.getPoints();
         update_length_mark(wall.lengthMark, points[0], points[1]);
@@ -192,16 +193,29 @@ function create_wall(points, group){
         var layer = this.getLayer();
         this.setStroke('black');
         var group = this.getParent();
-        var corners = group.corners;
-        corners.forEach(function(corner){
-            corner.hide();
+        var points = group.points;
+        points.forEach(function(p){
+            p.corner.hide();
         });
         wall.lengthMark.hide();
         layer.draw();
     });
+    wall.compare = function(wall){
+        var points;
+        points = this.getPoints();
+        var p1 = points[0];
+        var p2 = points[1];
+        points = wall.getPoints();
+        var p3 = points[0];
+        var p4 = points[1];
+        if((distance(p1, p3) == 0 && distance(p2, p4) == 0) ||
+           (distance(p1, p4) == 0 && distance(p2, p3) == 0)){
+            return 0;
+        }
+        return -1;
+    };
     group.add(wall);
     group.add(wall.lengthMark);
-    group.walls.push(wall);
     return wall;
 }
 
@@ -354,14 +368,15 @@ function split_wall(wall, pos)
     var points = wall.getPoints();
     var new_wall = create_wall([pos, points[1]], g_2d.house);
     new_wall.rooms = wall.rooms.slice();
-    new_wall.corners = [corner, wall.corners[1]];
 
     wall.setPoints([points[0], pos]);
-    wall.corners[1] = corner;
+
     g_2d.house.points.push(pos);
 
     for(var i = 0; i < wall.rooms.length; i++){
         var room = wall.rooms[i];
+        var index = room.walls.indexOf(wall);
+        room.walls.splice(index+1, 0, new_wall);
         var rpoints = room.getPoints();
         var index = rpoints.indexOf(points[1]);
         rpoints.splice(index, 0, pos);
@@ -392,31 +407,29 @@ function insert_wall(room, wall, order, index)
     points.splice(index, 0, wall.getPoints()[order[0]]);
 }
 
-function replace_wall(w1, w2)
+function replace_wall(w1, w2, p_map)
 {
-    var room = w1.room;
-    var index = room.walls.indexOf(w1);
-    room.walls[index] = w2;
+    for(var i = 0; i < w1.rooms.length; i++){
+        var room = w1.rooms[i];
+        var walls = room.walls;
 
-    var points = room.getPoints();
-    var w2_ps = w2.getPoints();
+        var index = room.walls.indexOf(w1);
+        walls[index] = w2;
 
-    var walls = room.walls;
-    var w = walls[(index-1+walls.length)%walls.length];
-    w.getPoints()[1] = w2_ps[0];
-    w.corners[1] = w2_ps.corners[0];
+        var points = room.getPoints();
+        var w2_ps = w2.getPoints();
 
-    w = walls[(index+1)%walls.length];
-    w.getPoints()[0] = w2_ps[1];
-    w.corners[0] = w2_ps.corners[1];
+        var w = walls[(index-1+walls.length)%walls.length];
+        w.getPoints()[1] = w2_ps[p_map[0]];
 
-    points[index] = w2_ps[0];
-    points[(index+1)%points.len] = w2_ps[1];
+        w = walls[(index+1)%walls.length];
+        w.getPoints()[0] = w2_ps[p_map[1]];
 
-    //destroy old wall
-    w1.corners[0].destroy();
-    w1.corners[1].destroy();
-    w1.Destroy();
+        points[index] = w2_ps[p_map[0]];
+        points[(index+1)%points.length] = w2_ps[p_map[1]];
+        //destroy old wall
+        w1.destroy();
+    }
 }
 
 function distance(p1, p2)
