@@ -143,21 +143,20 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                             //next
                             continue;
                         }
+                        var map = function(points1, points2){
+                            if(distance(points1[0],
+                                        points2[0]) == 0){
+                                return [0, 1];
+                            }
+                            else{
+                                return [1, 0];
+                            }
+                        };
 
                         if(w2.intersects(points1[1-share_p[0]])){
                             //w1 in w2
-                            console.log(share_p);
                             var p = points1[1-share_p[0]];
                             var w3 = split_wall(w2, p);
-                            var map = function(points1, points2){
-                                if(distance(points1[0],
-                                            points2[0]) == 0){
-                                    return [0, 1];
-                                }
-                                else{
-                                    return [1, 0];
-                                }
-                            };
                             if(w2.compare(w1) == 0){
                                 replace_wall(w2, w1,
                                             map(w2.getPoints(),
@@ -168,8 +167,20 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                                                 w1.getPoints()));
                             }
                         }
-                        else{
+                        else if(w1.intersects(points2[1-share_p[1]])){
                             //w2 in w1
+                            var p = points2[1-share_p[1]];
+                            var w3 = split_wall(w1, p);
+                            // if(w1.compare(w2) == 0){
+                            //     replace_wall(w1, w2,
+                            //                 map(w1.getPoints(),
+                            //                    w2.getPoints()));
+                            // }else{
+                            //     replace_wall(w3, w2,
+                            //                  map(w3.getPoints(),
+                            //                     w2.getPoints()));
+                            // }
+
                         }
                     }
                 }
