@@ -2,6 +2,7 @@ var renderer = null;
 var scene = null;
 var camera = null;
 var mesh = null;
+var editData ;
 
 var APP;
 

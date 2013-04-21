@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="/site_media/css/bootstrap.min.css"></link>
+		<link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
+	</head>
+
+	<body>
+		<div id="scene-main">	
+			<ul class="nav nav-tabs">
+			 	<li class="active">
+					<a href="javascript:;" id="three-tab">3D展示</a>
+			  	</li>
+			  	<li>
+			  		<a href="javascript:;" id="two-tab">2D编辑</a>
+			  	</li>
+			</ul>
+			<div id="three-scene">
+				{% include "3D.html"%}
+			</div>
+			<div id="two-scene" style="display:none;">
+				{% include "2D.html"%}
+			</div>
+		</div>
+
+		<script type="text/javascript">
+		$(function(){
+			$('#three-tab').on('click',function(event){
+				$('#three-scene').show();
+				$('#two-scene').hide();
+				$(this).parent().addClass('active');
+				$('#tow-tab').parent().removeClass('active');
+
+				/*var editData = exportJSON();
+
+				var container = document.getElementById('v-container');
+				var app = new SceneViewer();
+				app.init({
+					container: container
+				});
+				app.run();*/
+			});
+
+			$('#two-tab').on('click',function(event){
+				$('#two-scene').show();
+				$('#three-scene').hide();
+				$(this).parent().addClass('active');
+				$('#three-tab').parent().removeClass('active');
+			});
+		});
+		</script>
+	</body>
+
+</html>

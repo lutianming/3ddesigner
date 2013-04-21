@@ -5,6 +5,7 @@ var mesh = null;
 
 var APP;
 
+var editData;
 var threeSceneData;
 
 $(function() {

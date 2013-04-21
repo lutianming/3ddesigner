@@ -35,6 +35,10 @@ SceneViewer.prototype.init = function(param) {
 	this.createTrackballCameraControls();
 	// this.createFirstPersonControls();
 
+	if (editData === undefined) {
+		return;
+	}
+
 	var dataTransformer = new _DataTransformer();
 	threeSceneData = dataTransformer();
 

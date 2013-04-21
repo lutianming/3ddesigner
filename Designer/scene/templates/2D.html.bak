@@ -1,13 +1,18 @@
-
+<html>
+  <head>
+    <title>webgl 2d</title>
     <script type="text/javascript" src="/site_media/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/site_media/js/2dlib/kinetic-v4.4.3.min.js"></script>
     <script type="text/javascript" src="/site_media/js/2dlib/2Dfurniture.js"></script>
     <script type="text/javascript" src="/site_media/js/2dlib/2Droom.js"></script>
     <script type="text/javascript" src="/site_media/js/2dlib/2Dcmd.js"></script>
     <script type="text/javascript" src="/site_media/js/2dlib/2D.js"></script>
-
+    <link rel="stylesheet" href="/site_media/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
     <link rel="stylesheet" href="/site_meida/css/style.css"></link>
     <link rel="stylesheet" href="/site_media/css/2d.css"></link>
+  </head>
+  <body onload="init()">
     <div class="container-fluid">
       <div class="row-fluid">
         <div id="toolbox" class="span2">
@@ -26,8 +31,5 @@
         </div>
       </div>
     </div>
-    <script type="text/javascript">
-    $(function() {
-        init();
-    });
-    </script>
+  </body>
+</html>
