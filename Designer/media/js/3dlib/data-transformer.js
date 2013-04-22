@@ -21,6 +21,10 @@ function _DataTransformer() {
 	var _DEFAULT_TEXTURE_WIDTH = 50.0;
 	var _DEFAULT_TEXTURE_HEIGHT = 25.0;
 
+	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/mudiban063.jpg';
+	var _FLOOR_TEXTURE_REPEAT_X = 1;
+	var _FLOOR_TEXTURE_REPEAT_Y = 1;
+
 	/**
 	 * CONSTANT VALUE
 	 * ZOOM FACTOR FROM 2D TO 3D
@@ -69,6 +73,17 @@ function _DataTransformer() {
 		return point.x + ":" + point.y;
 	}
 
+
+	/**
+	 * point p1 equals to point p2
+	 * @param  {[type]} p1 [description]
+	 * @param  {[type]} p2 [description]
+	 * @return {[type]}    [description]
+	 */
+	function pointEquals(p1, p2) {
+		return (p1.x == p2.x) && (p1.y == p2.y);
+	}
+
 	/**
 	 * get Coordinate shift of 3d
 	 * place the scene at root (0,0,0)
@@ -79,9 +94,9 @@ function _DataTransformer() {
 		var maxX = 0;
 		var maxY = 0;
 
-		for (i in editData.walls) {
+		for (var i in editData.walls) {
 			var tmpWall = editData.walls[i];
-			for (j in tmpWall.points) {
+			for (var j in tmpWall.points) {
 				var point = tmpWall.points[j];
 				maxX = (point.x > maxX) ? point.x : maxX;
 				maxY = (point.y > maxY) ? point.y : maxY;
@@ -248,7 +263,7 @@ function _DataTransformer() {
 			if (!noDoors) {
 				// convert data of doors
 				newWall.doors = [];
-				for (i in tmpWall.doors) {
+				for (var i in tmpWall.doors) {
 					var tmpDoor = tmpWall.doors[i];
 					var newDoor = generateDoor(tmpDoor, shift, wallRotation, _DOOR_HEIGHT);
 					newWall.doors.push(newDoor);
@@ -259,14 +274,14 @@ function _DataTransformer() {
 
 			if (!noWindows) {
 				// covert data of windows
-				for (i in tmpWall.windows) {
+				for (var i in tmpWall.windows) {
 					// code here...
 				}
 			}
 
 			sortDeviders(wallDeviders, tmpWall);
 			var devidedBlocks = genenrateDevidedWallBlocks(tmpWall, wallDeviders, shift, wallRotation);
-			for (i in devidedBlocks) {
+			for (var i in devidedBlocks) {
 				newWall.blocks.push(devidedBlocks[i]);
 			}
 		}
@@ -374,7 +389,7 @@ function _DataTransformer() {
 		wallPoints.push(tmpWall.points[0]);
 		wallType.push(_WALL_TYPE);
 
-		for (i in wallDeviders) {
+		for (var i in wallDeviders) {
 			wallPoints.push(wallDeviders[i].p1);
 			wallType.push(wallDeviders[i].type);
 			wallPoints.push(wallDeviders[i].p2);
@@ -420,67 +435,244 @@ function _DataTransformer() {
 	 * @return {array}       [description]
 	 */
 
-	function generateFloor(walls) {
+	function generateFloor(walls, shift) {
 		if (walls === undefined) {
 			return [];
 		}
 
 		// generate hashmap for further algorithm 
 		var hashMap = {};
-		for (i in walls) {
-			for (j in walls[i].points) {
+		var allPoints = [];
+		var visitedPoints = [];
+
+		for (var i in walls) {
+			for (var j in walls[i].points) {
 				var key = getPointKey(walls[i].points[j]);
 				var value = walls[i].points[1 - j];
 
 				if (hashMap[key] === undefined) {
 					hashMap[key] = [];
 				}
-				hashMap[key].push(value);
-			}
-		}
-
-		/*var rooms = [];
-		var startKey = getPointKey(walls[0].points[0]);
-		var room = {
-			start : walls[0].points[0],
-			points : [walls[0].points[0]],
-			next : walls[0].points[0]
-		}
-		rooms.push(room);
-
-		for (i in rooms) {
-			var changed = false;
-		}*/
-
-		return [{
-			points: [{
-				x: 10,
-				y: 0,
-				z: 10
-			},
-			{
-				x: 10,
-				y: 0,
-				z: -10
-			},
-			{
-				x: -10,
-				y: 0,
-				z: -10
-			},
-			{
-				x: -10,
-				y: 0,
-				z: 10
-			}],
-			texture : {
-				url : '/site_media/img/mudiban063.jpg',
-				repeat : {
-					x:1,
-					y:1
+				// if (!pointInArray(value, hashMap[key])) {
+					hashMap[key].push(value);	
+				// }
+				
+				if (!pointInArray(value,allPoints)) {
+					allPoints.push(value);	
 				}
 			}
-		}];
+		}
+
+		// generate rooms
+		var rooms = [];
+		while (visitedPoints.length != allPoints.length) {
+			var tmpRooms =  generateRoom(allPoints, visitedPoints, hashMap);
+			for (var i in tmpRooms) {
+				rooms.push(tmpRooms[i]);	
+			}
+		}
+
+		
+		var results = [];
+
+		// convert rooms
+		for (var i in rooms) {
+			var tmp = {};
+
+			var points = convertRoomPoints(rooms[i], shift);
+			tmp.points = points;
+			tmp.texture =  {
+				url : _FLOOR_DEFAULT_TEXTURE_URL,
+				repeat : {
+					x : _FLOOR_TEXTURE_REPEAT_X,
+					y : _FLOOR_TEXTURE_REPEAT_Y
+				}
+			}
+			results.push(tmp);
+		}
+
+		return results;
+	}
+
+	/**
+	 * generate room points
+	 * @param  {[type]} allPoints     [description]
+	 * @param  {[type]} visitedPoints [description]
+	 * @param  {[type]} hashMap       [description]
+	 * @return {[type]}               [description]
+	 */
+	function generateRoom(allPoints, visitedPoints, hashMap) {
+		var startPoint;
+		for (var i =0 ; i<allPoints.length; i++){
+			if ( !pointInArray(allPoints[i],visitedPoints) ) {
+				startPoint = allPoints[i];
+				break;
+			}
+		}
+		if ( startPoint === undefined ) {
+			return;
+		}
+
+		/*init first point situation*/
+		var dests = hashMap[getPointKey(startPoint)];
+		var len = 1;
+		var path = [[startPoint]];
+		var lasts = [startPoint];
+		/*for (var i in dests) {
+			if (!pointEquals(dests[i], startPoint)) {
+				path.push( [ dests[i] ] );
+				lasts.push( dests[i] );
+			}
+		}*/
+
+
+		while( !pointInArray(startPoint, lasts) || len ===1) {
+			var len = lasts.length;
+			for (var i =0 ; i<len ; i++) {
+				var curPoint = lasts[i];
+				var curPath = cloneArray(path[i]);
+				var pathLen = curPath.length;
+				var prevPoint = (pathLen>2)? curPath[pathLen-2] : curPath[0];
+
+				var dests = hashMap[getPointKey(curPoint)];
+				
+				
+				var moreCount = 0;
+
+				for ( var j in dests ){
+					if ( !pointEquals(prevPoint, dests[j])) {
+						if (moreCount == 0) {
+							path[i].push(dests[j]);
+							lasts[i] = dests[j];
+						}
+						else {
+							var tmpPath = cloneArray(curPath);
+							tmpPath.push(dests[j]);
+							path.push(tmpPath);
+							lasts.push(dests[j]);
+						}
+						moreCount ++ ;
+					}
+				}
+			}
+			len ++;
+		}
+
+		var indexes = [];
+		for ( var i in lasts ) {
+			if (pointEquals(lasts[i], startPoint)) {
+				indexes.push( i );
+			}
+		}
+
+		var rooms = [];
+		for (var i in indexes) {
+			var tmp = path[ indexes[i] ];
+			tmp.pop();
+			if (!roomInArray(tmp,rooms)) {
+				rooms.push(tmp);
+			}
+		}
+
+		for ( var i in rooms ){
+			for (var j in rooms[i]) {
+				if (!pointInArray(rooms[i][j], visitedPoints)) {
+					visitedPoints.push(rooms[i][j]);
+				}
+			}
+		}
+
+		return rooms;
+	}
+
+	/**
+	 * convert 2d room points to 3d points
+	 * @param  {[type]} room  [description]
+	 * @param  {[type]} shift [description]
+	 * @return {[type]}       [description]
+	 */
+	function convertRoomPoints(room, shift ) {
+		var points = [];
+		for (var i in room) {
+			var p = {
+				x : (room[i].x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
+				y : 0,
+				z : (room[i].y - shift.shift_z) / _CONVERT_ZOOM_FACTOR
+			};
+			points.push(p);
+		}
+
+		return points;
+	}
+
+	/**
+	 * check point in point array
+	 * @param  {[type]} point         [description]
+	 * @param  {[type]} visitedPoints [description]
+	 * @return {[type]}               [description]
+	 */
+	function pointInArray(point, visitedPoints) {
+		if (visitedPoints===undefined|| visitedPoints.length===0){
+			return false;
+		}
+
+		for (var i in visitedPoints){
+			if ( pointEquals(point,visitedPoints[i]) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * check room in room array
+	 * @param  {[type]} room      [description]
+	 * @param  {[type]} roomArray [description]
+	 * @return {[type]}           [description]
+	 */
+	
+	function roomInArray(room, roomArray) {
+		if (roomArray===undefined || roomArray.length==0) {
+			return false;
+		}
+
+		for (var i in roomArray) {
+			var tmp = roomArray[i];
+			if (tmp.length != room.length) {
+				continue;
+			}
+			var len = room.length;
+			var res = false;
+			for ( var j = 1; j<len ;j++) {
+				if (pointEquals(tmp[j], room[len-j])) {
+					res = true;
+				}
+				else {
+					res = false;
+					break;
+				}
+			}
+			if (res) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * clone array
+	 * @param  {[type]} arr [description]
+	 * @return {[type]}     [description]
+	 */
+	function cloneArray(arr) {
+		var newArray = [];
+
+		for (var i in arr) {
+			newArray.push(arr[i]);
+		}
+
+		return newArray;
 	}
 
 	/**
@@ -545,7 +737,7 @@ function _DataTransformer() {
 		sceneData.walls = [];
 
 		// loop to convert wall 2d data
-		for (i in editData.walls) {
+		for (var i in editData.walls) {
 			var tmpWall = editData.walls[i];
 			var newWall = generateWall(tmpWall, shift);
 			if (newWall) sceneData.walls.push(newWall);
@@ -553,7 +745,7 @@ function _DataTransformer() {
 
 		// convert floor data from wall data
 		// sceneData.floors = [];
-		var floors = generateFloor(editData.walls);
+		var floors = generateFloor(editData.walls,shift);
 		sceneData.floors = floors;
 
 		var models = generateModels(editData.furnitures);

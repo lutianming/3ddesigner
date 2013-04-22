@@ -124,18 +124,18 @@ SceneViewer.prototype.update = function() {
 }
 
 SceneViewer.prototype.createWalls = function() {
-	for (i in threeSceneData.walls) {
+	for (var i in threeSceneData.walls) {
 		var wallParam = threeSceneData.walls[i];
 		var wall = new Wall;
 		// wall.root.rotation.y -= wallParam.rotation;
 
-		for (j in wallParam.blocks) {
+		for (var j in wallParam.blocks) {
 			var blockParam = wallParam.blocks[j];
 			var block = ObjectFactory.createCubeMesh(blockParam);
 			wall.add(block);
 		}
 
-		for (j in wallParam.doors) {
+		for (var j in wallParam.doors) {
 			var doorParam = wallParam.doors[j];
 			var door = ObjectFactory.createCubeMesh(doorParam);
 			wall.add(door);
@@ -146,7 +146,7 @@ SceneViewer.prototype.createWalls = function() {
 }
 
 SceneViewer.prototype.createFloors = function() {
-	for (i in threeSceneData.floors) {
+	for (var i in threeSceneData.floors) {
 		var param = threeSceneData.floors[i];
 		var floor = ObjectFactory.createPlaneMesh(param);
 		this.scene.add(floor);
@@ -154,7 +154,7 @@ SceneViewer.prototype.createFloors = function() {
 }
 
 SceneViewer.prototype.createModels = function() {
-	for (i in threeSceneData.models) {
+	for (var i in threeSceneData.models) {
 		var param = threeSceneData.models[i];
 		var model = ObjectFactory.createModel(param, this.scene);
 	}
@@ -217,7 +217,7 @@ ObjectFactory.createPlaneMesh = function(param) {
 	var points = param.points;
 	var len = points.length;
 
-	for (i in points) {
+	for (var i in points) {
 		geometry.vertices.push(new THREE.Vector3(points[i].x, points[i].y, points[i].z));
 	}
 
