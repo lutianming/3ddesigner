@@ -1,8 +1,177 @@
+Two.Corner = function(x, y){
+    Kinetic.Circle.call(this, {
+        name: 'corner',
+        x: x,
+        y: y,
+        radius: 3,
+        fill: 'white',
+        visible: false
+    });
+};
+Two.Corner.prototype = Object.create(Kinetic.Circle.prototype, {
+    x: {
+        get: function(){ return this.getX();},
+        set: function(x){ this.setX(x);}
+    },
+    y: {
+        get: function(){ return this.getY();},
+        set: function(y){ this.setY(y);}
+    }
+});
+
+Two.Wall = function(corner1, corner2){
+    Kinetic.Line.call(this, {
+        name: 'wall',
+        points: [corner1, corner2],
+        stroke: 'black',
+        strokeWidth: 10,
+        lineCap: 'round',
+        draggable: true,
+        dragOnTop: false
+    });
+
+    if(corner1.x == corner2.x){
+        //horizonal
+        this.setDragBoundFunc(function(pos){
+            return {
+                x: pos.x,
+                y: this.getAbsolutePosition().y
+            };
+        });
+    }
+    else if(corner1.y == corner2.y){
+        //vertical
+        this.setDragBoundFunc(function(pos){
+            return {
+                x: this.getAbsolutePosition().x,
+                y: pos.y
+            };
+        });
+    }
+
+    var d = distance(corner1, corner2);
+    var deg = this.direction();
+    var text = new Kinetic.Text({
+        x: corner1.x,
+        y: corner1.y,
+        fontSize: 10,
+        fontFamily: 'Calibri',
+        fill: 'red',
+        align: 'center',
+        text: d.toString(),
+        rotationDeg: deg
+    });
+    this.lengthMark = text;
+
+    this.rooms = [];
+    this.doors = [];
+    this.windows = [];
+
+
+    this.on('dragstart', function(){
+        g_2d.cmd = new DragWallCommand(this);
+        g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
+    });
+    this.on('dragmove', function(){
+
+    });
+    this.on('dragend', function(){
+
+    });
+    this.on('mousedown touchstart', function(){
+
+    });
+    this.on('mouseover', function(){
+        var layer = this.getLayer();
+        this.setStroke('blue');
+        var group = this.getParent();
+        var points = group.points;
+        points.forEach(function(p){
+ //           p.moveToTop();
+//            p.show();
+        });
+        var points = this.getPoints();
+        update_length_mark(this.lengthMark, points[0], points[1]);
+//        this.lengthMark.moveToTop();
+//        this.lengthMark.show();
+        layer.draw();
+    });
+    this.on('mouseout', function(){
+        var layer = this.getLayer();
+        this.setStroke('black');
+        var group = this.getParent();
+        var points = group.points;
+        points.forEach(function(p){
+//            p.hide();
+        });
+//        this.lengthMark.hide();
+        layer.draw();
+    });
+};
+
+Two.Wall.prototype = Object.create(Kinetic.Line.prototype, {
+    compare: {
+        value: function(wall){
+            var points;
+            points = this.getPoints();
+            var p1 = points[0];
+            var p2 = points[1];
+            points = wall.getPoints();
+            var p3 = points[0];
+            var p4 = points[1];
+            if((distance(p1, p3) == 0 && distance(p2, p4) == 0) ||
+               (distance(p1, p4) == 0 && distance(p2, p3) == 0)){
+                return 0;
+            }
+            return -1;
+        }
+    },
+    direction: {
+        value: function(){
+            var points = this.getPoints();
+            var dx = points[1].x - points[0].x;
+            var dy = points[1].y - points[0].y;
+
+            var diret = Math.atan2(dy, dx) / Math.PI * 180;
+            return diret;
+        }
+    }
+});
+
+Two.Room = function(corners, group){
+    Kinetic.Polygon.call(this, {
+        name: 'floor',
+        points: corners,
+        fill: '#00D2FF',
+        draggable: false
+    });
+    group.add(this);
+    this.walls = [];
+    var len = corners.length;
+    for(var i = 0; i < len; i++){
+        //corners[i].rooms.push(this);
+    }
+    for(var i = 0; i < len; i++){
+        var wall = new Two.Wall(corners[i], corners[(i+1)%len]);
+        wall.rooms.push(this);
+        // wall.corners = [room.corners[i], room.corners[(i+1)%len]];
+        // room.corners[i].walls.push(wall);
+        // room.corners[(i+1)%len].walls.push(wall);
+        this.walls.push(wall);
+        group.add(wall);
+    }
+
+};
+Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
+
+});
+
 function update_corners(room){
     var points = room.getPoints();
     for(var i = 0; i < points.length; i++){
         var p = points[i];
-        p.corner.setPosition(p);
+//        p.corner.setPosition(p);
+
     }
 }
 
@@ -62,161 +231,6 @@ function create_house_group(){
     group.walls = [];
     group.rooms = [];
     return group;
-}
-
-function create_room(points, group){
-    var room = new Kinetic.Polygon({
-        name: 'floor',
-        points: points,
-        fill: '#00D2FF',
-        draggable: false
-    });
-    group.add(room);
-    room.walls = [];
-    var len = points.length;
-    for(var i = 0; i < len; i++){
-        var p = points[i];
-        var corner;
-        if('corner' in points[i]){
-            corner = p.corner;
-        }
-        else{
-            corner = create_corner(points[i], group);
-        }
-        corner.rooms.push(room);
-    }
-    for(var i = 0; i < len; i++){
-        var wall = create_wall([points[i], points[(i+1)%len]], group);
-        wall.rooms.push(room);
-        // wall.corners = [room.corners[i], room.corners[(i+1)%len]];
-        // room.corners[i].walls.push(wall);
-        // room.corners[(i+1)%len].walls.push(wall);
-        room.walls.push(wall);
-    }
-    return room;
-}
-function create_corner(pos, group){
-    var corner = new Kinetic.Circle({
-        name: 'corner',
-        x: pos.x,
-        y: pos.y,
-        radius: 3,
-        fill: 'white',
-        visible: false
-      });
-    corner.walls = [];
-    corner.rooms = [];
-    pos.corner = corner;
-    corner.on('mouseover', function(){
-
-    });
-    group.add(corner);
-    return corner;
-}
-function create_wall(points, group){
-    function vertical(pos){
-        return {
-            x: this.getAbsolutePosition().x,
-            y: pos.y
-        };
-    }
-    function horizontal(pos){
-        return {
-            x: pos.x,
-            y: this.getAbsolutePosition().y
-        };
-    }
-    var wall = new Kinetic.Line({
-        name: 'wall',
-        points: points,
-        stroke: 'black',
-        strokeWidth: 10,
-        lineCap: 'round',
-        draggable: true,
-        dragOnTop: false
-    });
-
-    //wall length shower
-    var d = distance(points[0], points[1]);
-    var deg = wall_direction(wall);
-    var text = new Kinetic.Text({
-        x: points[0].x,
-        y: points[0].y,
-        fontSize: 10,
-        fontFamily: 'Calibri',
-        fill: 'red',
-        align: 'center',
-        text: d.toString(),
-        rotationDeg: deg
-    });
-    wall.lengthMark = text;
-
-    wall.rooms = [];
-    wall.doors = [];
-    wall.windows = [];
-
-    if(points[0].x == points[1].x){
-        wall.setDragBoundFunc(horizontal);
-    }else{
-        wall.setDragBoundFunc(vertical);
-    }
-
-    wall.on('dragstart', function(){
-        g_2d.cmd = new DragWallCommand(this);
-        g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
-    });
-    wall.on('dragmove', function(){
-
-    });
-    wall.on('dragend', function(){
-
-    });
-    wall.on('mousedown touchstart', function(){
-
-    });
-    wall.on('mouseover', function(){
-        var layer = this.getLayer();
-        this.setStroke('blue');
-        var group = this.getParent();
-        var points = group.points;
-        points.forEach(function(p){
-            p.corner.moveToTop();
-            p.corner.show();
-        });
-        var points = wall.getPoints();
-        update_length_mark(wall.lengthMark, points[0], points[1]);
-        wall.lengthMark.moveToTop();
-        wall.lengthMark.show();
-        layer.draw();
-    });
-    wall.on('mouseout', function(){
-        var layer = this.getLayer();
-        this.setStroke('black');
-        var group = this.getParent();
-        var points = group.points;
-        points.forEach(function(p){
-            p.corner.hide();
-        });
-        wall.lengthMark.hide();
-        layer.draw();
-    });
-    wall.compare = function(wall){
-        var points;
-        points = this.getPoints();
-        var p1 = points[0];
-        var p2 = points[1];
-        points = wall.getPoints();
-        var p3 = points[0];
-        var p4 = points[1];
-        if((distance(p1, p3) == 0 && distance(p2, p4) == 0) ||
-           (distance(p1, p4) == 0 && distance(p2, p3) == 0)){
-            return 0;
-        }
-        return -1;
-    };
-    group.add(wall);
-    group.add(wall.lengthMark);
-    return wall;
 }
 
 function create_door(x, y, deg, group){

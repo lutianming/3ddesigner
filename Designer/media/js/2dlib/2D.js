@@ -235,3 +235,90 @@ function exportJSON(){
 
     return JSON.stringify(data);
 }
+
+
+//the data saved in this function is used in load_scene,
+//thus the saved data is different from the exported data from
+//exportJSON
+function save_scene(){
+    var house = g_2d.house;
+    var furnitures =  g_2d.furnitures;
+    var data = {
+        points: [],
+        rooms: [],
+        doors: [],
+        furnitures: []
+    };
+
+    //save points
+    for(var i = 0; i < house.points.length; i++){
+        var p = house.points[i];
+        data.points.push({x: p.x, y: p.y});
+    }
+
+    //save rooms
+    for(var j = 0; i < house.rooms.length; j++){
+        var room = house.rooms[j];
+        var points = room.getPoints();
+        var indexs = [];
+        for(var k = 0; k < points.length; k++){
+            var index = house.points.indexOf(points[k]);
+            indexs.push(index);
+        }
+    }
+    //save furnitures
+    for(var i = 0; i < furnitures.length; i++){
+        var furniture = furnitures[i];
+        var f = {};
+        f.position = furniture.getPosition();
+        var w = furniture.furniture.getWidth();
+        var h = furniture.furniture.getHeight();
+        f.size = {x: w, y: h};
+        f.rotation = furniture.getRotation();
+        f.rotateDeg = furniture.getRotationDeg();
+        console.log(f);
+        data.furnitures.push(f);
+    }
+    return JSON.stringify(data);
+}
+
+function loadScene(json){
+    var data = JSON.parse(json);
+    var points = data.points;
+    var furnitures = data.furnitures;
+    var rooms = data.rooms;
+
+    //create all corners
+    if(g_2d.house == null){
+        g_2d.house = create_house_group();
+    }
+    else{
+        //clean old house
+    }
+
+    for(var i = 0; i < points.length; i++){
+        var p = points[i];
+        create_corner(p, g_2d.house);
+    }
+    //load rooms
+    for(var i = 0; i < rooms.length; i++){
+        var room = rooms[i];
+        var indexs = room.indexs;
+        var ps = [];
+        for(var j = 0; j < indexs.length; j++){
+            var p = points[indexs[j]];
+            ps.push(p);
+        }
+        //create room from ps;
+    }
+
+    //load furnitures
+    for(var i = 0; i < furnitures.length; i++){
+        var f = furnitures[i];
+        var cmd = AddFurnitureCommand();
+        cmd.mousedown(f.position);
+        cmd.obj.furniture.setWidth(f.x);
+        cmd.obj.furniture.setHeight(f.y);
+        cmd.obj.rotateDeg(f.rotateDeg);
+    }
+}

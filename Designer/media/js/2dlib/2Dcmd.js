@@ -46,17 +46,18 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             var bottomleft, bottomright;
             var points;
 
-            topleft = pos;
-            topright = {x:pos.x+1, y:pos.y};
-            bottomright = {x:pos.x+1, y:pos.y+1};
-            bottomleft = {x:pos.x, y:pos.y+1};
+            topleft = new Two.Corner(pos.x, pos.y);
+            topright = new Two.Corner(pos.x+1, pos.y);
+            bottomright = new Two.Corner(pos.x+1, pos.y+1);
+            bottomleft = new Two.Corner(pos.x, pos.y+1);
             points = [topleft, topright,
                       bottomright, bottomleft];
             house.points.push(topleft);
             house.points.push(topright);
             house.points.push(bottomright);
             house.points.push(bottomleft);
-            g_2d.current_obj = create_room(points, house);
+
+            g_2d.current_obj = new Two.Room(points, house);
             g_2d.layer.add(house);
             g_2d.layer.draw();
             return g_2d.current_obj;
@@ -326,9 +327,6 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
 
             this.prePos = wall.getPosition();
             wall.setPosition(0, 0);
-
-            points[0].corner.setPosition(points[0]);
-            points[1].corner.setPosition(points[1]);
 
             //update doors and windows on this wall
             for(var i = 0; i < wall.doors.length; i++){
