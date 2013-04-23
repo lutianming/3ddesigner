@@ -49,7 +49,7 @@ Two.Wall = function(corner1, corner2){
         });
     }
 
-    var d = distance(corner1, corner2);
+    var d = Two.distance(corner1, corner2);
     var deg = this.direction();
     var text = new Kinetic.Text({
         x: corner1.x,
@@ -87,8 +87,8 @@ Two.Wall = function(corner1, corner2){
         var group = this.getParent();
         var points = group.points;
         points.forEach(function(p){
- //           p.moveToTop();
-//            p.show();
+           p.moveToTop();
+           p.show();
         });
         var points = this.getPoints();
         update_length_mark(this.lengthMark, points[0], points[1]);
@@ -102,7 +102,7 @@ Two.Wall = function(corner1, corner2){
         var group = this.getParent();
         var points = group.points;
         points.forEach(function(p){
-//            p.hide();
+           p.hide();
         });
 //        this.lengthMark.hide();
         layer.draw();
@@ -119,8 +119,8 @@ Two.Wall.prototype = Object.create(Kinetic.Line.prototype, {
             points = wall.getPoints();
             var p3 = points[0];
             var p4 = points[1];
-            if((distance(p1, p3) == 0 && distance(p2, p4) == 0) ||
-               (distance(p1, p4) == 0 && distance(p2, p3) == 0)){
+            if((Two.distance(p1, p3) == 0 && Two.distance(p2, p4) == 0) ||
+               (Two.distance(p1, p4) == 0 && Two.distance(p2, p3) == 0)){
                 return 0;
             }
             return -1;
@@ -166,46 +166,9 @@ Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
 
 });
 
-function update_corners(room){
-    var points = room.getPoints();
-    for(var i = 0; i < points.length; i++){
-        var p = points[i];
-//        p.corner.setPosition(p);
-
-    }
-}
-
-function update_rooms(wall){
-    var position = wall.getPosition();
-
-    var deltax = position.x - wall.pos.x;
-    var deltay = position.y - wall.pos.y;
-
-    var points = wall.getPoints();
-    points[0].x += deltax;
-    points[0].y += deltay;
-    points[1].x += deltax;
-    points[1].y += deltay;
-    wall.setPoints(points);
-
-    wall.pos = wall.getPosition();
-    wall.setPosition(0, 0);
-
-    wall.corners[0].setPosition(points[0]);
-    wall.corners[1].setPosition(points[1]);
-
-    //update doors and windows on this wall
-    for(var i = 0; i < wall.doors.length; i++){
-        var door = wall.doors[i];
-        var x = door.getX();
-        var y = door.getY();
-        door.setPosition(x+deltax, y+deltay);
-    }
-}
-
 function update_length_mark(text, p1, p2){
 
-    var d = distance(p1, p2);
+    var d = Two.distance(p1, p2);
     var direc = direction(p1, p2);
     text.setText(d.toString());
     text.setRotationDeg(direc);
@@ -213,25 +176,22 @@ function update_length_mark(text, p1, p2){
     text.setY((p1.y + p2.y) / 2);
 }
 
-function create_house_group(){
-    var group = new Kinetic.Group({
-        name: 'house'
-    });
-    group.on('dragstart', function(){
-
-    });
-    group.on('dragmove', function(){
-
-    });
-    group.on('dragend', function(){
-
-    });
-    group.points = [];
-    group.corners = [];
-    group.walls = [];
-    group.rooms = [];
-    return group;
-}
+Two.House = function(name){
+   Kinetic.Group.call(this, {
+       name: name
+   });
+};
+Two.House.prototype = Object.create(Kinetic.Group.prototype, {
+    points: {
+        value: []
+    },
+    walls: {
+        value: []
+    },
+    rooms: {
+        value: []
+    }
+});
 
 function create_door(x, y, deg, group){
     var door = new Kinetic.Wedge({
@@ -264,23 +224,6 @@ function create_door(x, y, deg, group){
     return door;
 }
 
-function wall_direction(w)
-{
-    var points = w.getPoints();
-    var dx = points[1].x - points[0].x;
-    var dy = points[1].y - points[0].y;
-
-    var diret = Math.atan2(dy, dx) / Math.PI * 180;
-    return diret;
-
-}
-
-function direction(p1, p2){
-    var dx = p1.x - p2.x;
-    var dy = p1.y - p2.y;
-    var d = Math.atan2(dy, dx) / Math.PI * 180;
-    return d;
-}
 function create_window(points, group){
     var window = new Kinetic.Line({
         name: 'window',
@@ -323,7 +266,7 @@ function init_events(obj){
                 if(index != -1){
                     wall.doors.splice(index, 1);
                 }
-                var diret = wall_direction(wall);
+                var diret = wall.direction();
                 obj.setRotationDeg(diret);
                 pos = intersection_pos_wall(pos, wall);
 
@@ -357,7 +300,7 @@ function merge_walls(w1, w2)
     if(w2_p1_in_w1 && w2_p2_in_w1){
         var p0, p1;
         var order;
-        if(distance(points1[0], points2[0]) < distance(points1[0], points2[1])){
+        if(Two.distance(points1[0], points2[0]) < Two.distance(points1[0], points2[1])){
             p0 = points2[0];
             p1 = points2[1];
             order = [0, 1];
@@ -444,13 +387,6 @@ function replace_wall(w1, w2, p_map)
         //destroy old wall
         w1.destroy();
     }
-}
-
-function distance(p1, p2)
-{
-    var dx = Math.abs(p1.x - p2.x);
-    var dy = Math.abs(p1.y - p2.y);
-    return Math.sqrt(Math.pow(dx, 2)+ Math.pow(dy, 2));
 }
 
 function distance_pos_wall(pos, wall)

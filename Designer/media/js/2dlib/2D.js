@@ -1,6 +1,6 @@
 var OBJS = {
     room: 1,
-    window: 2,
+    window: 2
 };
 
 var CMDS = {
@@ -16,7 +16,7 @@ var g_2d = {
     width: 800,
     height: 600,
     cmd: null,
-    current_obj: null,
+    current_obj: null
 };
 
 g_2d.house = null;
@@ -54,6 +54,8 @@ function init(){
     g_2d.layer = new Kinetic.Layer();
     g_2d.stage.add(g_2d.layer);
 
+    g_2d.house = new Two.House('house');
+    g_2d.layer.add(g_2d.house);
     initControls();
 }
 
@@ -173,6 +175,7 @@ function have_obj(pos, name){
 }
 
 function exportJSON(){
+    console.log('json');
     var house = g_2d.house;
     var furnitures =  g_2d.furnitures;
     var data = {
@@ -182,9 +185,12 @@ function exportJSON(){
     };
 
     //rooms
+    console.log(house);
     if(house){
         for(var i = 0; i < house.rooms.length; i++){
             var room = house.rooms[i];
+            console.log('room');
+            console.log(i);
             var r = {
                 points : []
             };
@@ -199,6 +205,9 @@ function exportJSON(){
         //walls
         for(var i = 0; i < house.walls.length; i++){
             var wall = house.walls[i];
+            console.log('wall');
+            console.log(i);
+
             var w = {
                 doors: [],
                 points: []
@@ -221,6 +230,9 @@ function exportJSON(){
     }
     //furnitures
     for(var i = 0; i < furnitures.length; i++){
+        console.log('f');
+        console.log(i);
+
         var furniture = furnitures[i];
         var f = {};
         f.position = furniture.getPosition();
@@ -233,7 +245,7 @@ function exportJSON(){
         data.furnitures.push(f);
     }
 
-    return JSON.stringify(data);
+   return JSON.stringify(data);
 }
 
 

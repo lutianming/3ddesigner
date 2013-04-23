@@ -5,7 +5,7 @@ function center_point(p1, p2){
 };
 
 
-function Furniture(pos){
+Two.Furniture = function (pos){
     Kinetic.Group.call(this, {
         name: 'furniture_group',
         offset: [25, 25],
@@ -55,9 +55,9 @@ function Furniture(pos){
     this.right = create_rotate_anchor(pright.x, pright.y, 'right', this);
     this.bottom = create_rotate_anchor(pbottom.x, pbottom.y, 'bottom', this);
     this.left = create_rotate_anchor(pleft.x, pleft.y, 'left', this);
-}
+};
 
-Furniture.prototype = Object.create(Kinetic.Group.prototype, {
+Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
     hide_anchors : {
         value : function(){
             this.topleft.hide();
@@ -231,6 +231,7 @@ Anchor.prototype = Object.create(Kinetic.Rect, {
         }
     }
 });
+
 function create_anchor(x, y, width, height, name, group, fill){
     var anchor = new Kinetic.Circle({
         name: name,

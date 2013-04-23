@@ -21,7 +21,7 @@ function AddFurnitureCommand(){
 AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value: function(pos){
-            var furniture = new Furniture(pos);
+            var furniture = new Two.Furniture(pos);
             g_2d.furnitures.push(furniture);
             this.obj = furniture;
             // if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
@@ -47,9 +47,13 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             var points;
 
             topleft = new Two.Corner(pos.x, pos.y);
+            house.add(topleft);
             topright = new Two.Corner(pos.x+1, pos.y);
+            house.add(topright);
             bottomright = new Two.Corner(pos.x+1, pos.y+1);
+            house.add(bottomright);
             bottomleft = new Two.Corner(pos.x, pos.y+1);
+            house.add(bottomleft);
             points = [topleft, topright,
                       bottomright, bottomleft];
             house.points.push(topleft);
@@ -58,17 +62,12 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             house.points.push(bottomleft);
 
             g_2d.current_obj = new Two.Room(points, house);
-            g_2d.layer.add(house);
             g_2d.layer.draw();
             return g_2d.current_obj;
         }
     },
     mousedown : {
         value : function(pos){
-            if(g_2d.house == null){
-                g_2d.house = create_house_group();
-            }
-
             if(g_2d.house.rooms.length == 0){
                 this.obj = this._init_room(pos);
             }else{
@@ -127,16 +126,16 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                         var w2 = house.walls[j];
                         var points2 = w2.getPoints();
                         var share_p;
-                        if(distance(points1[0], points2[0]) == 0){
+                        if(Two.distance(points1[0], points2[0]) == 0){
                             share_p = [0, 0];
                         }
-                        else if(distance(points1[1], points2[0]) == 0){
+                        else if(Two.distance(points1[1], points2[0]) == 0){
                             share_p = [1, 0];
                         }
-                        else if(distance(points1[0], points2[1]) == 0){
+                        else if(Two.distance(points1[0], points2[1]) == 0){
                             share_p = [0, 1];
                         }
-                        else if(distance(points1[1], points2[1]) == 0){
+                        else if(Two.distance(points1[1], points2[1]) == 0){
                             share_p = [1, 1];
                         }
                         else{
@@ -145,7 +144,7 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                             continue;
                         }
                         var map = function(points1, points2){
-                            if(distance(points1[0],
+                            if(Two.distance(points1[0],
                                         points2[0]) == 0){
                                 return [0, 1];
                             }
@@ -195,7 +194,6 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
             for(var j = 0; j < points.length; j++){
                 house.points.push(points[j]);
             }
-            update_corners(this.obj);
             g_2d.layer.draw();
         }
     }
@@ -214,7 +212,7 @@ AddDoorCommand.prototype = Object.create(BaseCommand.prototype, {
            var wall = have_obj(pos, 'wall');
            if(wall != null){
 
-               var diret = wall_direction(wall);
+               var diret = wall.direction();
                pos = intersection_pos_wall(pos, wall);
                this.obj = create_door(pos.x, pos.y, diret, g_2d.house);
                wall.doors.push(this.obj);
