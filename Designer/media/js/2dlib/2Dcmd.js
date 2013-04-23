@@ -40,23 +40,21 @@ function AddRoomCommand(){
 }
 AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
     _init_room : {
-        value : function(pos){
+        value : function(corner){
             var house = g_2d.house;
             var topleft, topright;
             var bottomleft, bottomright;
             var points;
 
-            topleft = new Two.Corner(pos.x, pos.y);
-            house.add(topleft);
-            topright = new Two.Corner(pos.x+1, pos.y);
+            topleft = corner;
+            topright = new Two.Corner(corner.x+1, corner.y);
             house.add(topright);
-            bottomright = new Two.Corner(pos.x+1, pos.y+1);
+            bottomright = new Two.Corner(corner.x+1, corner.y+1);
             house.add(bottomright);
-            bottomleft = new Two.Corner(pos.x, pos.y+1);
+            bottomleft = new Two.Corner(corner.x, corner.y+1);
             house.add(bottomleft);
             points = [topleft, topright,
                       bottomright, bottomleft];
-            house.points.push(topleft);
             house.points.push(topright);
             house.points.push(bottomright);
             house.points.push(bottomleft);
@@ -68,14 +66,18 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mousedown : {
         value : function(pos){
+            g_2d.stage.setDraggable(false);
             if(g_2d.house.rooms.length == 0){
-                this.obj = this._init_room(pos);
+                var corner = new Two.Corner(pos.x, pos.y);
+                g_2d.house.add(corner);
+                g_2d.house.points.push(corner);
+                this.obj = this._init_room(corner);
             }else{
                 //to add another room, mouse pos should be on a corner
                 var corner = have_obj(pos, 'corner');
                 if(corner != null){
                     this.startCorner = corner;
-                    this.obj = this._init_room(corner.getPosition());
+                    this.obj = this._init_room(corner);
                 }
             }
         }
@@ -88,13 +90,13 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                 points[2].x = pos.x;
                 points[2].y = pos.y;
                 points[3].y = pos.y;
-                g_2d.current_obj.setPoints(points);
                 g_2d.layer.draw();
             }
         }
     },
     mouseup : {
         value : function(pos){
+            g_2d.stage.setDraggable(true);
             if(g_2d.current_obj == null){
                 return;
             }
@@ -157,6 +159,8 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                             //w1 in w2
                             var p = points1[1-share_p[0]];
                             var w3 = split_wall(w2, p);
+                            g_2d.house.add(w3);
+                            g_2d.house.walls.push(w3);
                             if(w2.compare(w1) == 0){
                                 replace_wall(w2, w1,
                                             map(w2.getPoints(),
@@ -213,7 +217,7 @@ AddDoorCommand.prototype = Object.create(BaseCommand.prototype, {
            if(wall != null){
 
                var diret = wall.direction();
-               pos = intersection_pos_wall(pos, wall);
+               pos = Two.intersection_pos_wall(pos, wall);
                this.obj = create_door(pos.x, pos.y, diret, g_2d.house);
                wall.doors.push(this.obj);
                this.obj.wall = wall;
@@ -246,7 +250,12 @@ SplitWallCommand.prototype = Object.create(BaseCommand.prototype, {
     mouseup : {
         value : function(pos){
             var wall = have_obj(pos, 'wall');
-            split_wall(wall, pos);
+            var pos = Two.intersection_pos_wall(pos, wall);
+            var corner = new Two.Corner(pos.x, pos.y);
+            g_2d.house.points.push(corner);
+            g_2d.house.add(corner);
+            var new_wall = split_wall(wall, corner);
+            g_2d.house.add(new_wall);
         }
     }
 });
@@ -259,6 +268,7 @@ function RotationCommand(anchor){
 RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value : function(pos){
+            g_2d.stage.setDraggable(false);
             this.startPos = this.anchor.getPosition();
             this.prePos = this.startPos;
             this.center = this.obj.getOffset();
@@ -273,7 +283,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mouseup : {
       value : function(pos){
-
+          g_2d.stage.setDraggable(true);
           this.rotate(pos);
           this.obj.getParent().draw();
           this.endPos = pos;

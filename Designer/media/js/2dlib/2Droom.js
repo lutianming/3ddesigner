@@ -204,12 +204,15 @@ function create_door(x, y, deg, group){
             if(this.wall == null){
                 return pos;
             }
-            var dist = distance_pos_wall(pos, this.wall);
+            var dist = Two.distance_pos_wall(pos, this.wall);
             if(dist > 20){
+                var doors = this.wall.doors;
+                var index = doors.indexOf(this);
+                doors.splice(index, 1);
                 this.wall = null;
                 return pos;
             }
-            var p = intersection_pos_wall(pos,
+            var p = Two.intersection_pos_wall(pos,
                                           this.wall);
 
             return p;
@@ -237,8 +240,8 @@ function create_window(points, group){
 //init event hanlders for door or window
 function init_events(obj){
     obj.on('dragstart', function(){
-        var group = obj.getParent();
-        var walls = group.get('.wall');
+        // var group = obj.getParent();
+        // var walls = group.get('.wall');
         // walls.each('setDrawHitFunc', function(canvas){
         //     var context = canvas.getContext();
         //     var points = this.getPoints();
@@ -254,18 +257,11 @@ function init_events(obj){
         //if leaved from wall, search new door to attach
         if(obj.wall == null){
             var pos = obj.getAbsolutePosition();
-//            var pos = g_2d.stage.getUserPosition();
             var wall = have_obj(pos, 'wall');
             if(wall != null){
-                //remove door from old wall
-                var index = wall.doors.indexOf(obj);
-                if(index != -1){
-                    wall.doors.splice(index, 1);
-                }
                 var diret = wall.direction();
                 obj.setRotationDeg(diret);
-                pos = intersection_pos_wall(pos, wall);
-
+                pos = Two.intersection_pos_wall(pos, wall);
                 wall.doors.push(this);
                 this.wall = wall;
             }
@@ -314,17 +310,13 @@ function merge_walls(w1, w2)
 
 }
 
-function split_wall(wall, pos)
+function split_wall(wall, corner)
 {
-    var corner = create_corner(pos, g_2d.house);
-
     var points = wall.getPoints();
-    var new_wall = create_wall([pos, points[1]], g_2d.house);
+    var new_wall = new Two.Wall(corner, points[1]);
     new_wall.rooms = wall.rooms.slice();
 
-    wall.setPoints([points[0], pos]);
-
-    g_2d.house.points.push(pos);
+    wall.setPoints([points[0], corner]);
 
     for(var i = 0; i < wall.rooms.length; i++){
         var room = wall.rooms[i];
@@ -332,7 +324,7 @@ function split_wall(wall, pos)
         room.walls.splice(index+1, 0, new_wall);
         var rpoints = room.getPoints();
         var index = rpoints.indexOf(points[1]);
-        rpoints.splice(index, 0, pos);
+        rpoints.splice(index, 0, corner);
     }
     return new_wall;
 }
@@ -380,72 +372,10 @@ function replace_wall(w1, w2, p_map)
 
         points[index] = w2_ps[p_map[0]];
         points[(index+1)%points.length] = w2_ps[p_map[1]];
-        //destroy old wall
-        w1.destroy();
     }
-}
 
-function distance_pos_wall(pos, wall)
-{
-    //in most cases, wall is vertical or horizon
-    var dist;
-    var points = wall.getPoints();
-    var p1 = points[0];
-    var p2 = points[1];
-    if(p1.x == p2.x){
-        dist = Math.abs(pos.x - p1.x);
-    }
-    else if(p1.y == p2.y){
-        dist = Math.abs(pos.y - p1.y);
-    }
-    else{
-        var A = p1.y - p2.y;
-        var B = p2.x - p1.x;
-        var C = p1.y * (p1.x - p2.x) - p1.x * (p1.y - p2.y);
-        var a = A * pos.x + B * pos.y + C;
-        var b = Math.pow(A, 2) + Math.pow(B, 2);
-        dist = Math.abs(a) / Math.sqrt(b);
-    }
-    return dist;
-}
-
-function intersection_pos_wall(pos, wall)
-{
-    var points = wall.getPoints();
-    var x1 = points[0].x;
-    var y1 = points[0].y;
-    var x2 = points[1].x;
-    var y2 = points[1].y;
-    var x3 = pos.x;
-    var y3 = pos.y;
-    var p = {};
-    if(x1 == x2){
-        p.x = x1;
-        p.y = y3;
-    }
-    else if(y1 == y2){
-        p.x = x3;
-        p.y = y1;
-    }
-    else{
-        //refer to http://en.wikipedia.org/wiki/Line-line_intersection
-        var x4, y4;
-        if((y1-y2) == 0){
-            x4 = x3;
-            y4 = y3 + 10;  //10 is random picked
-        }
-        else{
-            x4 = x3 + 10; //10 is random picked
-            y4 = (x3 - x4) * (x1 - x2) / (y1-y2) + y3;
-        }
-
-        //ready, calc intersection point
-        var a = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
-        var b = x1*y2 - y1*x2;
-        var c = x3*y4 - y3*x4;
-
-        p.x = (b*(x3-x4) - (x1-x2)*c) / a;
-        p.y = (b*(y3-y4) - (y1-y2)*c) / a;
-    }
-    return p;
+    //destroy old wall
+    var index = g_2d.house.walls.indexOf(w1);
+    g_2d.house.walls.splice(index, 1);
+    w1.destroy();
 }
