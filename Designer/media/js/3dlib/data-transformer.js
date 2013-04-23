@@ -518,13 +518,6 @@ function _DataTransformer() {
 		var len = 1;
 		var path = [[startPoint]];
 		var lasts = [startPoint];
-		/*for (var i in dests) {
-			if (!pointEquals(dests[i], startPoint)) {
-				path.push( [ dests[i] ] );
-				lasts.push( dests[i] );
-			}
-		}*/
-
 
 		while( !pointInArray(startPoint, lasts) || len ===1) {
 			var len = lasts.length;
@@ -593,6 +586,27 @@ function _DataTransformer() {
 	 */
 	function convertRoomPoints(room, shift ) {
 		var points = [];
+
+		//select four corners of a room
+		if (room.length > 4) {
+			for (var i = 0; i<room.length-2;) {
+				var p1 = room[i];
+				var p2 = room[i+1];
+				var p3 = room[i+2];
+
+				if (checkPointsOnLine(p1, p2 ,p3)) {
+					for (var j=i+1; j<room.length-1 ;j++) {
+						room[j] = room[j+1];
+					}
+					room.pop();
+				}
+				else {
+					i++;
+				}
+			}	
+		}
+		
+
 		for (var i in room) {
 			var p = {
 				x : (room[i].x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
@@ -602,7 +616,28 @@ function _DataTransformer() {
 			points.push(p);
 		}
 
+		
+		
+
 		return points;
+	}
+
+	/**
+	 * check if three points on same line
+	 * @param  {[type]} p1 [description]
+	 * @param  {[type]} p2 [description]
+	 * @param  {[type]} p3 [description]
+	 * @return false if not on one line
+	 *                  middle point if on same line
+	 */
+	function checkPointsOnLine(p1, p2, p3) {
+
+
+		var k1 = (p2.y - p1.y) / (p2.x - p1.x);
+		var k2 = (p3.y - p2.y) / (p3.x - p2.x);
+
+		return k1===k2;
+
 	}
 
 	/**
