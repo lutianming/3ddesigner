@@ -129,11 +129,7 @@ Two.Wall.prototype = Object.create(Kinetic.Line.prototype, {
     direction: {
         value: function(){
             var points = this.getPoints();
-            var dx = points[1].x - points[0].x;
-            var dy = points[1].y - points[0].y;
-
-            var diret = Math.atan2(dy, dx) / Math.PI * 180;
-            return diret;
+            return Two.direction(points[0], points[1]);
         }
     }
 });
@@ -169,7 +165,7 @@ Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
 function update_length_mark(text, p1, p2){
 
     var d = Two.distance(p1, p2);
-    var direc = direction(p1, p2);
+    var direc = Two.direction(p1, p2);
     text.setText(d.toString());
     text.setRotationDeg(direc);
     text.setX((p1.x + p2.x) / 2);

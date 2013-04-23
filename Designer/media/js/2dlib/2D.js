@@ -175,7 +175,6 @@ function have_obj(pos, name){
 }
 
 function exportJSON(){
-    console.log('json');
     var house = g_2d.house;
     var furnitures =  g_2d.furnitures;
     var data = {
@@ -185,54 +184,45 @@ function exportJSON(){
     };
 
     //rooms
-    console.log(house);
-    if(house){
-        for(var i = 0; i < house.rooms.length; i++){
-            var room = house.rooms[i];
-            console.log('room');
-            console.log(i);
-            var r = {
-                points : []
-            };
-            var points = room.getPoints();
-            for(var j = 0; j < points.length; i++){
-                var p = points[j];
-                r.points.push({x: p.x, y: p.y});
-            }
-            data.rooms.push(r);
+    for(var i = 0; i < house.rooms.length; i++){
+        var room = house.rooms[i];
+        var r = {
+            points : []
+        };
+        var points = room.getPoints();
+        for(var j = 0; j < points.length; j++){
+            var p = points[j];
+            r.points.push({x: p.x, y: p.y});
         }
-
-        //walls
-        for(var i = 0; i < house.walls.length; i++){
-            var wall = house.walls[i];
-            console.log('wall');
-            console.log(i);
-
-            var w = {
-                doors: [],
-                points: []
-            };
-            var points = wall.getPoints();
-            for(var j = 0; j < points.length; j++){
-                var p = points[j];
-                w.points.push({x: p.x, y: p.y});
-            }
-
-            for(var j = 0; j < wall.doors.length; j++){
-                var door = wall.doors[j];
-                var d = {};
-                d.position = door.getPosition();
-                d.width = door.getRadius();
-                w.doors.push(d);
-            }
-            data.walls.push(w);
-        }
+        data.rooms.push(r);
     }
+
+    console.log(house.walls);
+//    walls
+    for(var i = 0; i < house.walls.length; i++){
+        var wall = house.walls[i];
+        var w = {
+            doors: [],
+            points: []
+        };
+        var points = wall.getPoints();
+        for(var j = 0; j < points.length; j++){
+            var p = points[j];
+            w.points.push({x: p.x, y: p.y});
+        }
+
+        for(var j = 0; j < wall.doors.length; j++){
+            var door = wall.doors[j];
+            var d = {};
+            d.position = door.getPosition();
+            d.width = door.getRadius();
+            w.doors.push(d);
+        }
+        data.walls.push(w);
+    }
+
     //furnitures
     for(var i = 0; i < furnitures.length; i++){
-        console.log('f');
-        console.log(i);
-
         var furniture = furnitures[i];
         var f = {};
         f.position = furniture.getPosition();
