@@ -43,3 +43,14 @@ a{
 .nav-btn {
 	margin : 5px;
 }
+
+#outer-v-container {
+	position : relative;
+}
+
+#loading-box {
+	top : 200px;
+	left : 450px;
+	position : absolute;
+	display: none;
+}

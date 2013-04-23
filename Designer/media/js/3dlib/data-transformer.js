@@ -631,8 +631,6 @@ function _DataTransformer() {
 	 *                  middle point if on same line
 	 */
 	function checkPointsOnLine(p1, p2, p3) {
-
-
 		var k1 = (p2.y - p1.y) / (p2.x - p1.x);
 		var k2 = (p3.y - p2.y) / (p3.x - p2.x);
 
@@ -715,41 +713,46 @@ function _DataTransformer() {
 	 * @param  {[type]} params [description]
 	 * @return {[type]}        [description]
 	 */
-	function generateModels(params) {
+	function generateModels(params, shift) {
 		if (params === undefined) {
 			return;
 		}
 
-		return [
-			{
-				position : {
-					x : 0,
-					y : 1.5,
-					z : 10
-				},
-				url : '/site_media/models/sofa.dae',
-				scale : {
-					x : 3,
-					y : 3,
-					z : 3
-				},
-				rotation : {
-					x : Math.PI / 2,
-					y : 0,
-					z : 0
-				},
-				size : {
-					x : 100,
-					y : 20,
-					z : 30
-				},
-				originalSize : {
-					x : 50,
-					y : 10,
-					z : 15
-				}
+		var models = [];
+
+		for (var i in params) {
+			var model = {};
+			var param = params[i];
+			model.position = {
+				x : (param.position.x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
+				y : 2.5,
+				z : (param.position.y - shift.shift_z) / _CONVERT_ZOOM_FACTOR
+			};
+
+			model.rotation = {
+				x : Math.PI / 2,
+				y : 0,
+				z : param.rotation
+			};
+
+			model.size = {
+				x : param.size.x / _CONVERT_ZOOM_FACTOR,
+				y : 10,
+				z : param.size.y / _CONVERT_ZOOM_FACTOR 
+			};
+
+			model.scale = {
+				x : 0.3,
+				y : 0.3,
+				z : 0.3
 			}
-		];
+
+			model.url = '/site_media/models/tv.dae';
+
+			models.push(model);
+		}
+
+		return models;
 	}
 
 
@@ -780,10 +783,10 @@ function _DataTransformer() {
 
 		// convert floor data from wall data
 		// sceneData.floors = [];
-		var floors = generateFloor(editData.walls,shift);
+		var floors = generateFloor(editData.walls, shift);
 		sceneData.floors = floors;
 
-		var models = generateModels(editData.furnitures);
+		var models = generateModels(editData.furnitures, shift);
 		sceneData.models = models;
 
 		return sceneData;

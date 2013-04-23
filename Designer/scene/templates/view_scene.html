@@ -22,32 +22,7 @@
 			</div>
 		</div>
 
-		<script type="text/javascript">
-		$(function(){
-			$('#three-tab').on('click',function(event){
-				$('#three-scene').show();
-				$('#two-scene').hide();
-				$(this).parent().addClass('active');
-				$('#two-tab').parent().removeClass('active');
-
-				/*var editData = exportJSON();
-
-				var container = document.getElementById('v-container');
-				var app = new SceneViewer();
-				app.init({
-					container: container
-				});
-				app.run();*/
-			});
-
-			$('#two-tab').on('click',function(event){
-				$('#two-scene').show();
-				$('#three-scene').hide();
-				$(this).parent().addClass('active');
-				$('#three-tab').parent().removeClass('active');
-			});
-		});
-		</script>
+		<script type="text/javascript" src="/site_media/js/scene.js"></script>
 	</body>
 
 </html>
