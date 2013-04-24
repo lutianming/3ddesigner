@@ -55,9 +55,9 @@ SceneViewer.prototype.init = function(param) {
  */
 SceneViewer.prototype.createLight = function() {
 	// set light
-	this.headlight = new THREE.DirectionalLight(0xffffff, 1);
-	this.headlight.position.set(0, 100, 0);
-	this.scene.add(this.headlight);
+	var headlight = new THREE.DirectionalLight(0xffffff, 1);
+	headlight.position.set(0, 100, 0);
+	this.scene.add(headlight);
 
 	/*var amb = new THREE.AmbientLight(0xffffff);
 	this.scene.add(amb);*/
@@ -166,8 +166,8 @@ SceneViewer.prototype.createModels = function() {
 SceneViewer.CAMERA_RADIUS = 12.0;
 SceneViewer.MAX_CAMERA_RADIUS = 16.0;
 SceneViewer.MIN_CAMERA_RADIUS = 2.0;
-SceneViewer.MIN_DISTANCE_FACTOR = 0.6;
-SceneViewer.MAX_DISTANCE_FACTOR = 8.0;
+SceneViewer.MIN_DISTANCE_FACTOR = 0.9;
+SceneViewer.MAX_DISTANCE_FACTOR = 12.0;
 SceneViewer.ROTATE_SPEED = 1.0;
 SceneViewer.ZOOM_SPEED = 3.0;
 SceneViewer.PAN_SPEED = 0.2;
