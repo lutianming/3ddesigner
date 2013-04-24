@@ -27,7 +27,7 @@ function init(){
         container: 'content',
         width: g_2d.width,
         height: g_2d.height,
-        draggable: true
+        draggable: false
     });
     g_2d.layer = new Kinetic.Layer();
 
@@ -149,6 +149,9 @@ function setCmd(cmd){
     case CMDS.add_door:
         g_2d.cmd = new AddDoorCommand();
         break;
+    case CMDS.add_window:
+        g_2d.cmd = new AddWindowCommand();
+        break;
     case CMDS.split_wall:
         g_2d.cmd = new SplitWallCommand();
         break;
@@ -201,6 +204,7 @@ function exportJSON(){
         var wall = house.walls[i];
         var w = {
             doors: [],
+            windows: [],
             points: []
         };
         var points = wall.getPoints();
@@ -215,6 +219,14 @@ function exportJSON(){
             d.position = door.getPosition();
             d.width = door.getRadius();
             w.doors.push(d);
+        }
+        for(var j = 0; j < wall.windows.length; j++){
+            var window = wall.windows[j];
+            var win = {};
+            win.position = window.getPosition();
+            var points = window.getPoints();
+            win.width = Two.distance(points[0], points[1]);
+            w.windows.push(win);
         }
         data.walls.push(w);
     }

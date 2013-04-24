@@ -150,9 +150,6 @@ Two.Room = function(corners, group){
     for(var i = 0; i < len; i++){
         var wall = new Two.Wall(corners[i], corners[(i+1)%len]);
         wall.rooms.push(this);
-        // wall.corners = [room.corners[i], room.corners[(i+1)%len]];
-        // room.corners[i].walls.push(wall);
-        // room.corners[(i+1)%len].walls.push(wall);
         this.walls.push(wall);
         group.add(wall);
     }
@@ -189,12 +186,13 @@ Two.House.prototype = Object.create(Kinetic.Group.prototype, {
     }
 });
 
-function create_door(x, y, deg, group){
-    var door = new Kinetic.Wedge({
+Two.Door = function(x, y, deg, width){
+    var w = width? width : 30;
+    Kinetic.Wedge.call(this, {
         name: 'door',
         x: x,
         y: y,
-        radius: 30,
+        radius: w,
         angleDeg: 90,
         stroke: 'gray',
         strokeWidth: 2,
@@ -213,70 +211,58 @@ function create_door(x, y, deg, group){
                 return pos;
             }
             var p = Two.intersection_pos_wall(pos,
-                                          this.wall);
+                                              this.wall);
 
             return p;
         }
     });
-    init_events(door);
-    group.add(door);
-    return door;
-}
+    this.on('dragstart', function(){
+        g_2d.cmd = new DragDoorWindowCommand(this);
+    });
+};
+Two.Door.prototype = Object.create(Kinetic.Wedge.prototype, {
 
-function create_window(points, group){
-    var window = new Kinetic.Line({
+});
+
+Two.Window = function(x, y, deg, width){
+    var w = width? width : 50;
+    var pos1 = {x: 0, y: 0};
+    var pos2 = {x: w, y: 0};
+    Kinetic.Line.call(this, {
         name: 'window',
-        points: points,
+        points: [pos1, pos2],
+        x: x,
+        y: y,
         stroke: 'gray',
-        strokeWidth: 2,
+        strokeWidth: 5,
         draggable: true,
-        dragOnTop: false
-    });
-    init_events(window);
-    group.add(window);
-    return window;
-}
-
-//init event hanlders for door or window
-function init_events(obj){
-    obj.on('dragstart', function(){
-        // var group = obj.getParent();
-        // var walls = group.get('.wall');
-        // walls.each('setDrawHitFunc', function(canvas){
-        //     var context = canvas.getContext();
-        //     var points = this.getPoints();
-
-        //     context.beginPath();
-        //     context.moveTo(points[0].x, points[0].y);
-        //     context.lineTo(points[1].x, points[1].y);
-        //     context.lineWidth = 20;
-        //     context.stroke();
-        // });
-    });
-    obj.on('dragmove', function(){
-        //if leaved from wall, search new door to attach
-        if(obj.wall == null){
-            var pos = obj.getAbsolutePosition();
-            var wall = have_obj(pos, 'wall');
-            if(wall != null){
-                var diret = wall.direction();
-                obj.setRotationDeg(diret);
-                pos = Two.intersection_pos_wall(pos, wall);
-                wall.doors.push(this);
-                this.wall = wall;
+        rotationDeg: deg,
+        dragBoundFunc: function(pos){
+            if(this.wall == null){
+                return pos;
             }
+            var dist = Two.distance_pos_wall(pos, this.wall);
+            if(dist > 20){
+                var windows = this.wall.windows;
+                var index = windows.indexOf(this);
+                windows.splice(index, 1);
+                this.wall = null;
+                return pos;
+            }
+            var p = Two.intersection_pos_wall(pos,
+                                              this.wall);
 
+            return p;
         }
     });
-    obj.on('dragend', function(){
-
+    this.on('dragstart', function(){
+        g_2d.cmd = new DragDoorWindowCommand(this);
     });
 
-    obj.on('mousedown touchstart', function(){
+};
+Two.Window.prototype = Object.create(Kinetic.Line.prototype, {
 
-    });
-
-}
+});
 
 function merge_walls(w1, w2)
 {

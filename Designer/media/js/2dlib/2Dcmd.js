@@ -66,7 +66,7 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mousedown : {
         value : function(pos){
-            g_2d.stage.setDraggable(false);
+//            g_2d.stage.setDraggable(false);
             if(g_2d.house.rooms.length == 0){
                 var corner = new Two.Corner(pos.x, pos.y);
                 g_2d.house.add(corner);
@@ -96,7 +96,7 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mouseup : {
         value : function(pos){
-            g_2d.stage.setDraggable(true);
+//            g_2d.stage.setDraggable(true);
             if(g_2d.current_obj == null){
                 return;
             }
@@ -215,10 +215,10 @@ AddDoorCommand.prototype = Object.create(BaseCommand.prototype, {
            }
            var wall = have_obj(pos, 'wall');
            if(wall != null){
-
                var diret = wall.direction();
                pos = Two.intersection_pos_wall(pos, wall);
-               this.obj = create_door(pos.x, pos.y, diret, g_2d.house);
+               this.obj = new Two.Door(pos.x, pos.y, diret);
+               g_2d.house.add(this.obj);
                wall.doors.push(this.obj);
                this.obj.wall = wall;
                g_2d.layer.draw();
@@ -227,6 +227,29 @@ AddDoorCommand.prototype = Object.create(BaseCommand.prototype, {
    }
 });
 
+function AddWindowCommand(){
+
+}
+AddWindowCommand.prototype = Object.create(BaseCommand.prototype, {
+   mousedown : {
+       value : function(pos){
+           if(g_2d.house == null){
+               return;
+           }
+           var wall = have_obj(pos, 'wall');
+           if(wall != null){
+               var diret = wall.direction();
+               pos = Two.intersection_pos_wall(pos, wall);
+               this.obj = new Two.Window(pos.x, pos.y, diret);
+               g_2d.house.add(this.obj);
+               wall.windows.push(this.obj);
+               this.obj.wall = wall;
+               g_2d.layer.draw();
+           }
+       }
+   }
+
+});
 //move obj command
 function MoveCommand(obj){
     this.obj = obj;
@@ -268,7 +291,7 @@ function RotationCommand(anchor){
 RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value : function(pos){
-            g_2d.stage.setDraggable(false);
+//            g_2d.stage.setDraggable(false);
             this.startPos = this.anchor.getPosition();
             this.prePos = this.startPos;
             this.center = this.obj.getOffset();
@@ -283,7 +306,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mouseup : {
       value : function(pos){
-          g_2d.stage.setDraggable(true);
+//          g_2d.stage.setDraggable(true);
           this.rotate(pos);
           this.obj.getParent().draw();
           this.endPos = pos;
@@ -393,6 +416,47 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mouseup : {
         value : function(pos){
+
+        }
+    }
+});
+
+function DragDoorWindowCommand(obj){
+    this.obj = obj;
+    this.startPos = null;
+    this.lastPos = null;
+}
+
+DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
+    mousedown: {
+        value: function(pos){
+            this.startPos = obj.getPosition();
+            this.lastPos = this.startPos;
+        }
+    },
+    mousemove: {
+        value: function(pos){
+            if(this.obj.wall == null){
+                var wall = have_obj(pos, 'wall');
+                if(wall != null){
+                    var diret = wall.direction();
+                    this.obj.setRotationDeg(diret);
+                    pos = Two.intersection_pos_wall(pos, wall);
+                    if(this.obj.getName() == 'door'){
+                        wall.doors.push(this.obj);                                       }
+                    else{
+                        wall.windows.push(this.obj);
+                    }
+                    this.obj.wall = wall;
+                }
+            }
+            else{
+                this.lastPos = pos;
+            }
+        }
+    },
+    mouseup: {
+        value: function(pos){
 
         }
     }
