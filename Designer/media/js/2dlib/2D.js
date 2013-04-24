@@ -55,6 +55,9 @@ function init(){
     g_2d.layer = new Kinetic.Layer();
     g_2d.stage.add(g_2d.layer);
 
+    g_2d.temp_layer = new Kinetic.Layer();
+    g_2d.stage.add(g_2d.temp_layer);
+
     g_2d.house = new Two.House('house');
     g_2d.layer.add(g_2d.house);
     initControls();
@@ -178,6 +181,8 @@ function have_obj(pos, name){
 
 function exportJSON(){
     var house = g_2d.house;
+    var rooms = house.get('.room');
+    var walls = house.get('.wall');
     var furnitures =  g_2d.furnitures;
     var data = {
         rooms: [],
@@ -186,8 +191,8 @@ function exportJSON(){
     };
 
     //rooms
-    for(var i = 0; i < house.rooms.length; i++){
-        var room = house.rooms[i];
+    for(var i = 0; i < rooms.length; i++){
+        var room = rooms[i];
         var r = {
             points : []
         };
@@ -200,8 +205,8 @@ function exportJSON(){
     }
 
 //    walls
-    for(var i = 0; i < house.walls.length; i++){
-        var wall = house.walls[i];
+    for(var i = 0; i < walls.length; i++){
+        var wall = walls[i];
         var w = {
             doors: [],
             windows: [],
