@@ -218,6 +218,7 @@ function exportJSON(){
             var d = {};
             d.position = door.getPosition();
             d.width = door.getRadius();
+            d.rotationDeg = door.getRotationDeg();
             w.doors.push(d);
         }
         for(var j = 0; j < wall.windows.length; j++){
@@ -226,6 +227,7 @@ function exportJSON(){
             win.position = window.getPosition();
             var points = window.getPoints();
             win.width = Two.distance(points[0], points[1]);
+            win.rotationDeg = window.getRotationDeg();
             w.windows.push(win);
         }
         data.walls.push(w);
