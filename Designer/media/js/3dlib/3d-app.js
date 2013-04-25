@@ -154,7 +154,7 @@ SceneViewer.prototype.createWalls = function() {
 SceneViewer.prototype.createFloors = function() {
 	for (var i in threeSceneData.floors) {
 		var param = threeSceneData.floors[i];
-		var floor = ObjectFactory.createPlaneMesh(param);
+		var floor = ObjectFactory.createFloorMesh(param);
 		this.scene.add(floor);
 	}
 }
@@ -259,6 +259,36 @@ ObjectFactory.createPlaneMesh = function(param) {
 
 	return mesh;
 
+}
+
+ObjectFactory.createFloorMesh = function(param) {
+	var floorShape = new THREE.Shape();
+	var points = param.points;
+
+	var startPoint = points[0];
+
+	floorShape.moveTo( startPoint.x, startPoint.z);
+
+	for ( var i = 1, l = points.length; i < l ; i++) {
+		floorShape.lineTo(points[i].x , points[i].z);
+	}
+
+	floorShape.lineTo(startPoint.x , startPoint.z);
+
+	var geometry = new THREE.FloorGeometry( floorShape );
+	var map = THREE.ImageUtils.loadTexture(param.texture.url);
+	map.wrapT = map.wrapS = THREE.RepeatWrapping;
+	map.repeat.set( param.texture.repeat.x , param.texture.repeat.y );
+
+	var material = new THREE.MeshBasicMaterial(
+		{
+			map : map,
+			side : THREE.DoubleSide	
+		});
+
+	var mesh = new THREE.Mesh(geometry, material);
+
+	return mesh;
 }
 
 /**
