@@ -53,6 +53,9 @@ def get_user_profile(request, username):
             return page_obj.object_list
         else:
             return None
+    
+    def get_user_work_list():
+        return None
         
     user_msg_list = user.msg_set.order_by('-id')
     paginator = Paginator(user_msg_list,3)    

@@ -45,4 +45,5 @@ urlpatterns = patterns('',
     url(r'^post/restore/$', restore),
     url(r'^gallery/$', gallery_page),
     url(r'^scene/$',view_scene),
+    url(r'^msg_delete/(?P<id>\d+)$',msg_delete),
 )

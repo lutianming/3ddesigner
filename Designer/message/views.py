@@ -84,8 +84,8 @@ def msg_post_page(request):
     if request.method == 'POST':
         form = MsgPostForm(request.POST)
         if form.is_valid():
-            newmessage = Msg.objects.create(title=form.cleaned_data['title'],content=form.cleaned_data['content'],user=request.user,ip=request.META['REMOTE_ADDR'])
-            newmessage.save()  
+            message = Msg.objects.create(title=form.cleaned_data['title'],content=form.cleaned_data['content'],user=request.user,ip=request.META['REMOTE_ADDR'])
+            message.save()  
             return HttpResponseRedirect('/msg/')  
     else:
         form = MsgPostForm()
@@ -223,3 +223,7 @@ def restore(request):
     json=simplejson.dumps(result)
     return HttpResponse(json)
     
+def msg_delete(request, id):
+    msg=get_object_or_404(Msg,pk=int(id))    
+    msg.delete()
+    return HttpResponseRedirect('/msg/')
