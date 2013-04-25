@@ -84,8 +84,8 @@ Two.Wall = function(corner1, corner2){
     this.on('mouseover', function(){
         var layer = this.getLayer();
         this.setStroke('blue');
-        var group = this.getParent();
-        var points = group.points;
+        var house = this.getParent();
+        var points = house.get('.corner');
         points.forEach(function(p){
            p.moveToTop();
            p.show();
@@ -99,8 +99,8 @@ Two.Wall = function(corner1, corner2){
     this.on('mouseout', function(){
         var layer = this.getLayer();
         this.setStroke('black');
-        var group = this.getParent();
-        var points = group.points;
+        var house = this.getParent();
+        var points = house.get('.corner');
         points.forEach(function(p){
            p.hide();
         });
@@ -134,15 +134,15 @@ Two.Wall.prototype = Object.create(Kinetic.Line.prototype, {
     }
 });
 
-Two.Room = function(corners, group){
+Two.Room = function(corners, house){
     Kinetic.Polygon.call(this, {
-        name: 'floor',
+        name: 'room',
         points: corners,
         fill: '#00D2FF',
         draggable: false
     });
-    group.add(this);
-    this.walls = [];
+    house.add(this);
+    this.walls = new Array();
     var len = corners.length;
     for(var i = 0; i < len; i++){
         //corners[i].rooms.push(this);
@@ -151,7 +151,7 @@ Two.Room = function(corners, group){
         var wall = new Two.Wall(corners[i], corners[(i+1)%len]);
         wall.rooms.push(this);
         this.walls.push(wall);
-        group.add(wall);
+        house.add(wall);
     }
 
 };
@@ -170,20 +170,11 @@ function update_length_mark(text, p1, p2){
 }
 
 Two.House = function(name){
-   Kinetic.Group.call(this, {
-       name: name
-   });
+    Kinetic.Group.call(this, {
+        name: name
+    });
 };
 Two.House.prototype = Object.create(Kinetic.Group.prototype, {
-    points: {
-        value: []
-    },
-    walls: {
-        value: []
-    },
-    rooms: {
-        value: []
-    }
 });
 
 Two.Door = function(x, y, deg, width){
@@ -361,7 +352,6 @@ function replace_wall(w1, w2, p_map)
     }
 
     //destroy old wall
-    var index = g_2d.house.walls.indexOf(w1);
-    g_2d.house.walls.splice(index, 1);
+    w1.remove();
     w1.destroy();
 }

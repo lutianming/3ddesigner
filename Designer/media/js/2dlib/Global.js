@@ -75,6 +75,18 @@ Two.direction = function(p1, p2){
     return diret;
 };
 
+Two.clean = function(){
+    g_2d.layer.destroy();
+
+    g_2d.layer = new Kinetic.Layer();
+    g_2d.stage.add(g_2d.layer);
+
+    g_2d.furnitures = [];
+    g_2d.house = new Two.House('house');
+
+    g_2d.layer.add(g_2d.house);
+    g_2d.layer.draw();
+};
 //the data saved in this function is used in load_scene,
 //thus the saved data is different from the exported data from
 //exportJSON
@@ -127,13 +139,13 @@ Two.load_scene = function(json){
     var rooms = data.rooms;
 
     //clean old house
+    Two.clean();
 
     //create all corners
-
     for(var i = 0; i < points.length; i++){
         var p = points[i];
         var corner = new Two.Corner(p);
-        g_2d.house.points.push(corner);
+        g_2d.house.add(corner);
     }
     //load rooms
     for(var i = 0; i < rooms.length; i++){
