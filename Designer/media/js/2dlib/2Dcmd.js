@@ -21,7 +21,7 @@ function AddFurnitureCommand(){
 AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value: function(pos){
-            var furniture = new Two.Furniture(pos);
+            var furniture = new Two.Furniture(pos, 50, 50, 0);
             g_2d.furnitures.push(furniture);
             this.obj = furniture;
             // if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
@@ -358,6 +358,12 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
                 var y = door.getY();
                 door.setPosition(x+deltax, y+deltay);
             }
+            for(var i = 0; i < wall.windows.length; i++){
+                var window = wall.windows[i];
+                var x = window.getX();
+                var y = window.getY();
+                window.setPosition(x+deltax, y+deltay);
+            }
         }
     },
     mousedown : {
@@ -424,6 +430,7 @@ DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
         value: function(pos){
             this.startPos = obj.getPosition();
             this.lastPos = this.startPos;
+            this.obj.moveToTop();
         }
     },
     mousemove: {

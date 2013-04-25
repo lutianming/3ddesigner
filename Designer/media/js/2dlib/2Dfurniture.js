@@ -5,10 +5,10 @@ function center_point(p1, p2){
 };
 
 
-Two.Furniture = function (pos){
+Two.Furniture = function (pos, width, height, rotation){
     Kinetic.Group.call(this, {
         name: 'furniture_group',
-        offset: [25, 25],
+        offset: [width/2, height/2],
         draggable: true
     });
     this.type = 'furniture';
@@ -19,15 +19,14 @@ Two.Furniture = function (pos){
         name: 'furniture',
         x: pos.x,
         y: pos.y,
-        width: 50,
-        height: 50,
+        width: width,
+        height: height,
         fill: 'green'
     });
 
     this.add(obj);
     this.furniture = obj;
-    var height = obj.getHeight();
-    var width = obj.getWidth();
+
     var w = 10;
     this.topleft = create_anchor(pos.x, pos.y,
                                 -w, -w,

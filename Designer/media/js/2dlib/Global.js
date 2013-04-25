@@ -86,6 +86,7 @@ Two.clean = function(){
 
     g_2d.layer.add(g_2d.house);
     g_2d.layer.draw();
+    g_2d.current_obj = null;
 };
 //the data saved in this function is used in load_scene,
 //thus the saved data is different from the exported data from
@@ -95,38 +96,79 @@ Two.save_scene = function(){
     var furnitures =  g_2d.furnitures;
     var data = {
         points: [],
+        walls: [],
         rooms: [],
-        doors: [],
         furnitures: []
     };
 
     //save points
-    for(var i = 0; i < house.points.length; i++){
-        var p = house.points[i];
+    var i;
+    var corners = house.get('.corner');
+    for(i = 0; i < corners.length; i++){
+        var p = corners[i];
         data.points.push({x: p.x, y: p.y});
     }
 
-    //save rooms
-    for(var j = 0; i < house.rooms.length; j++){
-        var room = house.rooms[j];
-        var points = room.getPoints();
-        var indexs = [];
-        for(var k = 0; k < points.length; k++){
-            var index = house.points.indexOf(points[k]);
-            indexs.push(index);
+    //save walls
+    var walls = house.get('.wall');
+    for(i = 0; i < walls.length; i++){
+        var wall = walls[i];
+        var ps = wall.getPoints();
+        var index1 = corners.indexOf(ps[0]);
+        var index2 = corners.indexOf(ps[1]);
+        var w = {
+            doors:[],
+            windows: []
+        };
+        w.points = [index1, index2];
+        for(var j = 0; j < wall.doors.length; j++){
+            var door = wall.doors[j];
+            var d = {};
+            d.position = door.getPosition();
+            d.width = door.getRadius();
+            d.rotationDeg = door.getRotationDeg();
+            w.doors.push(d);
         }
+        for(var j = 0; j < wall.windows.length; j++){
+            var window = wall.windows[j];
+            var win = {};
+            win.position = window.getPosition();
+            var temp = window.getPoints();
+            win.width = Two.distance(temp[0], temp[1]);
+            win.rotationDeg = window.getRotationDeg();
+            w.windows.push(d);
+        }
+        data.walls.push(w);
+    }
+    //save rooms
+    var rooms = house.get('.room');
+    for(i = 0; i < rooms.length; i++){
+        var room = rooms[i];
+        var r = {};
+        var points = room.getPoints();
+        var corner_indexs = [];
+        for(var j = 0; j < points.length; j++){
+            var index = corners.indexOf(points[j]);
+            corner_indexs.push(index);
+        }
+        var wall_indexs = [];
+        for(var j = 0; j < room.walls.length; j++){
+            var index = walls.indexOf(room.walls[j]);
+            wall_indexs.push(index);
+        }
+        r.corner_indexs = corner_indexs;
+        r.wall_indexs = wall_indexs;
+        data.rooms.push(r);
     }
     //save furnitures
     for(var i = 0; i < furnitures.length; i++){
         var furniture = furnitures[i];
         var f = {};
         f.position = furniture.getPosition();
-        var w = furniture.furniture.getWidth();
-        var h = furniture.furniture.getHeight();
-        f.size = {x: w, y: h};
+        f.width = furniture.furniture.getWidth();
+        f.height = furniture.furniture.getHeight();
         f.rotation = furniture.getRotation();
         f.rotateDeg = furniture.getRotationDeg();
-        console.log(f);
         data.furnitures.push(f);
     }
     return JSON.stringify(data);
@@ -134,38 +176,92 @@ Two.save_scene = function(){
 
 Two.load_scene = function(json){
     var data = JSON.parse(json);
-    var points = data.points;
-    var furnitures = data.furnitures;
-    var rooms = data.rooms;
-
+    console.log(data);
     //clean old house
     Two.clean();
-
+    var i;
     //create all corners
-    for(var i = 0; i < points.length; i++){
-        var p = points[i];
-        var corner = new Two.Corner(p);
+    var corners = [];
+    for(i = 0; i < data.points.length; i++){
+        var p = data.points[i];
+        var corner = new Two.Corner(p.x, p.y);
+        corners.push(corner);
         g_2d.house.add(corner);
     }
+
+    //create all walls
+    var walls = [];
+    for(i = 0; i < data.walls.length; i++){
+        var w = data.walls[i];
+        var index1 = w.points[0];
+        var index2 = w.points[1];
+        var wall = new Two.Wall(corners[index1], corners[index2]);
+
+        g_2d.house.add(wall);
+        //doors and windows
+        for(var j = 0; j < w.doors.length; j++){
+            var d = w.doors[j];
+            var door = new Two.Door(d.position.x, d.position.y,
+                                    d.rotationDeg, d.width);
+            wall.doors.push(door);
+            door.wall = wall;
+            g_2d.house.add(door);
+        }
+        for(var j = 0; j < w.windows.length; j++){
+            var win = w.windows[j];
+            var window = new Two.Window(win.position.x,
+                                        win.position.y,
+                                        win.rotationDeg,
+                                        win.width);
+            wall.windows.push(window);
+            window.wall = wall;
+            g_2d.house.add(window);
+        }
+        walls.push(wall);
+    }
     //load rooms
-    for(var i = 0; i < rooms.length; i++){
-        var room = rooms[i];
-        var indexs = room.indexs;
+    for(var i = 0; i < data.rooms.length; i++){
+        var r = data.rooms[i];
+        var indexs = r.corner_indexs;
         var ps = [];
         for(var j = 0; j < indexs.length; j++){
-            var p = points[indexs[j]];
+            var p = corners[indexs[j]];
             ps.push(p);
         }
+        var ws = [];
+        for(var j = 0; j < r.wall_indexs.length; j++){
+            var w = walls[r.wall_indexs[j]];
+            ws.push(w);
+        }
         //create room from ps;
+        var room = new Two.Room(ps, g_2d.house, ws);
+        g_2d.house.add(room);
+    }
+
+    for(var i = 0; i < walls.length; i++){
+        var w = walls[i];
+        w.moveToTop();
+        for(var j = 0; j < w.doors.length; j++){
+            w.doors[j].moveToTop();
+        }
+        for(var j = 0; j < w.windows.length; j++){
+            w.windows[j].moveToTop();
+        }
     }
 
     //load furnitures
-    for(var i = 0; i < furnitures.length; i++){
-        var f = furnitures[i];
-        var cmd = AddFurnitureCommand();
-        cmd.mousedown(f.position);
-        cmd.obj.furniture.setWidth(f.x);
-        cmd.obj.furniture.setHeight(f.y);
-        cmd.obj.rotateDeg(f.rotateDeg);
+    for(i = 0; i < data.furnitures.length; i++){
+        var f = data.furnitures[i];
+        var furniture = new Two.Furniture(f.position, f.width,
+                                          f.height, f.rotationDeg);
+        g_2d.layer.add(furniture);
+        g_2d.furnitures.push(furniture);
     }
+    g_2d.layer.draw();
+};
+
+//test load and save
+Two.reload = function(){
+    var data = Two.save_scene();
+    Two.load_scene(data);
 };

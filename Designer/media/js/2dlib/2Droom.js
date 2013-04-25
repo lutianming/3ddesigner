@@ -134,7 +134,7 @@ Two.Wall.prototype = Object.create(Kinetic.Line.prototype, {
     }
 });
 
-Two.Room = function(corners, house){
+Two.Room = function(corners, house, walls){
     Kinetic.Polygon.call(this, {
         name: 'room',
         points: corners,
@@ -142,18 +142,22 @@ Two.Room = function(corners, house){
         draggable: false
     });
     house.add(this);
-    this.walls = new Array();
     var len = corners.length;
     for(var i = 0; i < len; i++){
         //corners[i].rooms.push(this);
     }
-    for(var i = 0; i < len; i++){
-        var wall = new Two.Wall(corners[i], corners[(i+1)%len]);
-        wall.rooms.push(this);
-        this.walls.push(wall);
-        house.add(wall);
+    if(walls != null){
+        this.walls = walls;
     }
-
+    else{
+        this.walls = new Array();
+        for(var i = 0; i < len; i++){
+            var wall = new Two.Wall(corners[i], corners[(i+1)%len]);
+            wall.rooms.push(this);
+            this.walls.push(wall);
+            house.add(wall);
+        }
+    }
 };
 Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
 
