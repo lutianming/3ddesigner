@@ -30,7 +30,7 @@ function _DataTransformer() {
 	var _DEFAULT_TEXTURE_WIDTH = 50.0;
 	var _DEFAULT_TEXTURE_HEIGHT = 25.0;
 
-	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/mudiban063.jpg';
+	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/floor-brick.jpg';
 	var _FLOOR_TEXTURE_REPEAT_X = 1;
 	var _FLOOR_TEXTURE_REPEAT_Y = 1;
 
@@ -657,7 +657,7 @@ function _DataTransformer() {
 		var points = [];
 
 		//select four corners of a room
-		if (room.length > 4) {
+		/*if (room.length > 4) {
 			for (var i = 0; i<room.length-2;) {
 				var p1 = room[i];
 				var p2 = room[i+1];
@@ -673,9 +673,8 @@ function _DataTransformer() {
 					i++;
 				}
 			}	
-		}
+		}*/
 		
-
 		for (var i in room) {
 			var p = {
 				x : (room[i].x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
@@ -684,9 +683,6 @@ function _DataTransformer() {
 			};
 			points.push(p);
 		}
-
-		
-		
 
 		return points;
 	}

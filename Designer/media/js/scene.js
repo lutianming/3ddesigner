@@ -1,3 +1,5 @@
+APP;
+
 $(function(){
 	$('#three-tab').on('click',function(event){
 		$('#three-scene').show();
@@ -19,6 +21,8 @@ $(function(){
 			container: container
 		});
 		app.run();
+
+		APP = app;
 
 		$("#loading-box").hide();
 	});
