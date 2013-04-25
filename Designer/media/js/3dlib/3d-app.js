@@ -141,6 +141,12 @@ SceneViewer.prototype.createWalls = function() {
 			wall.add(door);
 		}
 
+		for (var j in wallParam.windows) {
+			var windowParam = wallParam.windows[j];
+			var _window = ObjectFactory.createCubeMesh(windowParam);
+			wall.add(_window);
+		}
+
 		this.scene.add(wall);
 	}
 }

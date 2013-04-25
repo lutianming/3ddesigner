@@ -10,12 +10,21 @@ function _DataTransformer() {
 	 */
 	var _WALL_THICK = 0.2;
 	var _WALL_HEIGHT = 16;
+	var _WALL_DEFAULT_TEXTURE_URL = '/site_media/img/red-brick-seamless-512-x-512.jpg';
+
 	var _DOOR_THICK = 0.1;
 	var _DOOR_HEIGHT = 12;
+	var _DOOR_DEFAULT_TEXTURE_URL = '/site_media/img/europe_door_texture.jpg';
 
+	var _WINDOW_THICK = 0.1;
+	var _WINDOW_HEIGHT = 8;
+	var _WINDOW_Y_POS = 10;
+	var _WINDOW_DEFAULT_TEXTURE_URL = '/site_media/img/default-window-texture.jpg';
+
+
+	var _WALL_TYPE = 0;
 	var _DOOR_TYPE = 1;
 	var _WINDOW_TYPE = 2;
-	var _WALL_TYPE = 0;
 
 	var _DEFAULT_TEXTURE_REPEAT = 2;
 	var _DEFAULT_TEXTURE_WIDTH = 50.0;
@@ -274,8 +283,13 @@ function _DataTransformer() {
 
 			if (!noWindows) {
 				// covert data of windows
+				newWall.windows = [];
 				for (var i in tmpWall.windows) {
-					// code here...
+					var tmpWindow = tmpWall.windows[i];
+					var newWindow = generateWindow(tmpWindow, shift, wallRotation, _WINDOW_HEIGHT, _WINDOW_Y_POS);
+					newWall.windows.push(newWindow)
+
+					wallDeviders.push(getDevider(tmpWindow, _WINDOW_TYPE, wallRotation));
 				}
 			}
 
@@ -311,7 +325,7 @@ function _DataTransformer() {
 		newDoor.position.z = doorZ / _CONVERT_ZOOM_FACTOR;
 
 		newDoor.texture = {
-			url: '/site_media/img/europe_door_texture.jpg',
+			url: _DOOR_DEFAULT_TEXTURE_URL,
 			repeat: {
 				x: 1,
 				y: 1
@@ -327,6 +341,43 @@ function _DataTransformer() {
 		return newDoor;
 	}
 
+	/**
+	 * [generateWindow description]
+	 * @param  {[type]} tmpWindow    [description]
+	 * @param  {[type]} shift        [description]
+	 * @param  {[type]} wallRotation [description]
+	 * @param  {[type]} height       [description]
+	 * @return {[type]}              [description]
+	 */
+	function generateWindow(tmpWindow, shift, wallRotation, height, yPos) {
+		var newWindow = {};
+
+		// caculate position of door
+		var windowX = tmpWindow.position.x - shift.shift_x;
+		var windowY = yPos;
+		var windowZ = tmpWindow.position.y - shift.shift_z;
+
+		newWindow.position = {};
+		newWindow.position.x = windowX / _CONVERT_ZOOM_FACTOR;
+		newWindow.position.y = windowY;
+		newWindow.position.z = windowZ / _CONVERT_ZOOM_FACTOR;
+
+		newWindow.texture = {
+			url: _WINDOW_DEFAULT_TEXTURE_URL,
+			repeat: {
+				x: 1,
+				y: 1
+			}
+		};
+
+		newWindow.rotation = wallRotation;
+		newWindow.size = {};
+		newWindow.size.x = tmpWindow.width / _CONVERT_ZOOM_FACTOR;
+		newWindow.size.y = _WINDOW_HEIGHT;
+		newWindow.size.z = _WINDOW_THICK;
+
+		return newWindow;		
+	}
 
 	/**
 	 * generate wall block
@@ -358,7 +409,7 @@ function _DataTransformer() {
 		newBlock.size.y = height;
 		newBlock.size.z = _WALL_THICK;
 		newBlock.texture = {
-			url: '/site_media/img/red-brick-seamless-512-x-512.jpg',
+			url: _WALL_DEFAULT_TEXTURE_URL,
 			repeat: {
 				x: (newBlock.size.x * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_WIDTH,
 				y: (newBlock.size.y * _DEFAULT_TEXTURE_REPEAT) / _DEFAULT_TEXTURE_HEIGHT
@@ -404,25 +455,43 @@ function _DataTransformer() {
 				points: [wallPoints[i], wallPoints[i + 1]]
 			}
 
-			var height = 0;
-			var y = 0;
-			var repeat = 0;
+			var height = [];
+			var y = [];
+			var repeat = [];
 			switch (wallType[i]) {
 				case _WALL_TYPE:
-					height = _WALL_HEIGHT;
-					y = _WALL_HEIGHT / 2;
-					repeat = _DEFAULT_TEXTURE_REPEAT;
+					height.push(_WALL_HEIGHT);
+					y.push(_WALL_HEIGHT / 2);
+					repeat.push(_DEFAULT_TEXTURE_REPEAT);
 					break;
+
 				case _DOOR_TYPE:
-					height = _WALL_HEIGHT - _DOOR_HEIGHT;
-					y = (_WALL_HEIGHT + _DOOR_HEIGHT) / 2;
-					repeat = _DEFAULT_TEXTURE_REPEAT * (parseFloat(height) / _WALL_HEIGHT);
+					height.push(_WALL_HEIGHT - _DOOR_HEIGHT);
+					y.push((_WALL_HEIGHT + _DOOR_HEIGHT) / 2);
+					repeat.push(_DEFAULT_TEXTURE_REPEAT * (parseFloat(height) / _WALL_HEIGHT));
+					break;
+
+				case _WINDOW_TYPE:
+					var y1 = (_WINDOW_Y_POS - _WINDOW_HEIGHT / 2) / 2;
+					var y2 = (_WINDOW_HEIGHT / 2 + _WINDOW_Y_POS + _WALL_HEIGHT) / 2;
+					y.push(y1);
+					y.push(y2);
+
+					var h1 =  _WINDOW_Y_POS - _WINDOW_HEIGHT / 2;
+					var h2 =  _WALL_HEIGHT - _WINDOW_Y_POS - _WINDOW_HEIGHT / 2;
+					height.push(h1);
+					height.push(h2);
+
+					repeat.push(_DEFAULT_TEXTURE_REPEAT*(parseFloat(h1) / _WALL_HEIGHT));
+					repeat.push(_DEFAULT_TEXTURE_REPEAT*(parseFloat(h2) / _WALL_HEIGHT));
 					break;
 			}
-			var newBlock = generateWallBlock(wallParam, shift, wallRotation, height, y, repeat);
-			// if (height !== _WALL_HEIGHT) {
-			blocks.push(newBlock);
-			// }
+
+			for (var j in height) {
+				var newBlock = generateWallBlock(wallParam, shift, wallRotation, height[j], y[j], repeat[j]);
+				blocks.push(newBlock);	
+			}
+			
 
 		}
 
