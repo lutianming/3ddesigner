@@ -204,7 +204,7 @@ function exportJSON(){
         data.rooms.push(r);
     }
 
-//    walls
+    //walls
     for(var i = 0; i < walls.length; i++){
         var wall = walls[i];
         var w = {
@@ -218,21 +218,32 @@ function exportJSON(){
             w.points.push({x: p.x, y: p.y});
         }
 
+        //for door and window, use the center point as position
         for(var j = 0; j < wall.doors.length; j++){
             var door = wall.doors[j];
             var d = {};
-            d.position = door.getPosition();
             d.width = door.getRadius();
-            d.rotationDeg = door.getRotationDeg();
+
+            var pos = door.getPosition();
+            var rotation = door.getRotation();
+
+            var x = pos.x + d.width/2 * Math.cos(rotation);
+            var y = pos.y + d.width/2 * Math.sin(rotation);
+            d.position = {x: x, y: y};
             w.doors.push(d);
         }
         for(var j = 0; j < wall.windows.length; j++){
             var window = wall.windows[j];
             var win = {};
-            win.position = window.getPosition();
+
             var points = window.getPoints();
             win.width = Two.distance(points[0], points[1]);
-            win.rotationDeg = window.getRotationDeg();
+            var pos = window.getPosition();
+            var x = pos.x + d.width/2 * Math.cos(rotation);
+            var y = pos.y + d.width/2 * Math.sin(rotation);
+            win.position = {x: x, y: y};
+
+//            win.rotationDeg = window.getRotationDeg();
             w.windows.push(win);
         }
         data.walls.push(w);
