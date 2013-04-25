@@ -1,10 +1,11 @@
-<html>
-	<head>
-		<link rel="stylesheet" href="/site_media/css/bootstrap.min.css"></link>
-		<link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
-	</head>
-
-	<body>
+{% extends "gallery/base.html" %}
+{% block title %}Gallery{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
+<link rel="stylesheet" href="/site_media/css/scene.css"></link>
+{% endblock %}	
+{% block content %}
+<div class="hero-unit"> 
 		<div id="scene-main">	
 			<ul class="nav nav-tabs">
 			 	<li class="active">
@@ -23,6 +24,5 @@
 		</div>
 
 		<script type="text/javascript" src="/site_media/js/scene.js"></script>
-	</body>
-
-</html>
+</div>
+{% endblock%}

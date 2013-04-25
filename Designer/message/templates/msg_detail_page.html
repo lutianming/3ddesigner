@@ -35,6 +35,9 @@
 {% endblock %}
 {% block content%}
 <div id="detail_comment" class="hero-unit">
+{% ifequal user.username 'admin' %}
+<a href="/msg_delete/{{msg.id}}" onclick="return confirm('Are you sure to delete this message?')">Delete</a>
+{% endifequal %}
 <table class="msglist" style="visibility:hidden" id="msg_list">
 	<tr align="left">
 		<td rowspan="4" id="msg_owner"><img src='/site_media/img/user.png'><a href="/user/profile/{{msg.user.username}}">{{msg.user.username}}</a></td>
@@ -82,6 +85,18 @@
 	{% endfor %}
 </div>
 
+
+	<div class="bdlikebutton"></div>
+	<script id="bdlike_shell"></script>
+	<script>
+	var bdShare_config = {
+		"type":"small",
+		"color":"blue",
+		"uid":"4679712"
+	};
+	document.getElementById("bdlike_shell").src="http://bdimg.share.baidu.com/static/js/like_shell.js?t=" + Math.ceil(new Date()/3600000);
+	</script>
+
 	<!-- JiaThis Button BEGIN -->
 	<div class="jiathis_style" style="float:right">
 		<span class="jiathis_txt">Share to:</span>
@@ -105,9 +120,8 @@
     {{form.content_type}}
     {{form.timestamp}}
     {{form.security_hash}}
-    <!--<p><label for="id_name">Name:</label>--><input name="name" id="id_name" value="{{user.username}}" type='hidden'></p>
-    <!--<p><label for="id_email">Email</label>--><input name="email" id="id_email", value="{{user.email}}" type='hidden'></p>
-    <!--<p><label for="id_url">Url:</label><input name="url" id="id_url"></p>-->
+    <input name="name" id="id_name" value="{{user.username}}" type='hidden'></p>
+    <input name="email" id="id_email", value="{{user.email}}" type='hidden'></p>
     <p><label for="id_comment">Comment:</label></p>
     <p><textarea id="id_comment" rows="10" cols="40" name="comment"></textarea></p>
     <p style="display:none;"><label for="id_honeypot">asxa</label> <input type="text" name="honeypot" id="id_honeypot"></p>
