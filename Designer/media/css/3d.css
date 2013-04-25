@@ -1,5 +1,5 @@
 #v-area {
-	width:1000px;
+	width:940px;
 	float: left;
 }
 
@@ -13,12 +13,12 @@
 }
 
 #v-container{
-	width:1000px; 
+	width:940px; 
 	height:600px; 
-	position:absolute;
-	background-color:#AAA;
-	float:left;
+	background-color:#eee;
 	display: block;
+	border : 1px solid #c09853;
+	margin-bottom: 10px;
 }
 
 #vc-pannel {
@@ -53,4 +53,9 @@ a{
 	left : 450px;
 	position : absolute;
 	display: none;
+}
+
+#scene-main {
+	margin : 0 auto;
+	width: 940px;
 }
