@@ -1,4 +1,4 @@
-{% extends "gallery/base.html" %}
+{% extends "scene/base.html" %}
 {% block title %}Gallery{% endblock %}
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
@@ -16,10 +16,10 @@
 			  	</li>
 			</ul>
 			<div id="three-scene">
-				{% include "3D.html"%}
+				{% include "scene/3D.html"%}
 			</div>
 			<div id="two-scene" style="display:none;">
-				{% include "2D.html"%}
+				{% include "scene/2D.html"%}
 			</div>
 		</div>
 

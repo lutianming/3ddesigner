@@ -24,7 +24,7 @@
               <li class="divider-vertical"></li>
               <li><a href="/">Home</a></li>
               <li class="divider-vertical"></li>
-              <li><a href="/scene/">Design</a></li>
+              <li class="active"><a href="/scene/">Design</a></li>
               <li class="divider-vertical"></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">BBS<b class="caret"></b></a> 
@@ -34,7 +34,7 @@
                 </ul> 
               </li> 
               <li class="divider-vertical"></li>
-              <li class="active"><a href="/gallery/">Gallery</a></li>
+              <li><a href="/gallery/">Gallery</a></li>
               <li class="divider-vertical"></li>
             </ul> 
             {% if user.is_authenticated %}
@@ -44,6 +44,9 @@
 				<li><a href="/accounts/password/change/">Change Password</a></li>
 				<li class="divider-vertical"></li>
 				<li><a href="/accounts/logout/">Logout</a></li>
+				{% ifequal user.username 'admin' %}
+				<li><a href="/admin/">Backstage</a></li>
+				{% endifequal %}
 			</ul>
 			{% else %}
             <ul class="nav pull-right">

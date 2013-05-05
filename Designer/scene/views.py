@@ -5,6 +5,6 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def  view_scene(request):
-	return render_to_response('view_scene.html',context_instance=RequestContext(request))
+	return render_to_response('scene/view_scene.html',context_instance=RequestContext(request))
 
 
