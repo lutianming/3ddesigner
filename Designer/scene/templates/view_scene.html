@@ -1,4 +1,4 @@
-{% extends "scene/base.html" %}
+{% extends "gallery/base.html" %}
 {% block title %}Gallery{% endblock %}
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
@@ -71,6 +71,7 @@
 					<h3>{{ scene.title }}</h3>
 					<p>{{ scene.description|safe }}</p>
 				</div>
+				
 			</div>
 		{% endifequal %}
 	</div>

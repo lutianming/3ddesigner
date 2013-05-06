@@ -11,13 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 import time;
 
 @login_required
-<<<<<<< HEAD
 def  view_scene(request,id):
 	scene = get_object_or_404(SceneData,id = id)
-=======
-def  view_scene(request):
-	return render_to_response('scene/view_scene.html',context_instance=RequestContext(request))
->>>>>>> c8d02fe7e485f4eade01681a6e993336da784567
 
 	context = RequestContext(request,{
 			'type' : 'view',

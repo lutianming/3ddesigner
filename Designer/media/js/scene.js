@@ -4,7 +4,7 @@ $(function(){
 		$('#two-scene').hide();
 		$(this).parent().addClass('active');
 		$('#two-tab').parent().removeClass('active');
-		window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
+		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
 
 		$("#loading-box").show();
 
@@ -29,7 +29,7 @@ $(function(){
 		$('#three-scene').hide();
 		$(this).parent().addClass('active');
 		$('#three-tab').parent().removeClass('active');
-		window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
+		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
 	});
 
 	$("[id^=save-btn]").on("click",function(event){
