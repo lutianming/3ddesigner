@@ -102,6 +102,8 @@ function _DataTransformer() {
 	function getCoordinateShift() {
 		var maxX = 0;
 		var maxY = 0;
+		var minX = Infinity;
+		var minY = Infinity;
 
 		for (var i in editData.walls) {
 			var tmpWall = editData.walls[i];
@@ -109,12 +111,16 @@ function _DataTransformer() {
 				var point = tmpWall.points[j];
 				maxX = (point.x > maxX) ? point.x : maxX;
 				maxY = (point.y > maxY) ? point.y : maxY;
+				minX = (point.x < minX) ? point.x : minX;
+				minY = (point.y < minY) ? point.x : minY;
 			}
 		}
 
 		var shift = {
-			shift_x: maxX / 2.0,
-			shift_z: maxY / 2.0
+			/*shift_x: (maxX + minX) / 2.0,
+			shift_z: (maxY + minY) / 2.0*/
+			shift_x : maxX/2.0,
+			shift_z : maxY/2.0
 		};
 
 		return shift;

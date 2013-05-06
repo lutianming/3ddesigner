@@ -6,6 +6,9 @@ from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from django.utils import simplejson
+from django.http import HttpResponse
+from scene.models import *
 
 def register_page(request):
     if request.method == 'POST':
@@ -59,13 +62,40 @@ def get_user_profile(request, username):
         
     user_msg_list = user.msg_set.order_by('-id')
     paginator = Paginator(user_msg_list,3)    
-        
+
+
+    userId = request.user.id
+    sceneList = get_scene_list(userId,1) #SceneData.objects.filter(author_id=request.user.id)[0:9]
+
     page_obj = paginator.page(msgpage_number)
     c = RequestContext(request, {
             'msg_list': get_user_msg_list,
             'username':username,
-            'user':user
+            'user':user,
+            'sceneList' : sceneList
         })
         
     return render_to_response('profile/user_profile.html', c)
-    
+
+def ajax_get_more_scene(request,page):
+    userId = request.user.id
+    sceneList = get_scene_list(userId,page);
+
+    context = RequestContext(request,{
+            'sceneList' : sceneList
+        })
+
+    return render_to_response('profile/work_list.html',context)
+
+
+
+def get_scene_list(user_id,page):
+    start = (int(page)-1)*9
+    end =(int(page))*9
+    sceneList = SceneData.objects.filter(author_id=user_id)[start : end]
+
+    for scene in sceneList:
+        scene.htitle = scene.title[:12]
+        if len(scene.title) > 12 :
+            scene.htitle += '...'
+    return sceneList

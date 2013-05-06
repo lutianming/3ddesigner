@@ -1,30 +1,16 @@
-<ul class="thumbnails">
-  <li class="span3">
-    <div class="thumbnail">
-      <img data-src="holder.js/400x300" alt="" src="/site_media/img/1.jpg" style="width:400px; height:300px;">
-      <h3>Thumbnail label</h3>
-      <p>Thumbnail caption...</p>
-    </div>
-  </li>
-  <li class="span3">
-    <div class="thumbnail">
-      <img data-src="holder.js/400x300" alt="" src="/site_media/img/1.jpg" style="width:400px; height:300px;">
-      <h3>Thumbnail label</h3>
-      <p>Thumbnail caption...</p>
-    </div>
-  </li>
-  <li class="span3">
-    <div class="thumbnail">
-      <img data-src="holder.js/400x300" alt="" src="/site_media/img/1.jpg" style="width:400px; height:300px;">
-      <h3>Thumbnail label</h3>
-      <p>Thumbnail caption...</p>
-    </div>
-  </li>
-  <li class="span3">
-    <div class="thumbnail">
-      <img data-src="holder.js/400x300" alt="" src="/site_media/img/1.jpg" style="width:400px; height:300px;">
-      <h3>Thumbnail label</h3>
-      <p>Thumbnail caption...</p>
-    </div>
-  </li>
-</ul>
+{% for scene in sceneList %}
+<li class="span3">
+	<div class="thumbnail">
+		<a href="/scene/{{ scene.id }}" target="_blank">
+			{% if scene.img_url%}
+			<img data-src="holder.js/260x200" src="{{ scene.img_url }}" alt="Scene Picture" class="img-rounded" style="width:260px;height:200px;"/>
+			{%else%}
+			<img data-src="holder.js/260x200" src="/site_media/img/no-preview.jpg" class="img-rounded" style="width:260px;height:200px;"/>
+			{% endif %}
+		</a>
+	</div>
+	<a href="/scene/{{ scene.id }}" target="_blank" title="{{scene.title|safe}}">
+		<h3>{{ scene.htitle}}</h3>
+	</a>
+</li>
+{% endfor %}

@@ -73,7 +73,7 @@ SceneViewer.prototype.createLight = function() {
  */
 SceneViewer.prototype.createTrackballCameraControls = function() {
 
-	this.camera.position.set(0, 100, 100);
+	this.camera.position.set(0, 150, 100);
 	this.camera.lookAt(this.root.position);
 
 	var controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
@@ -217,6 +217,11 @@ ObjectFactory.createCubeMesh = function(param) {
 	return mesh;
 }
 
+/**
+ * @discarded
+ * @param  {[type]} param [description]
+ * @return {[type]}       [description]
+ */
 ObjectFactory.createPlaneMesh = function(param) {
 	var geometry = new THREE.Geometry();
 

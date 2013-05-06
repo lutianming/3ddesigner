@@ -3,17 +3,20 @@ var scene = null;
 var camera = null;
 var mesh = null;
 
-var APP;
+/*var APP;*/
 
 var editData;
 var threeSceneData;
 
 $(function() {
 	/* init webgl application instance*/
-	/*var container = document.getElementById('v-container');
-	var app = new SceneViewer();
-	app.init({
-		container: container
-	});
-	app.run();*/
+
+	if (editData !== undefined) {
+		var container = document.getElementById('v-container');
+		var app = new SceneViewer();
+		app.init({
+			container: container
+		});
+		app.run();
+	}
 });

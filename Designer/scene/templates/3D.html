@@ -1,3 +1,9 @@
+<script type="text/javascript">
+{% if scene.content %}
+var editData = {{ scene.content|safe }};
+{% endif %}
+</script>
+
 <script type="text/javascript" src="/site_media/js/jquery-1.9.0.min.js"></script>
 <!--<script type="text/javascript" src="js/3dlib/Three.js"></script>-->
 <script type="text/javascript" src="/site_media/js/3dlib/three/three.r57.min.js"></script>
@@ -18,15 +24,16 @@
 <link rel="stylesheet" type="text/css" href="/site_media/css/3d.css"/>
 
 
+
 <div id="v-area">
 	<div class="alert">
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<strong>操作提示：</strong> 按住鼠标左键转动视角，按住鼠标右键拖动场景，鼠标滚轮缩放。
+		<strong>Hint:</strong> Press left mouse to rotate camera. Press right mouse to drag scene. Scroll mouse to zoom scene.
 	</div>
 	<div id="outer-v-container" >
 		<div id="loading-box" class="modal">
 			<div class="modal-body">
-				<center><p>正在载入场景……</p></center>
+				<center><p>loading scene……</p></center>
 			</div>
 		</div>
 		<div id="v-container"></div>

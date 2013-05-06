@@ -1,11 +1,10 @@
-APP;
-
 $(function(){
 	$('#three-tab').on('click',function(event){
 		$('#three-scene').show();
 		$('#two-scene').hide();
 		$(this).parent().addClass('active');
 		$('#two-tab').parent().removeClass('active');
+		window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
 
 		$("#loading-box").show();
 
@@ -22,8 +21,6 @@ $(function(){
 		});
 		app.run();
 
-		APP = app;
-
 		$("#loading-box").hide();
 	});
 
@@ -32,5 +29,40 @@ $(function(){
 		$('#three-scene').hide();
 		$(this).parent().addClass('active');
 		$('#three-tab').parent().removeClass('active');
+		window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
 	});
+
+	$("[id^=save-btn]").on("click",function(event){
+		saveScene();
+	});
+
+	$("#save-draft-btn").on("click",function(event){
+		saveDraft();
+	});
+
+	function saveDraft() {
+		var content = exportJSON();
+		var title = $("#inputSceneTitle").val();
+		var description =  $("#inputSceneDescription").val();
+		var sceneId = $("#sceneId").val();
+
+		$.post(
+			'/scene/save/',
+			{
+				content : content,
+				title : title,
+				description : description,
+				sceneId : sceneId,
+				draft : draft
+			},
+			function(data) {
+				alert(data);
+			}
+		);
+	}
+
+	function saveScene() {
+		$("#sceneContentData").val(exportJSON());
+		$("#scene-data-form").submit();
+	}
 });
