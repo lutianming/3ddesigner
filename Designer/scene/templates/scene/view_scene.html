@@ -1,4 +1,4 @@
-{% extends "gallery/base.html" %}
+{% extends "scene/base.html" %}
 {% block title %}Gallery{% endblock %}
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
@@ -7,6 +7,7 @@
 {% endblock %}	
 {% block content %}
 <div> 
+<<<<<<< HEAD:Designer/scene/templates/view_scene.html
 	<div id="scene-title">
 		{% ifequal type 'edit' %}
 			<script type="text/javascript">
@@ -72,6 +73,22 @@
 					<p>{{ scene.description|safe }}</p>
 				</div>
 				
+=======
+		<div id="scene-main">	
+			<ul class="nav nav-tabs">
+			 	<li class="active">
+					<a href="javascript:;" id="three-tab">3D展示</a>
+			  	</li>
+			  	<li>
+			  		<a href="javascript:;" id="two-tab">2D编辑</a>
+			  	</li>
+			</ul>
+			<div id="three-scene">
+				{% include "scene/3D.html"%}
+			</div>
+			<div id="two-scene" style="display:none;">
+				{% include "scene/2D.html"%}
+>>>>>>> c8d02fe7e485f4eade01681a6e993336da784567:Designer/scene/templates/scene/view_scene.html
 			</div>
 		{% endifequal %}
 	</div>

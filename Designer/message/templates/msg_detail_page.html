@@ -40,7 +40,7 @@
 {% endifequal %}
 <table class="msglist" style="visibility:hidden" id="msg_list">
 	<tr align="left">
-		<td rowspan="4" id="msg_owner"><img src='/site_media/img/user.png'><a href="/user/profile/{{msg.user.username}}">{{msg.user.username}}</a></td>
+		<td rowspan="3" id="msg_owner"><img src='/site_media/img/user.png'><a href="/user/profile/{{msg.user.username}}">{{msg.user.username}}</a></td>
 		<td align="right" style="padding:10px">{{msg.datetime|date:"Y-m-d H:i"}}</td>
 		<!--<th>IP Address:{{msg.ip}}</th>-->
 	</tr>
@@ -50,7 +50,6 @@
 	<tr>
 		<td colspan="3" id="msg_content" style="padding:10px">{{msg.content}}</td>	
 	</tr>
-	<tr><td>Here shows the 3D model.You need to add a field named "relatedModel" in model Msg, and add a form field named "relatedModel" in MsgPostForm.Modify the msg_post_page view.</td></tr>
 </table>
 <br>
 {% get_comment_list for message.msg msg.id as comment_list %}
