@@ -62,8 +62,9 @@ Two.init = function(){
     g_2d.layer.add(g_2d.house);
     Two.initControls();
 
-    if(editData){
-        Two.load(editData);
+    //load model if we have the data
+    if(typeof twoEditData !== "undefined"){
+        Two.load(twoEditData);
     }
 };
 

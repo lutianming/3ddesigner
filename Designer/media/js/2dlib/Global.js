@@ -176,8 +176,11 @@ Two.save = function(){
     return JSON.stringify(data);
 };
 
-Two.load = function(json){
-    var data = JSON.parse(json);
+Two.load = function(data){
+    if(data instanceof String){
+        data = JSON.parse(data);
+    }
+
     //clean old house
     Two.clean();
     var i;
@@ -264,5 +267,8 @@ Two.load = function(json){
 //test load and save
 Two.reload = function(){
     var data = Two.save();
+    console.log('save');
     Two.load(data);
+    console.log('load');
+
 };
