@@ -22,7 +22,7 @@ var g_2d = {
 g_2d.house = null;
 g_2d.furnitures = [];
 
-function init(){
+Two.init = function(){
     g_2d.stage = new Kinetic.Stage({
         container: 'content',
         width: g_2d.width,
@@ -60,17 +60,21 @@ function init(){
 
     g_2d.house = new Two.House('house');
     g_2d.layer.add(g_2d.house);
-    initControls();
-}
+    Two.initControls();
 
-function initControls(){
+    if(editData){
+        Two.load(editData);
+    }
+};
+
+Two.initControls = function(){
     //mousewheel not work now
     var content = g_2d.stage.getContent();
     content.addEventListener('mousewheel', onCanvasMouseWheel, false);
     content.addEventListener('mouseup', onCanvasMouseUp, false);
     content.addEventListener('mousemove', onCanvasMouseMove, false);
     document.addEventListener('mousedown', onCanvasMouseDown, false);
-}
+};
 
 function onCanvasMouseWheel(event){
     event.preventDefault();
@@ -239,11 +243,12 @@ function exportJSON(){
             var points = window.getPoints();
             win.width = Two.distance(points[0], points[1]);
             var pos = window.getPosition();
-            var x = pos.x + d.width/2 * Math.cos(rotation);
-            var y = pos.y + d.width/2 * Math.sin(rotation);
+            var rotation = window.getRotation();
+
+            var x = pos.x + win.width/2 * Math.cos(rotation);
+            var y = pos.y + win.width/2 * Math.sin(rotation);
             win.position = {x: x, y: y};
 
-//            win.rotationDeg = window.getRotationDeg();
             w.windows.push(win);
         }
         data.walls.push(w);

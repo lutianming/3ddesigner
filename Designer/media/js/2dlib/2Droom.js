@@ -3,7 +3,7 @@ Two.Corner = function(x, y){
         name: 'corner',
         x: x,
         y: y,
-        radius: 3,
+        radius: 4,
         fill: 'white',
         visible: false
     });
@@ -143,11 +143,15 @@ Two.Room = function(corners, house, walls){
     });
     house.add(this);
     var len = corners.length;
-    for(var i = 0; i < len; i++){
-        //corners[i].rooms.push(this);
-    }
+    // for(var i = 0; i < len; i++){
+    //     //corners[i].rooms.push(this);
+    // }
     if(walls != null){
         this.walls = walls;
+        for(var i = 0; i < walls.length; i++){
+            var wall = walls[i];
+            wall.rooms.push(this);
+        }
     }
     else{
         this.walls = new Array();
@@ -304,8 +308,8 @@ function split_wall(wall, corner)
         var index = room.walls.indexOf(wall);
         room.walls.splice(index+1, 0, new_wall);
         var rpoints = room.getPoints();
-        var index = rpoints.indexOf(points[1]);
-        rpoints.splice(index, 0, corner);
+        var index = rpoints.indexOf(points[0]);
+        rpoints.splice(index+1, 0, corner);
     }
     return new_wall;
 }
@@ -356,6 +360,6 @@ function replace_wall(w1, w2, p_map)
     }
 
     //destroy old wall
-    w1.remove();
-    w1.destroy();
+    // w1.remove();
+    // w1.destroy();
 }
