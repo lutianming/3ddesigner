@@ -1,4 +1,6 @@
-var Two = {};
+var Two = {
+    globals: {}
+};
 Two.distance = function(p1, p2){
     var dx = Math.abs(p1.x - p2.x);
     var dy = Math.abs(p1.y - p2.y);
@@ -88,10 +90,10 @@ Two.clean = function(){
     g_2d.layer.draw();
     g_2d.current_obj = null;
 };
-//the data saved in this function is used in load_scene,
+//the data saved in this function is used in load,
 //thus the saved data is different from the exported data from
 //exportJSON
-Two.save_scene = function(){
+Two.save = function(){
     var house = g_2d.house;
     var furnitures =  g_2d.furnitures;
     var data = {
@@ -174,9 +176,8 @@ Two.save_scene = function(){
     return JSON.stringify(data);
 };
 
-Two.load_scene = function(json){
+Two.load = function(json){
     var data = JSON.parse(json);
-    console.log(data);
     //clean old house
     Two.clean();
     var i;
@@ -262,6 +263,6 @@ Two.load_scene = function(json){
 
 //test load and save
 Two.reload = function(){
-    var data = Two.save_scene();
-    Two.load_scene(data);
+    var data = Two.save();
+    Two.load(data);
 };

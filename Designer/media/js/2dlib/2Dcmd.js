@@ -177,15 +177,16 @@ AddRoomCommand.prototype = Object.create(BaseCommand.prototype, {
                             //w2 in w1
                             var p = points2[1-share_p[1]];
                             var w3 = split_wall(w1, p);
-                            // if(w1.compare(w2) == 0){
-                            //     replace_wall(w1, w2,
-                            //                 map(w1.getPoints(),
-                            //                    w2.getPoints()));
-                            // }else{
-                            //     replace_wall(w3, w2,
-                            //                  map(w3.getPoints(),
-                            //                     w2.getPoints()));
-                            // }
+                            g_2d.house.add(w3);
+                            if(w1.compare(w2) == 0){
+                                replace_wall(w1, w2,
+                                            map(w1.getPoints(),
+                                               w2.getPoints()));
+                            }else{
+                                replace_wall(w3, w2,
+                                             map(w3.getPoints(),
+                                                w2.getPoints()));
+                            }
 
                         }
                     }
