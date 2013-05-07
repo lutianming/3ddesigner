@@ -42,7 +42,7 @@ $(function(){
 
 	function saveDraft() {
 		var content3 = exportJSON();
-		var content2 = Two.save_scene();
+		var content2 = Two.save();
 		var title = $("#inputSceneTitle").val();
 		var description =  $("#inputSceneDescription").val();
 		var sceneId = $("#sceneId").val();
@@ -65,7 +65,7 @@ $(function(){
 
 	function saveScene() {
 		$("#sceneContentData").val(exportJSON());
-		$("#towContentData").val(Two.save_scene());
+		$("#towContentData").val(Two.save());
 		$("#scene-data-form").submit();
 	}
 });
