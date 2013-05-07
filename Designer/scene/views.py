@@ -43,19 +43,20 @@ def save_scene(request):
 		title = request.POST['title']
 		time = get_time_string()
 		description = request.POST['description']
-		content = request.POST['content']
+		content3 = request.POST['contentthree']
 		authorId = request.user.id
 		sceneId = request.POST['sceneId']
 		isDraft = request.POST['draft']
+		content2 = request.POST['contenttwo']
 		# imgUrl = request.POST['imgUrl']
 
 		if isDraft == 'true' :
-			sceneDraft = SceneDraft(title=title , time=time , description=description , content=content , author_id=authorId , scene_id=sceneId)
+			sceneDraft = SceneDraft(title=title , time=time , description=description , content3=content3 , content2=content2 , author_id=authorId , scene_id=sceneId)
 			sceneDraft.save()
 			json = {'code':1, 'draftId':sceneDraft.id}
 			return HttpResponse(simplejson.dumps(json))
 
-		scene = SceneData(title=title , time=time , description=description , content=content, author_id=authorId )#, img_url=imgUrl )
+		scene = SceneData(title=title , time=time , description=description , content3=content3 ,  content2=content2 , author_id=authorId )#, img_url=imgUrl )
 		scene.save()
 		return HttpResponseRedirect('/scene/' + str(scene.id))
 

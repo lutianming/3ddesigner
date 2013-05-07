@@ -4,6 +4,19 @@
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
  --><link rel="stylesheet" href="/site_media/css/scene.css"></link>
  <script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
+
+<script type="text/javascript">
+{% if scene.content3 %}
+var editData = {{ scene.content3|safe }};
+{% endif %}
+
+{% if scene.content2 %}
+var twoEditData = {{ scene.content2|safe }};
+{% endif %}
+
+</script>
+
+
 {% endblock %}	
 {% block content %}
 <div> 
@@ -50,7 +63,8 @@
 						</div>
 					</div>
 					<input type="hidden" id="sceneId" name="sceneId" value="{{scene.id}}"/>
-					<input type="hidden" id="sceneContentData" name="content" value=""/>
+					<input type="hidden" id="sceneContentData" name="contentthree" value=""/>
+					<input type="hidden" id="towContentData"  name="contenttwo" value=""/>
 					<input type="hidden" id="isDraft" name="draft" value="false"/>
 				</fieldset>
 			</form>

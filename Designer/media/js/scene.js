@@ -41,7 +41,8 @@ $(function(){
 	});
 
 	function saveDraft() {
-		var content = exportJSON();
+		var content3 = exportJSON();
+		var content2 = Two.save_scene();
 		var title = $("#inputSceneTitle").val();
 		var description =  $("#inputSceneDescription").val();
 		var sceneId = $("#sceneId").val();
@@ -49,7 +50,8 @@ $(function(){
 		$.post(
 			'/scene/save/',
 			{
-				content : content,
+				content3 : content3,
+				content2 : content2,
 				title : title,
 				description : description,
 				sceneId : sceneId,
@@ -63,6 +65,7 @@ $(function(){
 
 	function saveScene() {
 		$("#sceneContentData").val(exportJSON());
+		$("#towContentData").val(Two.save_scene());
 		$("#scene-data-form").submit();
 	}
 });
