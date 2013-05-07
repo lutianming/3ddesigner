@@ -13,20 +13,19 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div id="toolbox" class="span2">
-          <button onclick="Two.clean()">clean</button>
-          <button>load</button>
-          <button>save</button>
-          <button onclick="Two.reload()">reload</button>
-          <button onclick="scale(0.5)">+</button>
-          <button onclick="scale(-0.5)">-</button>
-          <button onclick="exportJSON()">export</button>
-          <button onclick="setCmd(CMDS.add_room)">room</button>
-          <button onclick="setCmd(CMDS.add_furniture)">table</button>
-          <button onclick="setCmd(CMDS.add_door)">door</button>
-          <button onclick="setCmd(CMDS.add_window)">window</button>
-          <button onclick="setCmd(CMDS.split_wall)">splite wall</button>
-          <div>
-            <img class="furniture img-rounded" src="thumbs/table.png"/>
+          <div class="btn-group btn-group-vertical">
+            <button class="btn" onclick="Two.clean()">clean</button>
+            <button class="btn">load</button>
+            <button class="btn">save</button>
+            <button class="btn" onclick="Two.reload()">reload</button>
+            <button class="btn" onclick="scale(0.5)">+</button>
+            <button class="btn" onclick="scale(-0.5)">-</button>
+            <button class="btn" onclick="exportJSON()">export</button>
+            <button class="btn" onclick="setCmd(CMDS.add_room)">room</button>
+            <button class="btn" onclick="setCmd(CMDS.add_furniture)">table</button>
+            <button class="btn" onclick="setCmd(CMDS.add_door)">door</button>
+            <button class="btn" onclick="setCmd(CMDS.add_window)">window</button>
+            <button class="btn" onclick="setCmd(CMDS.split_wall)">splite wall</button>
           </div>
         </div>
         <div id="content" class="span10">
@@ -35,6 +34,6 @@
     </div>
     <script type="text/javascript">
     $(function() {
-        init();
+    Two.init();
     });
     </script>
