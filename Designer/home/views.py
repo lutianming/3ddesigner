@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.utils import simplejson
 from django.http import HttpResponse
 from scene.models import *
+from django.contrib.auth.decorators import login_required
 
 def register_page(request):
     if request.method == 'POST':
@@ -64,7 +65,7 @@ def get_user_profile(request, username):
     paginator = Paginator(user_msg_list,3)    
 
 
-    userId = request.user.id
+    userId = user.id
     sceneList = get_scene_list(userId,1) #SceneData.objects.filter(author_id=request.user.id)[0:9]
 
     page_obj = paginator.page(msgpage_number)

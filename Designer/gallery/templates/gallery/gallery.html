@@ -11,9 +11,13 @@
 		<div class='right'><img alt="Blueband-right" src="/site_media/img/blueband-right.png" /></div> 
 		<div class='clear'></div> 
 	</div>
-	<div class='gallery_list'>
-		{% include "gallery/gallery_list.html" %}
+	<ul class="thumbnails" id="scene-ul">
+				{% include "profile/work_list.html" %}
+	</ul>
+	<div>
+		<a href="javascript:;" id="get-more-scene" class="btn btn-large" style="margin:0 auto;display:block" data-page="1">More......</a>
 	</div>
+	<script type="text/javascript" src="/site_media/js/gallery.js"></script>
 </div>
 <!-- UJian Button BEGIN -->
 	<script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&fade=1"></script>

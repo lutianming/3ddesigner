@@ -33,16 +33,18 @@
                 </ul> 
               </li> 
               <li class="divider-vertical"></li>
-              <li class="active"><a href="/gallery/">Gallery</a></li>
+              <li><a href="/gallery/">Gallery</a></li>
               <li class="divider-vertical"></li>
             </ul> 
             {% if user.is_authenticated %}
             <ul class="nav pull-right">
-				<li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>
-				<li class="divider-vertical"></li>
-				<li><a href="/accounts/password/change/">Change Password</a></li>
-				<li class="divider-vertical"></li>
-				<li><a href="/accounts/logout/">Logout</a></li>
+				<li class="dropdown">
+				<a href="/user/profile/{{user.username}}" class="dropdown-toggle" data-toggle="dropdown">{{user.username}}<b class="caret"></b></a> 
+                                <ul class="dropdown-menu"> 
+                                  <li><a href="/accounts/password/change/">Change Password</a></li> 
+                                  <li><a href="/accounts/logout/">Logout</a></li> 
+                                </ul> 
+                              </li>
 				{% ifequal user.username 'admin' %}
 				<li><a href="/admin/">Backstage</a></li>
 				{% endifequal %}

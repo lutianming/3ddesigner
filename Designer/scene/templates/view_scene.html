@@ -1,9 +1,23 @@
 {% extends "gallery/base.html" %}
+{% load comments %}
 {% block title %}Gallery{% endblock %}
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
  --><link rel="stylesheet" href="/site_media/css/scene.css"></link>
  <script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
+ <script type="text/javascript">
+		tinyMCE.init({
+		 mode:"textareas",
+		 theme:"advanced",
+		 plugins:"emotions",
+		 theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justrifyright,justrifyfull,|,fontselect,fontsizeselect,|,cut,copy,paste,|,undo,redo,|,link,unlink,|,forecolor,backcolor,|,image,emotions",
+		 theme_advanced_buttons2:"",
+		 theme_advanced_toolbar_location:"top",
+		 theme_advanced_toolbar_align:"left",
+		 language:"en",
+		 height:"100px",
+		});
+</script>
 
 <script type="text/javascript">
 {% if scene.content3 %}
@@ -132,6 +146,41 @@ var twoEditData = {{ scene.content2|safe }};
 		<div id="two-scene"  {% ifequal type 'view' %}style="display:none;"{% endifequal %}>
 			{% include "scene/2D.html"%}
 		</div>
+		{% ifequal type 'view' %}
+			{% get_comment_form for scene.scenedata scene.id as form %}  
+			<form action='{%comment_form_target%}' method='post'>
+			    {% csrf_token %}
+			    {{form.object_pk}}
+			    {{form.content_type}}
+			    {{form.timestamp}}
+			    {{form.security_hash}}
+			    <input name="name" id="id_name" value="{{user.username}}" type='hidden'></p>
+			    <input name="email" id="id_email", value="{{user.email}}" type='hidden'></p>
+			    <p><label for="id_comment">Comment:</label></p>
+			    <p><textarea id="id_comment" rows="10" cols="40" name="comment"></textarea></p>
+			    <p style="display:none;"><label for="id_honeypot">asxa</label> <input type="text" name="honeypot" id="id_honeypot"></p>
+			    <p><input name="post" value="Send" type="submit" /></p>
+			    <input type='hidden' name='next' value='/scene/{{scene.id}}'/>		    
+			
+			<!-- UJian Button BEGIN -->
+			<script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&fade=1"></script>
+			<a href="http://www.ujian.cc" style="border:0;"><img src="http://img.ujian.cc/pixel.png" alt="recommend" style="border:0;padding:0;margin:0;" /></a>
+			<!-- UJian Button END -->
+			<div id="uyan_frame"></div>
+			<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=0" async=""></script>
+			
+			{% get_comment_list for scene.scenedata scene.id as comment_list %}
+			<div id="comment_list" style="overflow-y:auto;height:500px">
+				{% for comment in comment_list %}
+				<div class="comment">
+					<p>User:<b>{{comment.user.username}}</b>&nbsp;&nbsp;&nbsp;
+					Time:{{comment.submit_date|date:"Y-m-d H:i"}}&nbsp;&nbsp;&nbsp;
+					<!--IP Address:{{comment.ip_address}}</p>-->
+					<div class="comment_detail">{{comment.comment}}</div>
+				</div>
+				{% endfor %}
+			</div>
+		{% endifequal %}
 	</div>
 
 	<script type="text/javascript" src="/site_media/js/scene.js"></script>

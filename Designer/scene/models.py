@@ -10,6 +10,9 @@ class SceneData(models.Model):
     author = models.ForeignKey(User)
     img_url = models.CharField(max_length=100)
     view_count = models.IntegerField()
+    
+    class Meta:
+        ordering = ['-time']
 
 class SceneDraft(models.Model):
     title = models.CharField(max_length=30)
@@ -19,4 +22,7 @@ class SceneDraft(models.Model):
     content2 = models.TextField()
     author = models.ForeignKey(User)
     scene = models.ForeignKey(SceneData)
+    
+    class Meta:
+        ordering = ['-time']
 
