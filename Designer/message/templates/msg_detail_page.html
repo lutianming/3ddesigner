@@ -38,20 +38,48 @@
 {% ifequal user.username 'admin' %}
 <a href="/msg_delete/{{msg.id}}" onclick="return confirm('Are you sure to delete this message?')">Delete</a>
 {% endifequal %}
+<div class="main">
+	<div class="main_title">
+		<span style="font-size:24px;">{{msg.title}}<span>
+	</div>
+	<div class="main_1">
+		<div class="mainbox_1">
+			<table id="msg_detail" width="100%">
+					<tr>
+						<td class="td_line1">
+							<div class="mybbs">
+								<div class="mypic" style="float:left;"><img src='/site_media/img/user.png'><a href="/user/profile/{{msg.user.username}}"></div>
+								<div class="myinfo">
+									<div class="myInfo_up">
+										&nbsp;&nbsp;
+										<a href="/user/profile/{{msg.user.username}}">{{msg.user.username}}</a>
+										&nbsp;&nbsp;
+										<span>Posted at: {{msg.datetime|date:"Y-m-d H:i"}}</span>
+									</div>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div>
+								<span style="float:right; font-size:14px;">
+									Viewed: <font color="#ff0000">{{msg.clickcount}}</font>&nbsp;
+									{% load comments %}
+									Commented: <font color="#ff0000">{% get_comment_count for message.msg msg.id as comment_count %}{{comment_count}}</font>
+								</span>
+								<div style="clear:both"></div>
+								<h2></h2>
+								<div id="msg_content" style="line-height:1.6em; padding:10px;">{{msg.content}}</div>
+							</div>
+						</td>
+					</tr>
+			</table>
+		</div>
+	</div>
+</div>
 <table class="msglist" style="visibility:hidden" id="msg_list">
-	<tr align="left">
-		<td rowspan="3" id="msg_owner"><img src='/site_media/img/user.png'><a href="/user/profile/{{msg.user.username}}">{{msg.user.username}}</a></td>
-		<td align="right" style="padding:10px">{{msg.datetime|date:"Y-m-d H:i"}}</td>
-		<!--<th>IP Address:{{msg.ip}}</th>-->
-	</tr>
-	<tr>
-		<td colspan="3" align="center"><b>{{msg.title}}</b></td>
-	</tr>
-	<tr>
-		<td colspan="3" id="msg_content" style="padding:10px">{{msg.content}}</td>	
-	</tr>
 </table>
-<br>
 {% get_comment_list for message.msg msg.id as comment_list %}
 	{% if not comment_list %}
 		<div id="comment_list" style="visibility:hidden">
@@ -75,11 +103,11 @@
 		{% endifequal %}
 	{% endif %}
 	{% for comment in comment_list %}
-	<div class="comment">
-		<p>User:<b>{{comment.user.username}}</b>&nbsp;&nbsp;&nbsp;
-		Time:{{comment.submit_date|date:"Y-m-d H:i"}}&nbsp;&nbsp;&nbsp;
+	<div class="comment" style="font-size:14px;">
+		<span style="color:green;">User:</span><b><a href="/user/profile/{{comment.user.username}}">{{comment.user.username}}</a></b>&nbsp;&nbsp;&nbsp;
+		<span style="color:green;">Time:{{comment.submit_date|date:"Y-m-d H:i"}}</span>&nbsp;&nbsp;&nbsp;
 		<!--IP Address:{{comment.ip_address}}</p>-->
-		<div class="comment_detail">{{comment.comment}}</div>
+		<div class="comment_detail" style="font-size:18px;">{{comment.comment}}</div>
 	</div>
 	{% endfor %}
 </div>

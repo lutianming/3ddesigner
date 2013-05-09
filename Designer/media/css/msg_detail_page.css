@@ -1,12 +1,6 @@
 body {
 	background-color: #b2daf2;
 }
-table#msg_list th, table#msg_list td{
-	border: 1 solid black;
-	width: 700px;
-	height:50px;
-	font-size: 18px;
-}
 
 div#detail_comment {
 	position: absolute;
@@ -18,9 +12,6 @@ div#detail_comment {
 	background-color: white;
 }
 
-table#msg_list td#msg_owner {
-	width:100px;
-}
 div#footer {
 	height:150px;
 	background: url('/site_media/img/bg-footer.jpg') repeat-x;
@@ -37,6 +28,30 @@ div#subfooter {
 	width: 100%;
 	height:40px;
 }
+.main_title {
+	border: 1px solid #9DB3C5;
+	border-bottom: 0;
+	padding: 1px;
+	color: white;
+	height: 31px;
+	overflow: hidden;
+	zoom: 1;
+	z-index: 1;
+	background: url('/site_media/img/title_bg.gif') repeat-x 0 0;
+}
+.main_title span {
+	line-height: 31px;
+	height: 31px;
+	padding-left: 1em;
+	
+}
 
-
-
+table td{
+	border-bottom: 1 solid #b2daf2;;
+	width: 700px;
+	height:50px;
+	font-size: 18px;
+}
+div.main {
+	border: 1 solid #b2daf2;;
+}
