@@ -4,7 +4,10 @@
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
  --><link rel="stylesheet" href="/site_media/css/scene.css"></link>
- <script type="text/javascript" src="/site_media/js/jquery-1.9.0.min.js"></script>
+
+ <script type="text/javascript" src="/site_media/js/utils.js"></script>
+ <script type="text/javascript" src="/site_media/js/comment_init.js"></script>
+
  <script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
  <script type="text/javascript">
 		$(function(){
@@ -145,6 +148,21 @@ var twoEditData = {{ scene.content2|safe }};
 		<div id="two-scene"  {% ifequal type 'view' %}style="display:none;"{% endifequal %}>
 			{% include "scene/2D.html"%}
 		</div>
+		
+		<!-- JiaThis Button BEGIN -->
+		<div class="jiathis_style" style="float:right">
+			<span class="jiathis_txt">Share to:</span>
+			<a class="jiathis_button_qzone"></a>
+			<a class="jiathis_button_tsina"></a>
+			<a class="jiathis_button_tqq"></a>
+			<a class="jiathis_button_renren"></a>
+			<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">More</a>
+			<a class="jiathis_counter_style"></a>
+		</div>
+		<div style="clear:both"></div>
+		<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1363692970301781" charset="utf-8"></script>
+		<!-- JiaThis Button END -->
+		
 		{% ifequal type 'view' %}
 			{% get_comment_form for scene.scenedata scene.id as form %}  
 			<form action='{%comment_form_target%}' method='post'>
@@ -171,17 +189,17 @@ var twoEditData = {{ scene.content2|safe }};
 			{% get_comment_list for scene.scenedata scene.id as comment_list %}
 			<div id="comment_list" style="overflow-y:auto;height:500px">
 				{% for comment in comment_list %}
-				<div class="comment">
-					<p>User:<b>{{comment.user.username}}</b>&nbsp;&nbsp;&nbsp;
-					Time:{{comment.submit_date|date:"Y-m-d H:i"}}&nbsp;&nbsp;&nbsp;
+				<div class="comment" style="font-size:14px;">
+					<span style="color:green;">User:</span><b><a href="/user/profile/{{comment.user.username}}">{{comment.user.username}}</a></b>&nbsp;&nbsp;&nbsp;
+					<span style="color:green;">Time:{{comment.submit_date|date:"Y-m-d H:i"}}</span>&nbsp;&nbsp;&nbsp;
 					<!--IP Address:{{comment.ip_address}}</p>-->
-					<div class="comment_detail">{{comment.comment|safe}}</div>
+					<div class="comment_detail" style="font-size:18px; margin-top:10px;">{{comment.comment}}</div>
 				</div>
 				{% endfor %}
 			</div>
 		{% endifequal %}
 	</div>
-
+	
 	<script type="text/javascript" src="/site_media/js/scene.js"></script>
 </div>
 {% endblock%}
