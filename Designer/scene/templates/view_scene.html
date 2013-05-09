@@ -159,6 +159,21 @@ var twoEditData = {{ scene.content2|safe }};
 		<div id="two-scene"  {% ifequal type 'view' %}style="display:none;"{% endifequal %}>
 			{% include "scene/2D.html"%}
 		</div>
+		
+		<!-- JiaThis Button BEGIN -->
+		<div class="jiathis_style" style="float:right">
+			<span class="jiathis_txt">Share to:</span>
+			<a class="jiathis_button_qzone"></a>
+			<a class="jiathis_button_tsina"></a>
+			<a class="jiathis_button_tqq"></a>
+			<a class="jiathis_button_renren"></a>
+			<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">More</a>
+			<a class="jiathis_counter_style"></a>
+		</div>
+		<div style="clear:both"></div>
+		<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1363692970301781" charset="utf-8"></script>
+		<!-- JiaThis Button END -->
+		
 		{% ifequal type 'view' %}
 			{% get_comment_form for scene.scenedata scene.id as form %}  
 			<form action='{%comment_form_target%}' method='post'>
