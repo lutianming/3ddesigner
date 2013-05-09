@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from scene.models import *
+from management.models import *
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 import time;
@@ -66,3 +67,24 @@ def save_scene(request):
 
 def get_time_string():
 	return time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
+@csrf_exempt
+def getModels(request):
+	modelMap = {}
+	modelTypeMap={}
+
+	modelTypes = ModelType.objects.all();
+
+	for mt in modelTypes:
+		modelMap[mt] = []
+		modelTypeMap[mt.id] = mt
+
+	modelDatas = ModelData.objects.all();
+	for md in modelDatas:
+		modelMap[ modelTypeMap[md.type_id] ].append(md)
+
+	context = RequestContext(request,{
+		'modelMap' : modelMap
+		})
+
+	return render_to_response('scene/model_select.html',context)

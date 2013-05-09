@@ -18,3 +18,16 @@ li.tab-btn-ctn{
 	clear: both;
 	overflow: hidden;
 }
+
+.select-button{
+	float: none;
+	padding: 10px 15px 10px;
+	color: #777;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #fff;
+}	
+
+.selection-div{
+	background: #fff;
+	padding:0.2em 0.5em;
+}

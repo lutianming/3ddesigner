@@ -34,6 +34,10 @@ function _DataTransformer() {
 	var _FLOOR_TEXTURE_REPEAT_X = 1;
 	var _FLOOR_TEXTURE_REPEAT_Y = 1;
 
+	var _DEFAULT_MODEL_URL = ['/site_media/models/office_desk.dae','/site_media/models/TV.dae','/site_media/models/blenderess_sofa_4seater1.dae'];
+	var _DEFAULT_MODEL_SCALE = [{x:1.0,y:1.0,z:1.0},{x:0.4,y:0.4,z:0.4},{x:1.2,y:1.2,z:1.2}]
+
+
 	/**
 	 * CONSTANT VALUE
 	 * ZOOM FACTOR FROM 2D TO 3D
@@ -790,10 +794,13 @@ function _DataTransformer() {
 		}
 
 		var models = [];
+		var len = 3;
 
 		for (var i in params) {
 			var model = {};
 			var param = params[i];
+
+			
 			model.position = {
 				x : (param.position.x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
 				y : 2.5,
@@ -812,13 +819,18 @@ function _DataTransformer() {
 				z : param.size.y / _CONVERT_ZOOM_FACTOR 
 			};
 
-			model.scale = {
-				x : 0.3,
-				y : 0.3,
-				z : 0.3
+			if (param.scale === undefined ) {
+				/*model.scale = {
+					x : 0.3,
+					y : 0.3,
+					z : 0.3
+				}*/
+				model.scale = _DEFAULT_MODEL_SCALE[i%len];
 			}
+			
 
-			model.url = '/site_media/models/tv.dae';
+			// model.url = '/site_media/models/tv.dae';
+			model.url = _DEFAULT_MODEL_URL[i%len];
 
 			models.push(model);
 		}

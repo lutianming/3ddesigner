@@ -51,4 +51,5 @@ urlpatterns = patterns('',
     url(r'^scene/save/$',save_scene),
     url(r'^scene/edit/(?P<id>\d+)$',edit_scene),
     url(r'^msg_delete/(?P<id>\d+)$',msg_delete),
+    url(r'^getAllModels/$',getModels)
 )
