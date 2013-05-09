@@ -21,6 +21,8 @@ $(function(){
 		});
 		app.run();
 
+		$("#v-container").focus();
+
 		$("#loading-box").hide();
 	});
 
@@ -46,12 +48,18 @@ $(function(){
 		var title = $("#inputSceneTitle").val();
 		var description =  $("#inputSceneDescription").val();
 		var sceneId = $("#sceneId").val();
+		var draft = true;
+
+		if (title.length==0) {
+			alert("Please fill in title and description");
+			return;
+		}
 
 		$.post(
 			'/scene/save/',
 			{
-				content3 : content3,
-				content2 : content2,
+				contentthree : content3,
+				contenttwo : content2,
 				title : title,
 				description : description,
 				sceneId : sceneId,
@@ -64,6 +72,14 @@ $(function(){
 	}
 
 	function saveScene() {
+
+		var title = $("#inputSceneTitle").val();
+
+		if (title.length==0) {
+			alert("Please fill in title");
+			return;
+		}
+
 		$("#sceneContentData").val(exportJSON());
 		$("#towContentData").val(Two.save());
 		$("#scene-data-form").submit();

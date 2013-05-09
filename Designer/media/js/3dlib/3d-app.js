@@ -96,12 +96,13 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 }
 
 SceneViewer.prototype.createFirstPersonControls = function() {
-	this.camera.position.set(0, 25, 0);
+	this.camera.position.set(0, 8, 0);
+	this.camera.lookAt( this.root.position );
 
 	var controls = new THREE.FirstPersonControls(this.camera, this.container);
 
-	controls.movementSpeed = 13;
-	controls.lookSpeed = 0.01;
+	controls.movementSpeed = 35;
+	controls.lookSpeed = 0.2;
 
 	// Don't allow tilt up/down
 	controls.lookVertical = false;
@@ -117,7 +118,14 @@ SceneViewer.prototype.createFirstPersonControls = function() {
  */
 SceneViewer.prototype.update = function() {
 	if (this.controls) {
-		this.controls.update();
+		if (this.controls instanceof THREE.TrackballControls) {
+			this.controls.update();
+		}
+
+		if (this.controls instanceof THREE.FirstPersonControls) {
+			this.controls.update( this.clock.getDelta() );
+		}
+		
 	}
 
 	ThreeExt.App.prototype.update.call(this);
