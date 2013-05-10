@@ -4,9 +4,9 @@ $(function(){
 		$('#two-scene').hide();
 		$(this).parent().addClass('active');
 		$('#two-tab').parent().removeClass('active');
-		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
+		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr('id');
 
-		$("#loading-box").show();
+		$('#loading-box').show();
 
 		editData = JSON.parse(exportJSON());
 
@@ -15,15 +15,13 @@ $(function(){
 		$('#outer-v-container').append('<div id="v-container"></div>');
 
 		var container = document.getElementById('v-container');
-		var app = new SceneViewer();
-		app.init({
-			container: container
-		});
-		app.run();
+		var app = new _App();
+		globalApp = app;
+		app.startApp({container:container});
 
-		$("#v-container").focus();
+		$('#v-container').focus();
 
-		$("#loading-box").hide();
+		$('#loading-box').hide();
 	});
 
 	$('#two-tab').on('click',function(event){
@@ -31,27 +29,43 @@ $(function(){
 		$('#three-scene').hide();
 		$(this).parent().addClass('active');
 		$('#three-tab').parent().removeClass('active');
-		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr("id");
+		// window.location.href='http://localhost:8000/scene/edit/11#'+$(this).attr('id');
 	});
 
-	$("[id^=save-btn]").on("click",function(event){
+	$('[id^=save-btn]').on('click',function(event){
 		saveScene();
 	});
 
-	$("#save-draft-btn").on("click",function(event){
+	$('#save-draft-btn').on('click',function(event){
 		saveDraft();
+	});
+
+	$('#ov-btn').on('click',function(event){
+		_CookieManager().setCookie('threemode',0);
+		$(this).siblings().removeClass('active');
+		$(this).addClass('active');
+
+		globalApp.setControls(0);
+	});
+
+	$('#fp-btn').on('click',function(event){
+		_CookieManager().setCookie('threemode',1);
+		$(this).siblings().removeClass('active');
+		$(this).addClass('active');
+
+		globalApp.setControls(1);
 	});
 
 	function saveDraft() {
 		var content3 = exportJSON();
 		var content2 = Two.save();
-		var title = $("#inputSceneTitle").val();
-		var description =  $("#inputSceneDescription").val();
-		var sceneId = $("#sceneId").val();
+		var title = $('#inputSceneTitle').val();
+		var description =  $('#inputSceneDescription').val();
+		var sceneId = $('#sceneId').val();
 		var draft = true;
 
 		if (title.length==0) {
-			alert("Please fill in title and description");
+			alert('Please fill in title and description');
 			return;
 		}
 
@@ -73,15 +87,15 @@ $(function(){
 
 	function saveScene() {
 
-		var title = $("#inputSceneTitle").val();
+		var title = $('#inputSceneTitle').val();
 
 		if (title.length==0) {
-			alert("Please fill in title");
+			alert('Please fill in title');
 			return;
 		}
 
-		$("#sceneContentData").val(exportJSON());
-		$("#towContentData").val(Two.save());
-		$("#scene-data-form").submit();
+		$('#sceneContentData').val(exportJSON());
+		$('#towContentData').val(Two.save());
+		$('#scene-data-form').submit();
 	}
 });

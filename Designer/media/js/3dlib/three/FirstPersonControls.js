@@ -262,11 +262,23 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 
-	this.domElement.addEventListener( 'mousemove', bind( this, this.onMouseMove ), false );
-	this.domElement.addEventListener( 'mousedown', bind( this, this.onMouseDown ), false );
-	this.domElement.addEventListener( 'mouseup', bind( this, this.onMouseUp ), false );
-	this.domElement.addEventListener( 'keydown', bind( this, this.onKeyDown ), false );
-	this.domElement.addEventListener( 'keyup', bind( this, this.onKeyUp ), false );
+	// this.domElement.addEventListener( 'mousemove', bind( this, this.onMouseMove ), false );
+	// this.domElement.addEventListener( 'mousedown', bind( this, this.onMouseDown ), false );
+	// this.domElement.addEventListener( 'mouseup', bind( this, this.onMouseUp ), false );
+	// this.domElement.addEventListener( 'keydown', bind( this, this.onKeyDown ), false );
+	// this.domElement.addEventListener( 'keyup', bind( this, this.onKeyUp ), false );
+
+	mousemove = bind(this , this.onMouseMove);
+	mousedown = bind(this , this.onMouseDown);
+	mouseup = bind(this , this.onMouseUp);
+	keydown = bind(this , this.onKeyDown);
+	keyup = bind(this , this.onKeyUp);
+
+	this.domElement.addEventListener( 'mousemove', mousemove , false );
+	this.domElement.addEventListener( 'mousedown', mousedown, false );
+	this.domElement.addEventListener( 'mouseup', mouseup , false );
+	this.domElement.addEventListener( 'keydown', keydown, false );
+	this.domElement.addEventListener( 'keyup', keyup, false );
 
 	function bind( scope, fn ) {
 
@@ -279,5 +291,17 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 	};
 
 	this.handleResize();
+
+	/**
+	 * customize function to unregister event listeners
+	 * @return {[type]} [description]
+	 */
+	this.unregisterEventListeners = function(){
+		this.domElement.removeEventListener( 'mousemove', mousemove, false );
+		this.domElement.removeEventListener( 'mousedown', mousedown, false );
+		this.domElement.removeEventListener( 'mouseup', mouseup, false );
+		this.domElement.removeEventListener( 'keydown', keydown, false );
+		this.domElement.removeEventListener( 'keyup', keyup, false );
+	}
 
 };

@@ -3,14 +3,6 @@
  */
 SceneViewer = function() {
 	ThreeExt.App.call(this);
-
-	this.walls = [];
-	this.floors = [];
-	this.ceilings = [];
-	this.windows = [];
-	this.doors = [];
-
-	this.zoomObjects = [];
 }
 
 /**
@@ -43,9 +35,16 @@ SceneViewer.prototype.init = function(param) {
 	threeSceneData = dataTransformer();
 
 	// create objects in the scene
+	this.createScene();
+}
+
+/**
+ * create Scene
+ * @return {[type]} [description]
+ */
+SceneViewer.prototype.createScene = function() {
 	this.createWalls();
 	this.createFloors();
-
 	this.createModels();
 }
 
@@ -68,7 +67,7 @@ SceneViewer.prototype.createLight = function() {
 }
 
 /**
- * create camera control
+ * create Overview Camera control
  * @return {[type]}
  */
 SceneViewer.prototype.createTrackballCameraControls = function() {
@@ -76,7 +75,7 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 	this.camera.position.set(0, 150, 100);
 	this.camera.lookAt(this.root.position);
 
-	var controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+	var controls = new THREE.TrackballControls(this.camera, this.container);
 	var radius = SceneViewer.CAMERA_RADIUS;
 
 	controls.rotateSpeed = SceneViewer.ROTATE_SPEED;
@@ -95,9 +94,13 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 	this.controls = controls;
 }
 
+/**
+ * create firstperson camera control
+ * @return {[type]} [description]
+ */
 SceneViewer.prototype.createFirstPersonControls = function() {
 	this.camera.position.set(0, 8, 0);
-	this.camera.lookAt( this.root.position );
+	this.camera.lookAt( new THREE.Vector3(1 , 8 , 0) );
 
 	var controls = new THREE.FirstPersonControls(this.camera, this.container);
 
@@ -110,6 +113,14 @@ SceneViewer.prototype.createFirstPersonControls = function() {
 	this.controls = controls;
 
 	this.clock = new THREE.Clock();
+}
+
+/**
+ * unregister all controls from domElement
+ * @return {[type]} [description]
+ */
+SceneViewer.prototype.unregisterControls = function() {
+	this.controls.unregisterEventListeners();
 }
 
 /**
@@ -330,4 +341,46 @@ ObjectFactory.createModel = function(param, scene) {
 		dae.position.set(param.position.x, param.position.y, param.position.z);
 		scene.add(dae);
 	});
+}
+
+
+
+function _App() {
+	var _app;
+
+	function getInstance() {
+		return _app;
+	}
+
+	function startApp(options) {
+		if (options.container === undefined) {
+			return;
+		}
+
+		_app = new SceneViewer();
+		_app.init({
+			container : options.container
+		});
+		_app.run();
+	}
+
+	function setControls(mode) {
+		if ( _app === undefined ) {
+			return;
+		}
+		_app.unregisterControls();
+		switch (mode) {
+			case 0:
+				_app.createTrackballCameraControls();
+				break;
+			case 1:
+				_app.createFirstPersonControls();
+				break;
+		}
+	}
+
+	return {
+		startApp : startApp,
+		setControls : setControls
+	}
 }

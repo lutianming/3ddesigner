@@ -58,6 +58,8 @@ def save_scene(request):
 			return HttpResponse(simplejson.dumps(json))
 
 		scene = SceneData(title=title , time=time , description=description , content3=content3 ,  content2=content2 , author_id=authorId )#, img_url=imgUrl )
+		if sceneId :
+			scene.id = sceneId
 		scene.save()
 		return HttpResponseRedirect('/scene/' + str(scene.id))
 

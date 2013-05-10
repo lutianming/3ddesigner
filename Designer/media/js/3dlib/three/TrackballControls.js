@@ -533,4 +533,24 @@ THREE.TrackballControls = function ( object, domElement ) {
 	window.addEventListener( 'keyup', keyup, false );
 
 	this.handleResize();
+
+	/**
+	 * customize function to remove all event listeners
+	 * @return {[type]} [description]
+	 */
+	this.unregisterEventListeners = function(){
+		// this.domElement.removeEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+
+		this.domElement.removeEventListener( 'mousedown', mousedown, false );
+
+		this.domElement.removeEventListener( 'mousewheel', mousewheel, false );
+		this.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+
+		this.domElement.removeEventListener( 'touchstart', touchstart, false );
+		this.domElement.removeEventListener( 'touchend', touchend, false );
+		this.domElement.removeEventListener( 'touchmove', touchmove, false );
+
+		window.removeEventListener( 'keydown', keydown, false );
+		window.removeEventListener( 'keyup', keyup, false );
+	}
 };

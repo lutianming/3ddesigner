@@ -8,15 +8,15 @@ var mesh = null;
 var editData;
 var threeSceneData;
 
+var globalApp;
+
 $(function() {
 	/* init webgl application instance*/
 
 	if (editData !== undefined) {
 		var container = document.getElementById('v-container');
-		var app = new SceneViewer();
-		app.init({
-			container: container
-		});
-		app.run();
+		var app = new _App();
+		globalApp = app;
+		app.startApp({container:container});
 	}
 });
