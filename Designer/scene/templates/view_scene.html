@@ -4,25 +4,21 @@
 {% block head %}
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
  --><link rel="stylesheet" href="/site_media/css/scene.css"></link>
-
  <script type="text/javascript" src="/site_media/js/utils.js"></script>
  <script type="text/javascript" src="/site_media/js/comment_init.js"></script>
-
  <script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
  <script type="text/javascript">
-		$(function(){
-			tinyMCE.init({
-				 mode:"textareas",
-				 theme:"advanced",
-				 plugins:"emotions",
-				 theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justrifyright,justrifyfull,|,fontselect,fontsizeselect,|,cut,copy,paste,|,undo,redo,|,link,unlink,|,forecolor,backcolor,|,image,emotions",
-				 theme_advanced_buttons2:"",
-				 theme_advanced_toolbar_location:"top",
-				 theme_advanced_toolbar_align:"left",
-				 language:"en",
-				 height:"100px",
-			});
-		})		
+		tinyMCE.init({
+		 mode:"textareas",
+		 theme:"advanced",
+		 plugins:"emotions",
+		 theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justrifyright,justrifyfull,|,fontselect,fontsizeselect,|,cut,copy,paste,|,undo,redo,|,link,unlink,|,forecolor,backcolor,|,image,emotions",
+		 theme_advanced_buttons2:"",
+		 theme_advanced_toolbar_location:"top",
+		 theme_advanced_toolbar_align:"left",
+		 language:"en",
+		 height:"100px",
+		});
 </script>
 
 <script type="text/javascript">
@@ -99,7 +95,16 @@ var twoEditData = {{ scene.content2|safe }};
 				{% endifequal %}
 				<div class="span8">
 					<h3>{{ scene.title }}</h3>
-					<p>{{ scene.description|safe }}</p>
+					Author:<a href="/user/profile/{{scene.author.username}}">{{ scene.author.username }}</a>
+					<table >
+						<tr>
+							<td>Description:</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td rowspan="2" style="font-size:16px;">{{ scene.description|safe }}</td>
+						</tr>
+					</table>
 				</div>
 				
 			</div>
@@ -149,21 +154,23 @@ var twoEditData = {{ scene.content2|safe }};
 			{% include "scene/2D.html"%}
 		</div>
 		
-		<!-- JiaThis Button BEGIN -->
-		<div class="jiathis_style" style="float:right">
-			<span class="jiathis_txt">Share to:</span>
-			<a class="jiathis_button_qzone"></a>
-			<a class="jiathis_button_tsina"></a>
-			<a class="jiathis_button_tqq"></a>
-			<a class="jiathis_button_renren"></a>
-			<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">More</a>
-			<a class="jiathis_counter_style"></a>
-		</div>
-		<div style="clear:both"></div>
-		<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1363692970301781" charset="utf-8"></script>
-		<!-- JiaThis Button END -->
+		
 		
 		{% ifequal type 'view' %}
+			<!-- JiaThis Button BEGIN -->
+			<div class="jiathis_style" style="float:right">
+				<span class="jiathis_txt">Share to:</span>
+				<a class="jiathis_button_qzone"></a>
+				<a class="jiathis_button_tsina"></a>
+				<a class="jiathis_button_tqq"></a>
+				<a class="jiathis_button_renren"></a>
+				<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">More</a>
+				<a class="jiathis_counter_style"></a>
+			</div>
+			<div style="clear:both"></div>
+			<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1363692970301781" charset="utf-8"></script>
+			<!-- JiaThis Button END -->
+			
 			{% get_comment_form for scene.scenedata scene.id as form %}  
 			<form action='{%comment_form_target%}' method='post'>
 			    {% csrf_token %}
