@@ -117,6 +117,9 @@ function onCanvasMouseUp(event){
 
         if(g_2d.current_obj){
             var p = g_2d.current_obj.getParent();
+            if('hide_anchors' in g_2d.current_obj){
+                g_2d.current_obj.hide_anchors();
+            }
             if('hide_anchors' in p){
                 p.hide_anchors();
             }

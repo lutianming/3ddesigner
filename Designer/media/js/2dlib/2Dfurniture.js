@@ -60,6 +60,7 @@ Two.Furniture = function (img, pos, width, height, rotation){
 Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
     hide_anchors : {
         value : function(){
+            console.log('hide');
             this.topleft.hide();
             this.topright.hide();
             this.bottomright.hide();
@@ -69,11 +70,12 @@ Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
             this.right.hide();
             this.bottom.hide();
             this.left.hide();
-            this.draw();
+            this.getParent().draw();
         }
     },
     show_anchors : {
         value : function(){
+            console.log('show');
             this.topleft.show();
             this.topright.show();
             this.bottomright.show();
@@ -83,7 +85,7 @@ Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
             this.right.show();
             this.bottom.show();
             this.left.show();
-            this.draw();
+            this.getParent().draw();
         }
     }
 });

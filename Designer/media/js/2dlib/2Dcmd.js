@@ -24,9 +24,9 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
             var furniture = new Two.Furniture(this.img, pos, 50, 50, 0);
             g_2d.furnitures.push(furniture);
             this.obj = furniture;
-            // if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
-            //     g_2d.current_obj.hide_anchors();
-            // }
+            if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
+                 g_2d.current_obj.hide_anchors();
+            }
             g_2d.current_obj = furniture;
             g_2d.layer.add(furniture);
             g_2d.layer.draw();
