@@ -146,26 +146,12 @@ function scale(delta){
 }
 
 
-function setCmd(cmd){
-    switch(cmd){
-    case CMDS.add_room:
-        g_2d.cmd = new AddRoomCommand();
-        break;
-    case CMDS.add_furniture:
-        g_2d.cmd = new AddFurnitureCommand();
-        break;
-    case CMDS.add_door:
-        g_2d.cmd = new AddDoorCommand();
-        break;
-    case CMDS.add_window:
-        g_2d.cmd = new AddWindowCommand();
-        break;
-    case CMDS.split_wall:
-        g_2d.cmd = new SplitWallCommand();
-        break;
-    default:
-        g_2d.cmd = null;
-        break;
+function setCmd(cmd, data){
+    if(data){
+        g_2d.cmd = new cmd(data);
+    }
+    else{
+        g_2d.cmd = new cmd();
     }
 }
 

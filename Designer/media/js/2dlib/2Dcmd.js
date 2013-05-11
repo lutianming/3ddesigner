@@ -15,13 +15,13 @@ BaseCommand.prototype = {
 };
 
 //add furniture command
-function AddFurnitureCommand(){
-
+function AddFurnitureCommand(img){
+    this.img = img;
 }
 AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value: function(pos){
-            var furniture = new Two.Furniture(pos, 50, 50, 0);
+            var furniture = new Two.Furniture(this.img, pos, 50, 50, 0);
             g_2d.furnitures.push(furniture);
             this.obj = furniture;
             // if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
@@ -322,8 +322,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             var v = a / b;
             var d = Math.acos(v);
 
-            var deg = d / Math.PI * 180;
-            this.obj.rotateDeg(deg);
+            this.obj.rotate(d);
             this.prePos = pos;
         }
     }

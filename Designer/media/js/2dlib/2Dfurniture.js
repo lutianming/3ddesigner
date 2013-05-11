@@ -5,7 +5,7 @@ function center_point(p1, p2){
 };
 
 
-Two.Furniture = function (pos, width, height, rotation){
+Two.Furniture = function (img, pos, width, height, rotation){
     Kinetic.Group.call(this, {
         name: 'furniture_group',
         offset: [width/2, height/2],
@@ -15,13 +15,14 @@ Two.Furniture = function (pos, width, height, rotation){
     this.setPosition(pos);
     pos.x = 0;
     pos.y = 0;
-    var obj = new Kinetic.Rect({
+
+    var obj = new Kinetic.Image({
         name: 'furniture',
         x: pos.x,
         y: pos.y,
         width: width,
         height: height,
-        fill: 'green'
+        image: img
     });
 
     this.add(obj);

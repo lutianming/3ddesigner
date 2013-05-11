@@ -15,17 +15,13 @@
         <div id="toolbox" class="span2">
           <div class="btn-group btn-group-vertical">
             <button class="btn" onclick="Two.clean()">clean</button>
-            <button class="btn">load</button>
-            <button class="btn">save</button>
-            <button class="btn" onclick="Two.reload()">reload</button>
             <button class="btn" onclick="scale(0.5)">+</button>
             <button class="btn" onclick="scale(-0.5)">-</button>
             <button class="btn" onclick="exportJSON()">export</button>
-            <button class="btn" onclick="setCmd(CMDS.add_room)">room</button>
-            <button class="btn" onclick="setCmd(CMDS.add_furniture)">table</button>
-            <button class="btn" onclick="setCmd(CMDS.add_door)">door</button>
-            <button class="btn" onclick="setCmd(CMDS.add_window)">window</button>
-            <button class="btn" onclick="setCmd(CMDS.split_wall)">splite wall</button>
+            <button class="btn" onclick="setCmd(AddRoomCommand)">room</button>
+            <button class="btn" onclick="setCmd(AddDoorCommand)">door</button>
+            <button class="btn" onclick="setCmd(AddWindowCommand)">window</button>
+            <button class="btn" onclick="setCmd(SplitWallCommand)">splite wall</button>
           </div>
         </div>
         <div id="content" class="span10">
