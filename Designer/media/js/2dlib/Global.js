@@ -138,7 +138,7 @@ Two.save = function(){
             var temp = window.getPoints();
             win.width = Two.distance(temp[0], temp[1]);
             win.rotationDeg = window.getRotationDeg();
-            w.windows.push(d);
+            w.windows.push(win);
         }
         data.walls.push(w);
     }
