@@ -360,6 +360,8 @@ function replace_wall(w1, w2, p_map)
     }
 
     //destroy old wall
-    // w1.remove();
-    // w1.destroy();
+    //w1.remove();
+    //it seems there are some bug in the lib of Kineticjs
+    w2.moveToTop();
+    w1.destroy();
 }
