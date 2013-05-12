@@ -23,8 +23,9 @@ SceneViewer.prototype.init = function(param) {
 	this.createLight();
 
 	// create camera control
-
-	this.createTrackballCameraControls();
+	this.createTrackballCamera();
+	this.createTrackballControls();
+	// this.createFirstPersonCamera();
 	// this.createFirstPersonControls();
 
 	if (editData === undefined) {
@@ -37,6 +38,7 @@ SceneViewer.prototype.init = function(param) {
 	// create objects in the scene
 	this.createScene();
 }
+
 
 /**
  * create Scene
@@ -67,14 +69,19 @@ SceneViewer.prototype.createLight = function() {
 }
 
 /**
+ * create Overview Camera
+ * @return {[type]} [description]
+ */
+SceneViewer.prototype.createTrackballCamera = function() {
+	this.camera.position.set(0, 150, 100);
+	this.camera.lookAt(this.root.position);
+}
+
+/**
  * create Overview Camera control
  * @return {[type]}
  */
-SceneViewer.prototype.createTrackballCameraControls = function() {
-
-	this.camera.position.set(0, 150, 100);
-	this.camera.lookAt(this.root.position);
-
+SceneViewer.prototype.createTrackballControls = function() {
 	var controls = new THREE.TrackballControls(this.camera, this.container);
 	var radius = SceneViewer.CAMERA_RADIUS;
 
@@ -95,13 +102,19 @@ SceneViewer.prototype.createTrackballCameraControls = function() {
 }
 
 /**
+ * create first-person camera
+ * @return {[type]} [description]
+ */
+SceneViewer.prototype.createFirstPersonCamera = function () {
+	this.camera.position.set(0, 8, 0);
+	this.camera.lookAt( new THREE.Vector3(1 , 8 , 0) );
+}
+
+/**
  * create firstperson camera control
  * @return {[type]} [description]
  */
-SceneViewer.prototype.createFirstPersonControls = function() {
-	this.camera.position.set(0, 8, 0);
-	this.camera.lookAt( new THREE.Vector3(1 , 8 , 0) );
-
+SceneViewer.prototype.createFirstPersonControls = function() {	
 	var controls = new THREE.FirstPersonControls(this.camera, this.container);
 
 	controls.movementSpeed = 35;
@@ -121,6 +134,14 @@ SceneViewer.prototype.createFirstPersonControls = function() {
  */
 SceneViewer.prototype.unregisterControls = function() {
 	this.controls.unregisterEventListeners();
+}
+
+/**
+ * reset camera to orgin
+ * @return {[type]} [description]
+ */
+SceneViewer.prototype.resetCamera = function() {
+	this.camera = new THREE.PerspectiveCamera(45, this.container.offsetWidth / this.container.offsetHeight, 1, 10000);
 }
 
 /**
@@ -145,28 +166,31 @@ SceneViewer.prototype.update = function() {
 SceneViewer.prototype.createWalls = function() {
 	for (var i in threeSceneData.walls) {
 		var wallParam = threeSceneData.walls[i];
-		var wall = new Wall;
+		// var wall = new Wall;
 		// wall.root.rotation.y -= wallParam.rotation;
 
 		for (var j in wallParam.blocks) {
 			var blockParam = wallParam.blocks[j];
 			var block = ObjectFactory.createCubeMesh(blockParam);
-			wall.add(block);
+			// wall.add(block);
+			this.scene.add(block);
 		}
 
 		for (var j in wallParam.doors) {
 			var doorParam = wallParam.doors[j];
 			var door = ObjectFactory.createCubeMesh(doorParam);
-			wall.add(door);
+			// wall.add(door);
+			this.scene.add(door);
 		}
 
 		for (var j in wallParam.windows) {
 			var windowParam = wallParam.windows[j];
 			var _window = ObjectFactory.createCubeMesh(windowParam);
-			wall.add(_window);
+			// wall.add(_window);
+			this.scene.add(_window);
 		}
 
-		this.scene.add(wall);
+		// this.scene.add(wall);
 	}
 }
 
@@ -233,56 +257,10 @@ ObjectFactory.createCubeMesh = function(param) {
 		mesh.rotation.y -= param.rotation;
 	}
 
-	return mesh;
-}
-
-/**
- * @discarded
- * @param  {[type]} param [description]
- * @return {[type]}       [description]
- */
-ObjectFactory.createPlaneMesh = function(param) {
-	var geometry = new THREE.Geometry();
-
-	var points = param.points;
-	var len = points.length;
-
-	for (var i in points) {
-		geometry.vertices.push(new THREE.Vector3(points[i].x, points[i].y, points[i].z));
-	}
-
-	var face = new THREE.Face4(0,1,2,3,null,null,0);
-	var normal = new THREE.Vector3(0,1,0);
-	face.normal.copy(normal);
-	face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone(), normal.clone());
-	// face.faceVertexUvs
-
-	geometry.faces.push(face);
-	geometry.faceVertexUvs[0].push([
-			new THREE.Vector2(0,1),
-			new THREE.Vector2(0,0),
-			new THREE.Vector2(1,0),
-			new THREE.Vector2(1,1)
-		]);
-
-
-	geometry.computeCentroids();
-	geometry.computeFaceNormals();
-
-	var map = THREE.ImageUtils.loadTexture(param.texture.url);
-	map.wrapS = map.wrapT = THREE.RepeatWrapping;
-	map.repeat.set(param.texture.repeat.x, param.texture.repeat.y);
-
-	var material = new THREE.MeshBasicMaterial({
-		map: map,
-		side: THREE.DoubleSide
-	});
-
-	var mesh = new THREE.Mesh(geometry, material);
-
+	mesh.originalPostion = mesh.position.clone();
+	mesh.originalRotation = mesh.rotation.clone();
 
 	return mesh;
-
 }
 
 ObjectFactory.createFloorMesh = function(param) {
@@ -312,6 +290,9 @@ ObjectFactory.createFloorMesh = function(param) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
+	mesh.originalPostion = mesh.position.clone();
+	mesh.originalRotation = mesh.rotation.clone();
+
 	return mesh;
 }
 
@@ -339,11 +320,13 @@ ObjectFactory.createModel = function(param, scene) {
 		dae.rotation.z -= param.rotation.z;
 
 		dae.position.set(param.position.x, param.position.y, param.position.z);
+
+		dae.originalPostion = dae.position.clone();
+		dae.originalRotation = dae.rotation.clone();
+
 		scene.add(dae);
 	});
 }
-
-
 
 function _App() {
 	var _app;
@@ -369,11 +352,15 @@ function _App() {
 			return;
 		}
 		_app.unregisterControls();
+		_app.resetCamera();
+
 		switch (mode) {
 			case 0:
-				_app.createTrackballCameraControls();
+				_app.createTrackballCamera();
+				_app.createTrackballControls();
 				break;
 			case 1:
+				_app.createFirstPersonCamera();
 				_app.createFirstPersonControls();
 				break;
 		}

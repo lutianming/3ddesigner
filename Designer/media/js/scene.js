@@ -42,6 +42,8 @@ $(function(){
 
 	$('#ov-btn').on('click',function(event){
 		_CookieManager().setCookie('threemode',0);
+		$('#track-alert').show();
+		$('#firstperson-alert').hide();
 		$(this).siblings().removeClass('active');
 		$(this).addClass('active');
 
@@ -50,9 +52,12 @@ $(function(){
 
 	$('#fp-btn').on('click',function(event){
 		_CookieManager().setCookie('threemode',1);
+		$('#track-alert').hide();
+		$('#firstperson-alert').show();
 		$(this).siblings().removeClass('active');
 		$(this).addClass('active');
 
+		$('#v-container canvas').focus();
 		globalApp.setControls(1);
 	});
 
