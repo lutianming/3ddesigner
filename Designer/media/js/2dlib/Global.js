@@ -83,7 +83,6 @@ Two.clean = function(){
     g_2d.layer = new Kinetic.Layer();
     g_2d.stage.add(g_2d.layer);
 
-    g_2d.furnitures = [];
     g_2d.house = new Two.House('house');
 
     g_2d.layer.add(g_2d.house);
@@ -95,7 +94,7 @@ Two.clean = function(){
 //exportJSON
 Two.save = function(){
     var house = g_2d.house;
-    var furnitures =  g_2d.furnitures;
+    var furnitures =  g_2d.layer.get('.furniture_group');
     var data = {
         points: [],
         walls: [],
@@ -259,7 +258,6 @@ Two.load = function(data){
         var furniture = new Two.Furniture(f.position, f.width,
                                           f.height, f.rotationDeg);
         g_2d.layer.add(furniture);
-        g_2d.furnitures.push(furniture);
     }
     g_2d.layer.draw();
 };

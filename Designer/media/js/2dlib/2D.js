@@ -20,7 +20,6 @@ var g_2d = {
 };
 
 g_2d.house = null;
-g_2d.furnitures = [];
 
 Two.init = function(){
     g_2d.stage = new Kinetic.Stage({
@@ -160,9 +159,7 @@ function setCmd(cmd, data){
 
 function have_obj(pos, name){
     var objs = g_2d.layer.getIntersections(pos);
-    if(objs == null){
-        return null;
-    }
+
     var result = null;
     for(var i = 0; i < objs.length; i++){
         if(objs[i].getName() == name){
@@ -177,7 +174,7 @@ function exportJSON(){
     var house = g_2d.house;
     var rooms = house.get('.room');
     var walls = house.get('.wall');
-    var furnitures =  g_2d.furnitures;
+    var furnitures =  g_2d.layer.get('.furniture_group');
     var data = {
         rooms: [],
         walls: [],

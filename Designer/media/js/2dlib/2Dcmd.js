@@ -22,7 +22,6 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown : {
         value: function(pos){
             var furniture = new Two.Furniture(this.img, pos, 50, 50, 0);
-            g_2d.furnitures.push(furniture);
             this.obj = furniture;
             if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
                  g_2d.current_obj.hide_anchors();
@@ -457,6 +456,46 @@ DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
     mouseup: {
         value: function(pos){
 
+        }
+    }
+});
+
+function DeleteCommand(){
+
+}
+DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
+    mouseup : {
+        value: function(pos){
+            var objs = g_2d.layer.getIntersections(pos);
+            if(objs.length == 0){
+                return;
+            }
+
+            var getObjs = function(name, objs){
+                var g = [];
+                for(var i = 0; i < objs.length; i++){
+                    var obj = objs[i];
+                    if(obj.getName() == name){
+                        g.push(obj);
+                    }
+                }
+                return g;
+            };
+            var obj = null;
+            var targets = getObjs('furniture', objs);
+            if(targets.length > 0){
+                var obj = targets[0];
+                var g = obj.getParent();
+                g.remove();
+                g_2d.layer.draw();
+                g_2d.current_obj = null;
+            }
+
+            var targets = getObjs('room', objs);
+            if(targets.length > 0){
+                var obj = targets[0];
+                //TODO
+            }
         }
     }
 });

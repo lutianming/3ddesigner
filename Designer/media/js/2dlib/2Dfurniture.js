@@ -60,7 +60,6 @@ Two.Furniture = function (img, pos, width, height, rotation){
 Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
     hide_anchors : {
         value : function(){
-            console.log('hide');
             this.topleft.hide();
             this.topright.hide();
             this.bottomright.hide();
@@ -75,7 +74,6 @@ Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
     },
     show_anchors : {
         value : function(){
-            console.log('show');
             this.topleft.show();
             this.topright.show();
             this.bottomright.show();
