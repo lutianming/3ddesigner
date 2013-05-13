@@ -23,10 +23,16 @@ SceneViewer.prototype.init = function(param) {
 	this.createLight();
 
 	// create camera control
-	this.createTrackballCamera();
-	this.createTrackballControls();
-	// this.createFirstPersonCamera();
-	// this.createFirstPersonControls();
+	var controlMode = _CookieManager().getCookie('threemode');
+	if (controlMode === undefined || controlMode == 0) {
+		this.createTrackballCamera();
+		this.createTrackballControls();
+	}
+	else {	
+		this.createFirstPersonCamera();
+		this.createFirstPersonControls();		
+	}
+
 
 	if (editData === undefined) {
 		return;

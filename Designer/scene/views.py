@@ -61,6 +61,10 @@ def save_scene(request):
 		if sceneId :
 			scene.id = sceneId
 		scene.save()
+
+		#delete related drafts
+		SceneDraft.objects().filter(scene_id = sceneId).delete()
+		
 		return HttpResponseRedirect('/scene/' + str(scene.id))
 
 	json = {'code': 0}
@@ -90,3 +94,10 @@ def getModels(request):
 		})
 
 	return render_to_response('scene/model_select.html',context)
+
+
+def deleteScene(request , id):
+	scene = get_object_or_404(SceneData, id=id)
+	if scene.author_id == request.user.id:
+		scene.delete()
+	return HttpResponseRedirect('/user/profile/' + request.user.username)

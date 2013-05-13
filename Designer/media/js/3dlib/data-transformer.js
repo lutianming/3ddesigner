@@ -803,7 +803,7 @@ function _DataTransformer() {
 			
 			model.position = {
 				x : (param.position.x - shift.shift_x) / _CONVERT_ZOOM_FACTOR,
-				y : 2.5,
+				y : (param.baseY === undefined)? 0 : param.baseY,
 				z : (param.position.y - shift.shift_z) / _CONVERT_ZOOM_FACTOR
 			};
 

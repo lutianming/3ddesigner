@@ -1,4 +1,6 @@
 $(function(){
+
+	/* button click event */
 	$('#three-tab').on('click',function(event){
 		$('#three-scene').show();
 		$('#two-scene').hide();
@@ -39,6 +41,19 @@ $(function(){
 	$('#save-draft-btn').on('click',function(event){
 		saveDraft();
 	});
+
+	// init controls by cookie data
+	var controlmode = _CookieManager().getCookie('threemode');
+	if (controlmode === undefined || controlmode==0) {
+		$('#ov-btn').addClass('active');
+		$('#track-alert').show();
+		$('#firstperson-alert').hide();
+	}
+	else {
+		$('#fp-btn').addClass('active');
+		$('#track-alert').hide();
+		$('#firstperson-alert').show();
+	}
 
 	$('#ov-btn').on('click',function(event){
 		_CookieManager().setCookie('threemode',0);
