@@ -9,7 +9,9 @@ from scene.models import *
 from management.models import *
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
-import time;
+import os
+import time
+from django.conf import settings
 
 @login_required
 def  view_scene(request,id):
@@ -101,3 +103,36 @@ def deleteScene(request , id):
 	if scene.author_id == request.user.id:
 		scene.delete()
 	return HttpResponseRedirect('/user/profile/' + request.user.username)
+
+
+def testModel(request) :
+	return render_to_response('scene/model_test.html')
+
+@csrf_exempt
+def ajaxUploadModel(request): 
+	try:
+		if request.method == 'POST' :
+			file = request.FILES.get('modelFile')
+			filename = file.name
+			fname = os.path.join(settings.MEDIA_ROOT , 'temp/models/', filename)
+			if os.path.exists(fname):
+				os.remove(fname)
+
+			dirs = os.path.dirname(fname)
+
+			if not os.path.exists(dirs):
+				os.makedirs(dirs)
+
+			if os.path.isfile(fname):
+				os.remove(fname)
+
+			fp = open(fname , 'wb')
+			for content in file.chunks():
+				fp.write(content)
+
+			fp.close()
+
+			return HttpResponse('/site_media/temp/models/'+filename)
+	except:
+		return HttpResponse('500')
+

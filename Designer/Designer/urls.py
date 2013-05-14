@@ -52,5 +52,7 @@ urlpatterns = patterns('',
     url(r'^scene/edit/(?P<id>\d+)$',edit_scene),
     url(r'^msg_delete/(?P<id>\d+)$',msg_delete),
     url(r'^getAllModels/$',getModels),
-    url(r'^scene/delete/(?P<id>\d+)$',deleteScene)
+    url(r'^scene/delete/(?P<id>\d+)$',deleteScene),
+    url(r'^manage/testModel/$',testModel),
+    url(r'^manage/ajaxUploadModel/$',ajaxUploadModel)
 )

@@ -160,7 +160,7 @@ SceneViewer.prototype.update = function() {
 			this.controls.update();
 		}
 
-		if (this.controls instanceof THREE.FirstPersonControls) {
+		else if (this.controls instanceof THREE.FirstPersonControls) {
 			this.controls.update( this.clock.getDelta() );
 		}
 		
@@ -263,9 +263,6 @@ ObjectFactory.createCubeMesh = function(param) {
 		mesh.rotation.y -= param.rotation;
 	}
 
-	mesh.originalPostion = mesh.position.clone();
-	mesh.originalRotation = mesh.rotation.clone();
-
 	return mesh;
 }
 
@@ -284,20 +281,33 @@ ObjectFactory.createFloorMesh = function(param) {
 	floorShape.lineTo(startPoint.x , startPoint.z);
 
 	var geometry = new THREE.FloorGeometry( floorShape );
-	var map = THREE.ImageUtils.loadTexture(param.texture.url);
-	map.wrapT = map.wrapS = THREE.RepeatWrapping;
-	map.repeat.set( param.texture.repeat.x , param.texture.repeat.y );
 
-	var material = new THREE.MeshBasicMaterial(
+	var map;
+	if (param.texture !== undefined) {
+		var map = THREE.ImageUtils.loadTexture(param.texture.url);
+		map.wrapT = map.wrapS = THREE.RepeatWrapping;
+		map.repeat.set( param.texture.repeat.x , param.texture.repeat.y );
+	}
+	
+	var material ;
+	if (map !== undefined) {
+		material = new THREE.MeshBasicMaterial(
 		{
 			map : map,
 			side : THREE.DoubleSide	
-		});
+		});	
+	}
+	else {
+		material = new THREE.MeshBasicMaterial(
+		{
+			color : '#ee3322',
+			side : THREE.DoubleSide
+		}
+		);
+	}
+	
 
 	var mesh = new THREE.Mesh(geometry, material);
-
-	mesh.originalPostion = mesh.position.clone();
-	mesh.originalRotation = mesh.rotation.clone();
 
 	return mesh;
 }
@@ -326,9 +336,6 @@ ObjectFactory.createModel = function(param, scene) {
 		dae.rotation.z -= param.rotation.z;
 
 		dae.position.set(param.position.x, param.position.y, param.position.z);
-
-		dae.originalPostion = dae.position.clone();
-		dae.originalRotation = dae.rotation.clone();
 
 		scene.add(dae);
 	});
