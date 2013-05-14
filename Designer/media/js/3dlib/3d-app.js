@@ -247,14 +247,27 @@ ObjectFactory.createCubeMesh = function(param) {
 	var geometry = new THREE.CubeGeometry(param.size.x, param.size.y, param.size.z);
 	// var geometry = new THREE.PlaneGeometry(100, 100, 1, 1);
 
-	var map = THREE.ImageUtils.loadTexture(param.texture.url);
-	map.wrapS = map.wrapT = THREE.RepeatWrapping;
-	map.repeat.set(param.texture.repeat.x, param.texture.repeat.y);
+	var map;
+	if (param.texture !== undefined) {
+		map = THREE.ImageUtils.loadTexture(param.texture.url);
+		map.wrapS = map.wrapT = THREE.RepeatWrapping;
+		map.repeat.set(param.texture.repeat.x, param.texture.repeat.y);
+	}
+	
 	// map.offset.set(param.texture.offset_x, param.offset_y);
 
-	var material = new THREE.MeshLambertMaterial({
-		map: map
-	});
+	var material;
+	if (map !== undefined) {
+		material = new THREE.MeshLambertMaterial({
+			map: map
+		});
+	}
+	else {
+		material = new THREE.MeshBasicMaterial({
+			color : '#330000'
+		});
+	}
+	
 
 	var mesh = new THREE.Mesh(geometry, material);
 

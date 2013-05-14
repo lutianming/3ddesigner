@@ -30,7 +30,9 @@ function _DataTransformer() {
 	var _DEFAULT_TEXTURE_WIDTH = 50.0;
 	var _DEFAULT_TEXTURE_HEIGHT = 25.0;
 
-	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/floor-brick.jpg';
+	// var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/floor-brick.jpg';
+	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/red-brick-seamless-512-x-512.jpg';
+
 	var _FLOOR_TEXTURE_REPEAT_X = 1;
 	var _FLOOR_TEXTURE_REPEAT_Y = 1;
 
