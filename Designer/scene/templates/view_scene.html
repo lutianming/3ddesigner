@@ -5,7 +5,7 @@
 <!-- <link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css"></link>
  --><link rel="stylesheet" href="/site_media/css/scene.css"></link>
  <script type="text/javascript" src="/site_media/js/utils.js"></script>
- <script type="text/javascript" src="/site_media/js/comment_init.js"></script>
+
  <script type="text/javascript" src="/site_media/js/tiny_mce/tiny_mce.js"></script>
  <script type="text/javascript">
 		tinyMCE.init({
@@ -142,7 +142,21 @@ var twoEditData = {{ scene.content2|safe }};
 		  	{% ifequal type 'view' %}
 		  	<li class="tab-btn-ctn">
 		  		<div class="btn-ctn">
-		  			<a href="/scene/edit/{{ scene.id }}" class="btn btn-primary">Edit</a>
+		  			<div  class="btn-group">
+		  				<a href="/scene/edit/{{ scene.id }}" class="btn btn-primary">Edit</a>
+		  				<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+		  					<span class="caret"></span>
+		  				</a>
+		  				<ul class="dropdown-menu">
+		  					<li>
+		  						<a href="/scene/edit/{{ scene.id }}">Edit</a>
+		  					</li>
+		  					<li>
+		  						<a href="/scene/delete/{{ scene.id }}">Delete</a>
+		  					</li>
+		  				</ul>
+		  			</div>
+		  			
 		  		</div>
 		  	</li>
 		  	{% endifequal %}
@@ -157,6 +171,7 @@ var twoEditData = {{ scene.content2|safe }};
 		
 		
 		{% ifequal type 'view' %}
+			<script type="text/javascript" src="/site_media/js/comment_init.js"></script>
 			<!-- JiaThis Button BEGIN -->
 			<div class="jiathis_style" style="float:right">
 				<span class="jiathis_txt">Share to:</span>

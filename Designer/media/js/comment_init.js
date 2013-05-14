@@ -8,6 +8,9 @@ function initPage() {
   	content1 = content1.replace(/\.\.\/\.\.\//,'/');
   	element_list[i].innerHTML = content1;
   }  
+  
+  comment_list = document.getElementById("comment_list");
+  comment_list.style.visibility = "visible";
 
 }
 

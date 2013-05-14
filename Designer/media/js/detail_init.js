@@ -5,6 +5,8 @@ function initPage() {
   content = element.childNodes[0].nodeValue;
   content = content.replace(/\.\.\//,'/');
   element.innerHTML = content;
+  element.style.visibility = "";
+
   
   element_list = getElementsByClassName(document, "comment_detail");
   for (var i=0;i<element_list.length; i++){

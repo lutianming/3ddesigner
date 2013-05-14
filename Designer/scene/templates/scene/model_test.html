@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<title>Test Model Data</title>
+		<style type="text/css">
+			#v-container {
+				width: 800px;
+				height: 600px;
+				background: #eee;
+			}
+			label {
+				width: 100px;
+				display: inline-block;
+			}
+			.ui-icon {
+
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="outer-v-container" style="float:left">
+			<div id="v-container"></div>
+		</div>
+
+		<div id="var-div" style="float:left;margin-left:20px;">
+			<form action="/manage/ajaxUploadModel/" method="post" enctype="multipart/form-data" id="fileForm">
+				<label>File</label>
+				<input type="file" name="modelFile" class="fileUpload" id="modelFile" multiple/>
+			</form>
+
+			<label>Scale X:</label>
+			<input type="text" id="scaleX" value="1.0"/><br/>
+			<label>Scale Y:</label>
+			<input type="text" id="scaleY" value="1.0"/><br/>
+			<label>Scale Z:</label>
+			<input type="text" id="scaleZ" value="1.0"/><br/>
+
+			<hr/>
+
+			<label>Rotation X:</label>
+			<input type="text" id="rotationX" value="0.0"/><br/>
+			<label>Rotation Y:</label>
+			<input type="text" id="rotationY" value="0.0"/><br/>
+			<label>Rotation Z:</label>
+			<input type="text" id="rotationZ" value="0.0"/><br/>
+
+			<hr/>
+
+			<label>Base Y:</label>
+			<input type="text" id="baseY" value="0.0"/>
+		</div>
+
+		<script type="text/javascript" src="/site_media/js/jquery-1.6.2.min.js"></script>
+		<script src="/site_media/js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+		<script src="/site_media/js/jquery.fileUploader.js" type="text/javascript"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/three/three.r57.min.js"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/three/TrackballControls.js"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/three/ColladaLoader.js"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/three/three-r57-ext.js"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/3d-app.js"></script>
+		<script type="text/javascript" src="/site_media/js/3dlib/three/FloorGeometry.js"></script>
+
+
+		<script type="text/javascript">
+			var threeSceneData = {
+				floors:[
+					{
+						points:[{
+							x:-10,
+							y:0,
+							z:-10
+						},
+						{
+							x:10,
+							y:0,
+							z:-10
+						},
+						{
+							x:10,
+							y:0,
+							z:10
+						},
+						{
+							x:-10,
+							y:0,
+							z:10
+						}]
+					}
+				]
+			}
+
+			var app;
+
+			$(function(){	
+				$('#modelFile').fileUploader(
+					{
+						allowedExtension:'dae',
+						afterEachUpload : function(data){
+							var url = data[0].innerHTML;
+							var param = getParam(url);
+							ObjectFactory.createModel(param , app.scene);
+							$('div[id^="px-form"]').remove();
+						}
+					});
+
+				$('#var-div input').change(function(){
+					var param = getParam();
+
+					var len = app.scene.children.length;
+
+					app.scene.children[len-1].scale.set(param.scale.x,param.scale.y,param.scale.z);
+					app.scene.children[len-1].rotation.set(param.rotation.x,param.rotation.y,param.rotation.z);
+					app.scene.children[len-1].position.set(0,param.position.y,0);
+				});
+
+				function getParam( url ) {
+					var param = {
+						scale : {
+							x : parseFloat($('#scaleX').val()),
+							y : parseFloat($('#scaleY').val()),
+							z : parseFloat($('#scaleZ').val())
+						},
+						rotation : {
+							x : parseFloat($('#rotationX').val()),
+							y : parseFloat($('#rotationY').val()),
+							z : parseFloat($('#rotationZ').val())
+						},
+						position : {
+							x : 0,
+							y : parseFloat($('#baseY').val()),
+							z : 0
+						}
+					}
+					
+					if ( url !==  undefined ){
+						param.url = url;
+					}
+
+					return param;
+				}
+
+
+				var c=document.getElementById('v-container');
+
+				app = new SceneViewer();
+				ThreeExt.App.prototype.init.call(app,{container:c});
+				app.createLight();
+				app.createTrackballCamera();
+				app.createTrackballControls();
+				app.createScene();
+
+				app.run();
+			});
+		</script>
+
+		<link rel="stylesheet" type="text/css" href="/site_media/css/jquery-ui-1.8.14.custom.css"/>
+		<link rel="stylesheet" type="text/css" href="/site_media/css/fileUploader.css"/>
+	</body>
+	
+</html>

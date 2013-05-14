@@ -1,4 +1,6 @@
 $(function(){
+
+	/* button click event */
 	$('#three-tab').on('click',function(event){
 		$('#three-scene').show();
 		$('#two-scene').hide();
@@ -40,8 +42,23 @@ $(function(){
 		saveDraft();
 	});
 
+	// init controls by cookie data
+	var controlmode = _CookieManager().getCookie('threemode');
+	if (controlmode === undefined || controlmode==0) {
+		$('#ov-btn').addClass('active');
+		$('#track-alert').show();
+		$('#firstperson-alert').hide();
+	}
+	else {
+		$('#fp-btn').addClass('active');
+		$('#track-alert').hide();
+		$('#firstperson-alert').show();
+	}
+
 	$('#ov-btn').on('click',function(event){
 		_CookieManager().setCookie('threemode',0);
+		$('#track-alert').show();
+		$('#firstperson-alert').hide();
 		$(this).siblings().removeClass('active');
 		$(this).addClass('active');
 
@@ -50,9 +67,12 @@ $(function(){
 
 	$('#fp-btn').on('click',function(event){
 		_CookieManager().setCookie('threemode',1);
+		$('#track-alert').hide();
+		$('#firstperson-alert').show();
 		$(this).siblings().removeClass('active');
 		$(this).addClass('active');
 
+		$('#v-container canvas').focus();
 		globalApp.setControls(1);
 	});
 
