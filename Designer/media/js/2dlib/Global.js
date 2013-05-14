@@ -170,13 +170,15 @@ Two.save = function(){
         f.height = furniture.furniture.getHeight();
         f.rotation = furniture.getRotation();
         f.rotateDeg = furniture.getRotationDeg();
+
+        f.element_id = furniture.element.id;
         data.furnitures.push(f);
     }
     return JSON.stringify(data);
 };
 
 Two.load = function(data){
-    if(data instanceof String){
+    if(typeof data == 'string'){
         data = JSON.parse(data);
     }
 
@@ -255,11 +257,19 @@ Two.load = function(data){
     //load furnitures
     for(i = 0; i < data.furnitures.length; i++){
         var f = data.furnitures[i];
-        var furniture = new Two.Furniture(f.position, f.width,
-                                          f.height, f.rotationDeg);
-        g_2d.layer.add(furniture);
+        var element = document.getElementById(f.element_id);
+        var url = element.getAttribute('data-icon-url');
+        var img = new Image();
+        img.src = url;
+        img.onload = function(){
+            var furniture = new Two.Furniture(img, f.position, f.width,
+                                              f.height, f.rotation);
+            furniture.element = element;
+            g_2d.layer.add(furniture);
+            g_2d.layer.draw();
+        };
     }
-    g_2d.layer.draw();
+    g_2d.stage.draw();
 };
 
 //test load and save

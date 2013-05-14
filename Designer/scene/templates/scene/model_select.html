@@ -8,14 +8,13 @@
 					data-type-id="{{model.type_id}}"
 					data-model-url="{{model.model_url}}"
 					data-img-url="{{model.image_url}}"
-					data-icon-url="{{model.icon_url}}"
+					data-icon-url="/site_media/{{model.icon_url}}"
 					data-scale="{{model.scale_x}}:{{model.scale_y}}:{{model.scale_z}}"
 					data-rotation="{{model.rotation_x}}:{{model.rotation_y}}:{{model.rotation_z}}"
-					data-size="{{model.x}}:{{model.y}}:{{model.z}}">
+					data-size="{{model.x}}:{{model.y}}:{{model.z}}"
+                                        onclick="setCmd(AddFurnitureCommand, this)">
 					<a href="#">
 						<img
-                                                    onclick="setCmd(AddFurnitureCommand, this
-                                                             )"
                                                      src="/site_media/{{model.image_url}}" style="width:50px;height:50px;"/>
 						{{ model.name}}
 					</a>

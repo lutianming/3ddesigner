@@ -251,7 +251,12 @@ function exportJSON(){
         f.size = {x: w, y: h};
         f.rotation = furniture.getRotation();
         f.rotateDeg = furniture.getRotationDeg();
-        console.log(f);
+
+        //element info for building model
+        var element = furniture.element;
+        f.data_model_url = element.getAttribute('data-model-url');
+        f.data_rotation = element.getAttribute('data-rotation');
+        f.data_size = element.getAttribute('data-size');
         data.furnitures.push(f);
     }
 

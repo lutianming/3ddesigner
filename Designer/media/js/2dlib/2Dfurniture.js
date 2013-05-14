@@ -9,6 +9,7 @@ Two.Furniture = function (img, pos, width, height, rotation){
     Kinetic.Group.call(this, {
         name: 'furniture_group',
         offset: [width/2, height/2],
+        rotation: rotation,
         draggable: true
     });
     this.type = 'furniture';
