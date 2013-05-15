@@ -265,34 +265,30 @@ Two.Window.prototype = Object.create(Kinetic.Line.prototype, {
 
 function merge_walls(w1, w2)
 {
-    var points1 = w1.getPoints();
-    var points2 = w2.getPoints();
-
-    var w2_p1_in_w1 = w1.interact(points2[0]);
-    var w2_p2_in_w1 = w1.interact(points2[1]);
-    var w1_p1_in_w2 = w2.interact(points1[0]);
-    var w1_p2_in_w2 = w2.interact(points2[1]);
-    //three possibility
-    //w2 in w1, w1 in w2, w1w2 interact
-    if(w2_p1_in_w1 && w2_p2_in_w1){
-        var p0, p1;
-        var order;
-        if(Two.distance(points1[0], points2[0]) < Two.distance(points1[0], points2[1])){
-            p0 = points2[0];
-            p1 = points2[1];
-            order = [0, 1];
-        }
-        else{
-            p0 = points2[1];
-            p1 = points1[0];
-            order = [1, 0];
-        }
-
-        var new_wall = split_wall(w1, p0);
-        var index = room.walls.indexOf(new_wall);
-        insert_wall(w1.room, wall, order, index);
+    var shared_corner = null;
+    var corners1 = w1.getPoints();
+    var corners2 = w2.getPoints();
+    if(corners2.indexOf(corners1[0]) != -1){
+        shared_corner = corners1[0];
+        var index = corners2.indexOf(shared_corner);
+        corners1[0] = corners2[1-index];
     }
-
+    else{
+        shared_corner = corners1[1];
+        var index = corners2.indexOf(shared_corner);
+        corners1[1] = corners2[1-index];
+    }
+    //remove w2 and shared corner from rooms;
+    for(var i = 0; i < w1.rooms.length; i++){
+        var room = w1.rooms[i];
+        var index = room.walls.indexOf(w2);
+        room.walls.splice(index, 1);
+        var corners = room.getPoints();
+        index = corners.indexOf(shared_corner);
+        corners.splice(index, 1);
+    }
+    shared_corner.remove();
+    w2.remove();
 }
 
 function split_wall(wall, corner)
@@ -357,6 +353,8 @@ function replace_wall(w1, w2, p_map)
 
         points[index] = w2_ps[p_map[0]];
         points[(index+1)%points.length] = w2_ps[p_map[1]];
+
+        w2.rooms.push(room);
     }
 
     //destroy old wall

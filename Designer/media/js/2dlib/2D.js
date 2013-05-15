@@ -104,7 +104,7 @@ function onCanvasMouseUp(event){
     if(g_2d.cmd != null){
         g_2d.cmd.mouseup(pos);
         g_2d.cmd = null;
-        if(g_2d.current_obj){
+        if(g_2d.current_obj && g_2d.current_obj.getName() == 'furniture'){
             var p = g_2d.current_obj.getParent();
             if('show_anchors' in p){
             p.show_anchors();

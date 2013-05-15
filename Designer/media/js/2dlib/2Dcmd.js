@@ -489,17 +489,83 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
             var obj = null;
             var targets = getObjs('furniture', objs);
             if(targets.length > 0){
-                var obj = targets[0];
+                obj = targets[0];
                 var g = obj.getParent();
                 g.remove();
                 g_2d.layer.draw();
                 g_2d.current_obj = null;
+                return;
             }
 
-            var targets = getObjs('room', objs);
+            targets = getObjs('door', objs);
             if(targets.length > 0){
-                var obj = targets[0];
-                //TODO
+                obj = targets[0];
+                var wall = obj.wall;
+                var index = wall.doors.indexOf(obj);
+                wall.doors.splice(index, 1);
+                obj.remove();
+                g_2d.layer.draw();
+                return;
+            }
+
+            targets = getObjs('window', objs);
+            if(targets.length > 0){
+                obj = targets[0];
+                var wall = obj.wall;
+                var index = wall.windows.indexOf(obj);
+                wall.windows.splice(index, 1);
+                obj.remove();
+                g_2d.layer.draw();
+                return;
+            }
+
+            targets = getObjs('room', objs);
+            if(targets.length > 0){
+                obj = targets[0];
+                for(var i = 0; i < obj.walls.length; i++){
+                    var wall = obj.walls[i];
+                    if(wall.rooms.length == 1){
+                        wall.remove();
+                    }
+                }
+                var rooms = g_2d.house.get('.room');
+                var corners = obj.getPoints();
+                for(var i = 0; i < corners.length; i++){
+                    var c = corners[i];
+                    var shared = false;
+                    for(var j = 0; j < rooms.length; j++){
+                        var r = rooms[j];
+                        if(r == obj){
+                            break;
+                        }
+                        var points = r.getPoints();
+                        if(points.indexOf(c) != -1){
+                            shared = true;
+                            break;
+                        }
+                    }
+                    if(!shared){
+                        c.remove();
+                    }
+                }
+                obj.remove();
+
+                var rooms = g_2d.house.get('.room');
+                for(var i = 0; i < rooms.length; i++){
+                    var room = rooms[i];
+                    for(var j = 0; j < room.walls.length; j++){
+                        var wall = room.walls[j];
+                        var next_wall = room.walls[(j+1)%room.walls.length];
+                        var d1 = wall.direction();
+                        var d2 = next_wall.direction();
+                        if(d1 == d2 ||
+                          Math.abs(d1-d2) == 180){
+                            merge_walls(wall, next_wall);
+                            break;
+                        }
+                    }
+                }
+                g_2d.layer.draw();
             }
         }
     }
