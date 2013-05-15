@@ -324,12 +324,9 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             var x2 = pos.x - this.center.x;
             var y2 = pos.y - this.center.y;
 
-            var a = x1*x2 + y1*y2;
-            var b =  Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
-            var v = a / b;
-            var d = Math.acos(v);
-
-            this.obj.rotate(d);
+            var deg1 = Math.atan2(y1, x1);
+            var deg2 = Math.atan2(y2, x2);
+            this.obj.rotate(deg2-deg1);
             this.prePos = pos;
         }
     }
