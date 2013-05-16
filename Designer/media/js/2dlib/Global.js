@@ -280,3 +280,16 @@ Two.reload = function(){
     console.log('load');
 
 };
+
+Two.snapshot = function(callback){
+    g_2d.stage.toImage({
+        x: 0,
+        y: 0,
+        width: 800,
+        height: 600,
+        callback : function(img){
+            //img is a HTML img element with src
+            callback(img);
+        }
+    });
+};
