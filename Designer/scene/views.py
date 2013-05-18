@@ -51,7 +51,7 @@ def save_scene(request):
 		sceneId = request.POST['sceneId']
 		isDraft = request.POST['draft']
 		content2 = request.POST['contenttwo']
-		# imgUrl = request.POST['imgUrl']
+		imgUrl = request.POST['imageUrl']
 
 		if isDraft == 'true' :
 			sceneDraft = SceneDraft(title=title , time=time , description=description , content3=content3 , content2=content2 , author_id=authorId , scene_id=sceneId)
@@ -59,13 +59,15 @@ def save_scene(request):
 			json = {'code':1, 'draftId':sceneDraft.id}
 			return HttpResponse(simplejson.dumps(json))
 
-		scene = SceneData(title=title , time=time , description=description , content3=content3 ,  content2=content2 , author_id=authorId )#, img_url=imgUrl )
+		scene = SceneData(title=title , time=time , description=description , content3=content3 ,  content2=content2 , author_id=authorId , img_url=imgUrl )
 		if sceneId :
 			scene.id = sceneId
 		scene.save()
 
 		#delete related drafts
-		SceneDraft.objects().filter(scene_id = sceneId).delete()
+		# draftlist = SceneDraft.objects.filter(scene_id = sceneId)
+		# if len(draftlist) > 0:
+		# 	draftlist.delete()
 		
 		return HttpResponseRedirect('/scene/' + str(scene.id))
 

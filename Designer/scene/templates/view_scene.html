@@ -64,16 +64,9 @@ var twoEditData = {{ scene.content2|safe }};
 							<textarea class="scene-input"  id="inputSceneDescription" rows="3" placeholder="input description of the scene..." name="description" autocomplete="off">{{scene.description}}</textarea>
 						</div>
 					</div>
-					<div class="control-group">
-						<label class="control-label" for="inputSceneImageUrl">Thumnail Image</label>
-						<div class="controls">
-							<input type="file" id="inputSceneImageUrl" name="imageUrl"/>
-						</div>
-						<div class="span3"></div>
-						<div class="span3" id="img-preview-div">
-							<!-- <img data-src="holder.js/400x300" src="/site_media/img/1.jpg" style="width:400px;height:300px;"/> -->
-						</div>
-					</div>
+					
+					<input type="hidden" id="sceneImageUrlData" name="imageUrl"/>
+						
 					<input type="hidden" id="sceneId" name="sceneId" value="{{scene.id}}"/>
 					<input type="hidden" id="sceneContentData" name="contentthree" value=""/>
 					<input type="hidden" id="towContentData"  name="contenttwo" value=""/>

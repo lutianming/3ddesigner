@@ -116,6 +116,13 @@ $(function(){
 
 		$('#sceneContentData').val(exportJSON());
 		$('#towContentData').val(Two.save());
-		$('#scene-data-form').submit();
+
+
+		function saveCallback(img) {
+			$('#sceneImageUrlData').val(img.src);
+			$('#scene-data-form').submit();
+		}
+		
+		Two.snapshot(saveCallback);
 	}
 });

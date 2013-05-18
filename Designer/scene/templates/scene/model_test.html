@@ -30,11 +30,11 @@
 			</form>
 
 			<label>Scale X:</label>
-			<input type="text" id="scaleX" value="1.0"/><br/>
+			<input type="text" id="scaleX" value="1.0"/><span>20&nbsp;/&nbsp;=&nbsp;</span><span id="rScaleX"></span><br/>
 			<label>Scale Y:</label>
-			<input type="text" id="scaleY" value="1.0"/><br/>
+			<input type="text" id="scaleY" value="1.0"/><span>20&nbsp;/&nbsp;=&nbsp;</span><span id="rScaleY"></span><br/>
 			<label>Scale Z:</label>
-			<input type="text" id="scaleZ" value="1.0"/><br/>
+			<input type="text" id="scaleZ" value="1.0"/><span>20&nbsp;/&nbsp;=&nbsp;</span><span id="rScaleZ"></span><br/>
 
 			<hr/>
 
@@ -127,6 +127,11 @@
 					app.scene.children[len-1].scale.set(param.scale.x,param.scale.y,param.scale.z);
 					app.scene.children[len-1].rotation.set(param.rotation.x,param.rotation.y,param.rotation.z);
 					app.scene.children[len-1].position.set(0,param.position.y,0);
+
+					$('#rScaleX').html( 20 / parseFloat($('#scaleX').val()));
+					$('#rScaleY').html( 20 / parseFloat($('#scaleY').val()));
+					$('#rScaleZ').html( 20 / parseFloat($('#scaleZ').val()));
+
 				});
 
 				function getParam( url ) {

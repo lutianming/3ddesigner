@@ -30,8 +30,8 @@ function _DataTransformer() {
 	var _DEFAULT_TEXTURE_WIDTH = 50.0;
 	var _DEFAULT_TEXTURE_HEIGHT = 25.0;
 
-	// var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/floor-brick.jpg';
-	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/red-brick-seamless-512-x-512.jpg';
+	var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/floor-brick.jpg';
+	// var _FLOOR_DEFAULT_TEXTURE_URL = '/site_media/img/red-brick-seamless-512-x-512.jpg';
 
 	var _FLOOR_TEXTURE_REPEAT_X = 1;
 	var _FLOOR_TEXTURE_REPEAT_Y = 1;
@@ -821,18 +821,23 @@ function _DataTransformer() {
 				z : param.size.y / _CONVERT_ZOOM_FACTOR 
 			};
 
-			if (param.scale === undefined ) {
-				/*model.scale = {
-					x : 0.3,
-					y : 0.3,
-					z : 0.3
-				}*/
-				model.scale = _DEFAULT_MODEL_SCALE[i%len];
-			}
-			
+			/*model.originSize = {
+				x : param.modelSize.x,
+				y : param.modelSize.y,
+				z : param.size.z
+			}*/
 
-			// model.url = '/site_media/models/tv.dae';
-			model.url = _DEFAULT_MODEL_URL[i%len];
+			/*if (param.scale === undefined ) {
+				model.scale = _DEFAULT_MODEL_SCALE[i%len];
+			}*/
+
+			/*model.scale = {
+				x : model.size.x / model.originSize.x,
+				y : model.size.y / model.originSize.y,
+				z : model.size.z / model.originSize.z
+			}*/
+
+			// model.url = param.url;
 
 			models.push(model);
 		}
