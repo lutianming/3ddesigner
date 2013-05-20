@@ -47,8 +47,14 @@
 
 			<hr/>
 
+			<label>Base X:</label>
+			<input type="text" id="baseX" value="0.0"/><br/>
+
 			<label>Base Y:</label>
-			<input type="text" id="baseY" value="0.0"/>
+			<input type="text" id="baseY" value="0.0"/><br/>
+
+			<label>Base Z:</label>
+			<input type="text" id="baseZ" value="0.0"/><br/>
 		</div>
 
 		<script type="text/javascript" src="/site_media/js/jquery-1.6.2.min.js"></script>
@@ -126,7 +132,7 @@
 
 					app.scene.children[len-1].scale.set(param.scale.x,param.scale.y,param.scale.z);
 					app.scene.children[len-1].rotation.set(param.rotation.x,param.rotation.y,param.rotation.z);
-					app.scene.children[len-1].position.set(0,param.position.y,0);
+					app.scene.children[len-1].position.set(param.position.x,param.position.y,param.position.z);
 
 					$('#rScaleX').html( 20 / parseFloat($('#scaleX').val()));
 					$('#rScaleY').html( 20 / parseFloat($('#scaleY').val()));
@@ -147,9 +153,9 @@
 							z : parseFloat($('#rotationZ').val())
 						},
 						position : {
-							x : 0,
+							x : parseFloat($('#baseX').val()),
 							y : parseFloat($('#baseY').val()),
-							z : 0
+							z : parseFloat($('#baseZ').val())
 						}
 					}
 					

@@ -38,6 +38,7 @@ class ModelData(models.Model):
     y = models.FloatField()
     z = models.FloatField()
     baseY = models.FloatField()
+    height = models.FloatField()
 
     class Meta:
         ordering = ['name']
