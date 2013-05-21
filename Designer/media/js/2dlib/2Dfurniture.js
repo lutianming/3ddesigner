@@ -17,6 +17,8 @@ Two.Furniture = function (img, pos, width, height, rotation){
     pos.x = 0;
     pos.y = 0;
 
+    width = img.width;
+    height = img.height;
     var obj = new Kinetic.Image({
         name: 'furniture',
         x: pos.x,
@@ -31,17 +33,13 @@ Two.Furniture = function (img, pos, width, height, rotation){
 
     var w = 10;
     this.topleft = create_anchor(pos.x, pos.y,
-                                -w, -w,
-                                'topleft', this, 'red');
+                                 'topleft', this, 'red');
     this.topright = create_anchor(pos.x+width, pos.y,
-                                 w, -w,
-                                 'topright', this, 'black');
+                                  'topright', this, 'black');
     this.bottomright = create_anchor(pos.x+width, pos.y+height,
-                                    w, w,
-                                    'bottomright', this, 'blue');
+                                     'bottomright', this, 'blue');
     this.bottomleft = create_anchor(pos.x, pos.y+height,
-                                   -w, w,
-                                   'bottomleft', this, 'black');
+                                    'bottomleft', this, 'black');
 
     var ptop = center_point(this.topleft.getPosition(),
                         this.topright.getPosition());
@@ -150,8 +148,8 @@ function update_furniture(anchor){
     var offset = obj.getOffset();
     var dx = width/2 - offset.x;
     var dy = height/2 - offset.y;
-   obj.move(-deltax + dx, -deltay + dy);
-   obj.setOffset(width/2, height/2);
+    obj.move(-deltax + dx, -deltay + dy);
+    obj.setOffset(width/2, height/2);
 }
 
 function Anchor(x, y, width, height, name, furniture){
@@ -233,7 +231,7 @@ Anchor.prototype = Object.create(Kinetic.Rect, {
     }
 });
 
-function create_anchor(x, y, width, height, name, group, fill){
+function create_anchor(x, y, name, group, fill){
     var anchor = new Kinetic.Circle({
         name: name,
         x: x,
