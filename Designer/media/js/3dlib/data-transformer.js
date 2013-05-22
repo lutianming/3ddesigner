@@ -40,6 +40,8 @@ function _DataTransformer() {
 	var _DEFAULT_MODEL_SCALE = [{x:1.0,y:1.0,z:1.0},{x:0.4,y:0.4,z:0.4},{x:1.2,y:1.2,z:1.2}]
 
 
+	var _MEDIA_PREFIX = '/site_media/';
+
 	/**
 	 * CONSTANT VALUE
 	 * ZOOM FACTOR FROM 2D TO 3D
@@ -821,23 +823,22 @@ function _DataTransformer() {
 				z : param.size.y / _CONVERT_ZOOM_FACTOR 
 			};
 
-			/*model.originSize = {
-				x : param.modelSize.x,
-				y : param.modelSize.y,
-				z : param.size.z
-			}*/
 
-			/*if (param.scale === undefined ) {
-				model.scale = _DEFAULT_MODEL_SCALE[i%len];
-			}*/
+			var data_size = param.data_size.split(":");
+			model.originSize = {
+				x : data_size[0],
+				y : data_size[1],
+				z : data_size[2],
+			}
 
-			/*model.scale = {
+
+			model.scale = {
 				x : model.size.x / model.originSize.x,
 				y : model.size.y / model.originSize.y,
 				z : model.size.z / model.originSize.z
-			}*/
+			}
 
-			// model.url = param.url;
+			model.url = _MEDIA_PREFIX + param.data_model_url;
 
 			models.push(model);
 		}
