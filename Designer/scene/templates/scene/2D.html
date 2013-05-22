@@ -10,26 +10,45 @@
 
     <link rel="stylesheet" href="/site_meida/css/style.css"></link>
     <link rel="stylesheet" href="/site_media/css/2d.css"></link>
-    <div class="container-fluid">
-      <div class="row-fluid">
-        <div id="toolbox" class="span2">
-          <div class="btn-group btn-group-vertical">
+    <div class="btn-toolbar">
+    <div class="btn-group">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        edit
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li onclick="Two.undo()">
+          <a>undo</a>
+        </li>
+        <li onclick="Two.redo()">
+          <a>redo</a>
+        </li>
+        <li onclick="Two.clean()">
+          <a>clean</a>
+        </li>
+      </ul>
+    </div>
+    <button class="btn" onclick="Two.setCmd(DeleteCommand)">delete</button>
 
-            <button class="btn btn-block" onclick="Two.clean()">clean</button>
-            <button class="btn btn-block" onclick="Two.undo()">undo</button>
-            <button class="btn btn-block" onclick="Two.redo()">redo</button>
-            <button class="btn btn-block" onclick="Two.reload()">reload</button>
-            <button class="btn btn-block" onclick="scale(0.5)">+</button>
-            <button class="btn btn-block" onclick="scale(-0.5)">-</button>
-            <button class="btn btn-block" onclick="Two.setCmd(DeleteCommand)">delete</button>
-            <button class="btn btn-block" onclick="Two.setCmd(AddRoomCommand)">room</button>
-            <button class="btn btn-block" onclick="Two.setCmd(AddDoorCommand)">door</button>
-            <button class="btn btn-block" onclick="Two.setCmd(AddWindowCommand)">window</button>
-            <button class="btn btn-block" onclick="Two.setCmd(SplitWallCommand)">splite wall</button>
+    <button class="btn" onclick="Two.setCmd(SplitWallCommand)">splite wall</button>
 
-          </div>
-          {% include "scene/model_select.html" %}
-        </div>
+    <button class="btn" onclick="Two.setCmd(AddRoomCommand)">room</button>
+    <button class="btn" onclick="Two.setCmd(AddDoorCommand)">door</button>
+    <button class="btn" onclick="Two.setCmd(AddWindowCommand)">window</button>
+    {% include "scene/model_select.html" %}
+    </div>
+
+    <div class="container">
+
+      <!-- <div class="row-fluid"> -->
+      <!--   <div id="toolbox" class="span2"> -->
+      <!--     <div class="btn-group btn-group-vertical"> -->
+            <!-- <button class="btn btn-block" onclick="Two.reload()">reload</button> -->
+            <!-- <button class="btn btn-block" onclick="scale(0.5)">+</button> -->
+            <!-- <button class="btn btn-block" onclick="scale(-0.5)">-</button> -->
+          <!-- </div> -->
+
+        <!-- </div> -->
         <div id="content" class="span10">
         </div>
       </div>

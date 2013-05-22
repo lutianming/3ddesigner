@@ -1,8 +1,9 @@
 {% for key , value in modelMap.items %}
-	<label>{{ key }}</label>
-	<div class="dropdown  selection-div" id="select-model-{{key.id}}">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Select One<b class="caret"></b></a>
-			<ul  class="dropdown-menu" role="menu" aria-labelledby="dLabel"  style="max-height:240px; overflow-y:scroll;">
+	<!-- <label>{{ key }}</label> -->
+	<div class="btn-group" id="select-model-{{key.id}}">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"
+                   role="button">{{ key }}<span class="caret"></span></a>
+			<ul  class="dropdown-menu" role="menu">
 			{% for model in value %}
 				<li id="option-model-{{model.id}}"
 					data-type-id="{{model.type_id}}"
