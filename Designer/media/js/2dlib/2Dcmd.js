@@ -56,6 +56,13 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
             img.src = url;
             var that = this;
             img.onload = function(){
+                var width = img.width;
+                var height = img.height;
+                if(width > 80){
+                    img.width = 80;
+                    var rate = img.width / width;
+                    img.height = height * rate;
+                }
                 var furniture = new Two.Furniture(img, pos, 0);
                 furniture.element = that.element;
                 that.obj = furniture;
