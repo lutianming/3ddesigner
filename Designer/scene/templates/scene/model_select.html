@@ -11,11 +11,11 @@
 					data-icon-url="/site_media/{{model.icon_url}}"
 					data-scale="{{model.scale_x}}:{{model.scale_y}}:{{model.scale_z}}"
 					data-rotation="{{model.rotation_x}}:{{model.rotation_y}}:{{model.rotation_z}}"
+					data-height="{{model.height}}"
 					data-size="{{model.x}}:{{model.y}}:{{model.z}}"
                                         onclick="setCmd(AddFurnitureCommand, this)">
-					<a href="#">
-						<img
-                                                     src="/site_media/{{model.image_url}}" style="width:50px;height:50px;"/>
+					<a href="javascript:;">
+						<img src="/site_media/{{model.image_url}}" style="width:50px;height:50px;"/>
 						{{ model.name}}
 					</a>
 				</li>

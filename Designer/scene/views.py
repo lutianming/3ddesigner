@@ -19,14 +19,16 @@ def  view_scene(request,id):
 
 	context = RequestContext(request,{
 			'type' : 'view',
-			'scene': scene
+			'scene': scene , 
+			'modelMap' : getAllModels()
 		})
 
 	return render_to_response('view_scene.html',context_instance = context)
 
 def new_scene(request):
 	context = RequestContext(request,{
-			'type' : 'edit'
+			'type' : 'edit',
+			'modelMap' : getAllModels()
 		})
 	return render_to_response('view_scene.html',context_instance = context)
 
@@ -34,7 +36,8 @@ def edit_scene(request , id):
 	scene = get_object_or_404(SceneData, id = id)
 	context = RequestContext(request,{
 			'type' : 'edit',
-			'scene' : scene
+			'scene' : scene,
+			'modelMap' : getAllModels()
 		})
 	return render_to_response('view_scene.html',context_instance = context)
 
@@ -99,6 +102,22 @@ def getModels(request):
 
 	return render_to_response('scene/model_select.html',context)
 
+
+def getAllModels():
+	modelMap = {}
+	modelTypeMap={}
+
+	modelTypes = ModelType.objects.all();
+
+	for mt in modelTypes:
+		modelMap[mt] = []
+		modelTypeMap[mt.id] = mt
+
+	modelDatas = ModelData.objects.all();
+	for md in modelDatas:
+		modelMap[ modelTypeMap[md.type_id] ].append(md)
+
+	return modelMap
 
 def deleteScene(request , id):
 	scene = get_object_or_404(SceneData, id=id)
