@@ -2,22 +2,22 @@ Two.undoStack = [];
 Two.redoStack = [];
 
 Two.undo = function(){
-    if(this.undoStack.length > 0){
-        var cmd = this.undoStack.pop();
+    if(Two.undoStack.length > 0){
+        var cmd = Two.undoStack.pop();
         cmd.undo();
         g_2d.layer.draw();
-        this.redoStack.push(cmd);
+        Two.redoStack.push(cmd);
     }else{
         alert("can't undo");
     }
 
 };
 Two.redo = function(){
-    if(this.redoStack.length > 0){
-        var cmd = this.redoStack.pop();
+    if(Two.redoStack.length > 0){
+        var cmd = Two.redoStack.pop();
         cmd.redo();
         g_2d.layer.draw();
-        this.undoStack.push(cmd);
+        Two.undoStack.push(cmd);
     }else{
         alert("can't redo");
     }
@@ -31,8 +31,8 @@ Two.setCmd = function(cmd, data){
     else{
         c = new cmd();
     }
-    this.cmd = cmd;
-    this.undoStack.push(cmd);
+    Two.cmd = c;
+    Two.undoStack.push(c);
 };
 
 function BaseCommand(){

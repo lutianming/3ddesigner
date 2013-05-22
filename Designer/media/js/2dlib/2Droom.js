@@ -69,9 +69,8 @@ Two.Wall = function(corner1, corner2){
 
 
     this.on('dragstart', function(){
-        var cmd = new DragWallCommand(this);
-        Two.setCmd(cmd);
-        cmd.mousedown(g_2d.stage.getPointerPosition());
+        Two.setCmd(DragWallCommand, this);
+        Two.cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     this.on('dragmove', function(){
 
@@ -270,9 +269,8 @@ Two.Door = function(x, y, deg, width){
         }
     });
     this.on('dragstart', function(){
-        var cmd = new DragDoorWindowCommand(this);
-        Two.setCmd(cmd);
-        cmd.mousedown();
+        Two.setCmd(DragDoorWindowCommand, this);
+        Two.cmd.mousedown();
     });
 };
 Two.Door.prototype = Object.create(Kinetic.Wedge.prototype, {
@@ -325,9 +323,8 @@ Two.Window = function(x, y, deg, width){
         }
     });
     this.on('dragstart', function(){
-        var cmd = new DragDoorWindowCommand(this);
-        Two.setCmd(cmd);
-        cmd.mousedown();
+        Two.setCmd(DragDoorWindowCommand, this);
+        Two.cmd.mousedown();
     });
 
 };
