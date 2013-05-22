@@ -309,7 +309,7 @@ function create_rotate_anchor(x, y, name, furniture){
     anchor.on('mousedown', function(){
         this.mousehold = true;
         var cmd = new RotationCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     anchor.on('mousemove', function(){

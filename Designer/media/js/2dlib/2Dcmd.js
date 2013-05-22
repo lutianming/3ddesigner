@@ -1,36 +1,32 @@
-var undoStack = [];
-var redoStack = [];
+Two.undoStack = [];
+Two.redoStack = [];
 
-Two.cmdManager = {
-    cmd : null,
-    undo : function(){
-        if(undoStack.length > 0){
-            var cmd = undoStack.pop();
-            cmd.undo();
-            g_2d.layer.draw();
-            redoStack.push(cmd);
-        }else{
-            alert("can't undo");
-        }
-    },
-    redo : function(){
-        if(redoStack.length > 0){
-            var cmd = redoStack.pop();
-            cmd.redo();
-            g_2d.layer.draw();
-            undoStack.push(cmd);
-        }else{
-            alert("can't redo");
-        }
-    },
-    setCmd : function(cmd){
-        this.cmd = cmd;
-        undoStack.push(cmd);
+Two.undo = function(){
+    if(this.undoStack.length > 0){
+        var cmd = this.undoStack.pop();
+        cmd.undo();
+        g_2d.layer.draw();
+        this.redoStack.push(cmd);
+    }else{
+        alert("can't undo");
+    }
+
+};
+Two.redo = function(){
+    if(this.redoStack.length > 0){
+        var cmd = this.redoStack.pop();
+        cmd.redo();
+        g_2d.layer.draw();
+        this.undoStack.push(cmd);
+    }else{
+        alert("can't redo");
     }
 };
 
-Two.undo = Two.cmdManager.undo;
-Two.redo = Two.cmdManager.redo;
+Two.setCmd = function(cmd){
+    this.cmd = cmd;
+    this.undoStack.push(cmd);
+};
 
 function BaseCommand(){
 

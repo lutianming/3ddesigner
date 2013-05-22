@@ -70,7 +70,7 @@ Two.Wall = function(corner1, corner2){
 
     this.on('dragstart', function(){
         var cmd = new DragWallCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     this.on('dragmove', function(){
@@ -271,7 +271,7 @@ Two.Door = function(x, y, deg, width){
     });
     this.on('dragstart', function(){
         var cmd = new DragDoorWindowCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown();
     });
 };
@@ -326,7 +326,7 @@ Two.Window = function(x, y, deg, width){
     });
     this.on('dragstart', function(){
         var cmd = new DragDoorWindowCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown();
     });
 

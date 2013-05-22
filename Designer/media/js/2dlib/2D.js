@@ -93,16 +93,16 @@ function onCanvasMouseDown(event){
     if(pos == null){
         return;
     }
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mousedown(pos);
+    if(Two.cmd != null){
+        Two.cmd.mousedown(pos);
     }
 }
 
 function onCanvasMouseUp(event){
     var pos = g_2d.stage.getPointerPosition();
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mouseup(pos);
-        Two.cmdManager.cmd = null;
+    if(Two.cmd != null){
+        Two.cmd.mouseup(pos);
+        Two.cmd = null;
         if(g_2d.current_obj && g_2d.current_obj.getName() == 'furniture'){
             var p = g_2d.current_obj.getParent();
             if('show_anchors' in p){
@@ -136,8 +136,8 @@ function onCanvasMouseMove(event){
     if(pos == null){
         return;
     }
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mousemove(pos);
+    if(Two.cmd != null){
+        Two.cmd.mousemove(pos);
     }
 }
 
@@ -155,7 +155,7 @@ function setCmd(cmd, data){
     else{
         c = new cmd();
     }
-    Two.cmdManager.setCmd(c);
+    Two.setCmd(c);
 }
 
 function have_obj(pos, name){
