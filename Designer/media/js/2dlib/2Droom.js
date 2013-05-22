@@ -70,7 +70,7 @@ Two.Wall = function(corner1, corner2){
 
     this.on('dragstart', function(){
         var cmd = new DragWallCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     this.on('dragmove', function(){
@@ -167,12 +167,56 @@ Two.Room = function(corners, house, walls){
 Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
     movein: {
         value: function(p){
+            p.add(this);
 
+            var corners = this.getPoints();
+            for(var i = 0; i < corners.length; i++){
+                var c = corners;
+                p.add(c);
+            }
+            for(var i = 0; i < this.walls.length; i++){
+                var wall = this.walls[i];
+                if(wall.rooms.indexOf(this) != -1){
+                    p.add(wall);
+                }
+            }
         }
     },
     moveout: {
         value: function(){
+            this.remove();
+            for(var i = 0; i < this.walls.length; i++){
+                var wall = this.walls[i];
+                if(wall.rooms.length == 1){
+                    wall.remove();
+                }else{
+                    var index = wall.rooms.indexOf(this);
+                    wall.rooms.splice(index, 1);
+                }
+            }
 
+            var corners = this.getPoints();
+
+            var rooms = g_2d.house.get('.room');
+
+            for(var i = 0; i < corners.length; i++){
+                var c = corners[i];
+                var shared = false;
+                for(var j = 0; j < rooms.length; j++){
+                    var r = rooms[j];
+                    if(r == this.obj){
+                        break;
+                    }
+                    var points = r.getPoints();
+                    if(points.indexOf(c) != -1){
+                        shared = true;
+                        break;
+                    }
+                }
+                if(!shared){
+                    c.remove();
+                }
+            }
         }
     }
 });
@@ -227,7 +271,7 @@ Two.Door = function(x, y, deg, width){
     });
     this.on('dragstart', function(){
         var cmd = new DragDoorWindowCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown();
     });
 };
@@ -282,7 +326,7 @@ Two.Window = function(x, y, deg, width){
     });
     this.on('dragstart', function(){
         var cmd = new DragDoorWindowCommand(this);
-        Two.cmdManager.setCmd(cmd);
+        Two.setCmd(cmd);
         cmd.mousedown();
     });
 

@@ -21,13 +21,11 @@
             <button class="btn btn-block" onclick="Two.reload()">reload</button>
             <button class="btn btn-block" onclick="scale(0.5)">+</button>
             <button class="btn btn-block" onclick="scale(-0.5)">-</button>
-            <button class="btn btn-block" onclick="setCmd(DeleteCommand)">delete</button>
-            <button class="btn btn-block" onclick="setCmd(AddRoomCommand)">room</button>
-            <button class="btn btn-block" onclick="setCmd(AddDoorCommand)">door</button>
-            <button class="btn btn-block" onclick="setCmd(AddWindowCommand)">window</button>
-            <button class="btn btn-block" onclick="setCmd(SplitWallCommand)">splite wall</button>
-
-            
+            <button class="btn btn-block" onclick="Two.setCmd(DeleteCommand)">delete</button>
+            <button class="btn btn-block" onclick="Two.setCmd(AddRoomCommand)">room</button>
+            <button class="btn btn-block" onclick="Two.setCmd(AddDoorCommand)">door</button>
+            <button class="btn btn-block" onclick="Two.setCmd(AddWindowCommand)">window</button>
+            <button class="btn btn-block" onclick="Two.setCmd(SplitWallCommand)">splite wall</button>
 
           </div>
           {% include "scene/model_select.html" %}

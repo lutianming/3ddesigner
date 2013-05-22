@@ -1,17 +1,3 @@
-var OBJS = {
-    room: 1,
-    window: 2
-};
-
-var CMDS = {
-    normal: 1,
-    add_room: 2,
-    add_door: 3,
-    add_window: 4,
-    add_furniture: 5,
-    split_wall: 6
-};
-
 var g_2d = {
     width: 800,
     height: 600,
@@ -93,16 +79,16 @@ function onCanvasMouseDown(event){
     if(pos == null){
         return;
     }
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mousedown(pos);
+    if(Two.cmd != null){
+        Two.cmd.mousedown(pos);
     }
 }
 
 function onCanvasMouseUp(event){
     var pos = g_2d.stage.getPointerPosition();
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mouseup(pos);
-        Two.cmdManager.cmd = null;
+    if(Two.cmd != null){
+        Two.cmd.mouseup(pos);
+        Two.cmd = null;
         if(g_2d.current_obj && g_2d.current_obj.getName() == 'furniture'){
             var p = g_2d.current_obj.getParent();
             if('show_anchors' in p){
@@ -136,26 +122,14 @@ function onCanvasMouseMove(event){
     if(pos == null){
         return;
     }
-    if(Two.cmdManager.cmd != null){
-        Two.cmdManager.cmd.mousemove(pos);
+    if(Two.cmd != null){
+        Two.cmd.mousemove(pos);
     }
 }
 
 function scale(delta){
     g_2d.stage.setScale(g_2d.stage.getScale().x + delta);
     g_2d.stage.draw();
-}
-
-
-function setCmd(cmd, data){
-    var c;
-    if(data){
-        c = new cmd(data);
-    }
-    else{
-        c = new cmd();
-    }
-    Two.cmdManager.setCmd(c);
 }
 
 function have_obj(pos, name){
