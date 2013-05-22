@@ -23,7 +23,7 @@ $(function(){
 
 		$('#v-container').focus();
 
-		updateProgress(globalApp, loadingBox);
+		// updateProgress(globalApp, loadingBox);
 	});
 
 	$('#two-tab').on('click',function(event){
@@ -126,16 +126,5 @@ $(function(){
 		Two.snapshot(saveCallback);
 	}
 
-	function updateProgress(app , loadingBox) {
-		while(true) {
-			var progress = app.getLoadingProgress();
-			if (progress>=100) {
-				loadingBox.hide();
-				break;
-			}
-			else {
-				loadingBox.find("#progress-span").html(progress);
-			}
-		}
-	}
+	
 });
