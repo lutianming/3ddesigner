@@ -262,11 +262,12 @@ Two.load = function(data){
         var img = new Image();
         img.src = url;
         img.f = f;
+        img.element = element;
         img.onload = function(){
             this.width = this.f.width;
             this.height = this.f.height;
             var furniture = new Two.Furniture(this, this.f.position, this.f.rotation);
-            furniture.element = element;
+            furniture.element = this.element;
             g_2d.layer.add(furniture);
             g_2d.layer.draw();
         };
