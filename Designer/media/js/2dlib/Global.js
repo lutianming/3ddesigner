@@ -261,9 +261,11 @@ Two.load = function(data){
         var url = element.getAttribute('data-icon-url');
         var img = new Image();
         img.src = url;
+        img.f = f;
         img.onload = function(){
-            var furniture = new Two.Furniture(img, f.position, f.width,
-                                              f.height, f.rotation);
+            this.width = this.f.width;
+            this.height = this.f.height;
+            var furniture = new Two.Furniture(this, this.f.position, this.f.rotation);
             furniture.element = element;
             g_2d.layer.add(furniture);
             g_2d.layer.draw();
