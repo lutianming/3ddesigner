@@ -9,6 +9,8 @@ Two.cmdManager = {
             cmd.undo();
             g_2d.layer.draw();
             redoStack.push(cmd);
+        }else{
+            alert("can't undo");
         }
     },
     redo : function(){
@@ -17,6 +19,8 @@ Two.cmdManager = {
             cmd.redo();
             g_2d.layer.draw();
             undoStack.push(cmd);
+        }else{
+            alert("can't redo");
         }
     },
     setCmd : function(cmd){
@@ -44,6 +48,47 @@ BaseCommand.prototype = {
     }
 };
 
+function CombinedCommand(){
+    this.cmds = [];
+}
+
+CombinedCommand.prototype = Object.create(BaseCommand.prototype, {
+    mousedown: {
+        value: function(pos){
+            for(var i = 0; i < this.cmds.length; i++){
+                this.cmds[i].mousedown(pos);
+            }
+        }
+    },
+    mousemove: {
+        value: function(pos){
+            for(var i = 0; i < this.cmds.length; i++){
+                this.cmds[i].mousemove(pos);
+            }
+        }
+    },
+    mouseup: {
+        value: function(pos){
+            for(var i = 0; i < this.cmds.length; i++){
+                this.cmds[i].mouseup(pos);
+            }
+        }
+    },
+    undo: {
+        value: function(){
+            for(var i = this.cmds.length - 1; i >= 0; i--){
+                this.cmds[i].undo();
+            }
+        }
+    },
+    redo: {
+        value: function(){
+            for(var i = 0; i < this.cmds.length; i++){
+                this.cmds[i].redo();
+            }
+        }
+    }
+});
 //add furniture command
 function AddFurnitureCommand(element){
     this.element = element;
@@ -56,14 +101,14 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
             img.src = url;
             var that = this;
             img.onload = function(){
-                var width = img.width;
-                var height = img.height;
+                var width = this.width;
+                var height = this.height;
                 if(width > 80){
-                    img.width = 80;
-                    var rate = img.width / width;
-                    img.height = height * rate;
+                    this.width = 80;
+                    var rate = this.width / width;
+                    this.height = height * rate;
                 }
-                var furniture = new Two.Furniture(img, pos, 0);
+                var furniture = new Two.Furniture(this, pos, 0);
                 furniture.element = that.element;
                 that.obj = furniture;
                 if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
@@ -334,16 +379,46 @@ ResizeCommand.prototype = Object.create(BaseCommand.prototype, {
 });
 
 function SplitWallCommand(){
-
+    this.wall = null;
+    this.new_wall = null;
+    this.shared_corner = null;
 }
 SplitWallCommand.prototype = Object.create(BaseCommand.prototype, {
     mouseup : {
         value : function(pos){
             var wall = have_obj(pos, 'wall');
-            var pos = Two.intersection_pos_wall(pos, wall);
-            var corner = new Two.Corner(pos.x, pos.y);
-            g_2d.house.add(corner);
-            var new_wall = split_wall(wall, corner);
+            if(wall != null){
+                this.wall = wall;
+                var pos = Two.intersection_pos_wall(pos, wall);
+                this.shared_corner = new Two.Corner(pos.x, pos.y);
+                g_2d.house.add(this.shared_corner);
+                var new_wall = split_wall(wall, this.shared_corner);
+                this.new_wall = new_wall;
+                g_2d.house.add(new_wall);
+            }
+        }
+    },
+    undo: {
+        value: function(){
+            var corners = this.new_wall.getPoints();
+            var index = corners.indexOf(this.shared_corner);
+            var c1 = corners[1-index];
+
+            corners = this.wall.getPoints();
+            index = corners.indexOf(this.shared_corner);
+            corners[1-index] = c1;
+
+            g_2d.house.remove(this.new_wall);
+            g_2d.house.remove(this.shared_corner);
+        }
+    },
+    redo: {
+        value: function(){
+            var pos = Two.intersection_pos_wall(pos, this.wall);
+            this.shared_corner = new Two.Corner(pos.x, pos.y);
+            g_2d.house.add(this.shared_corner);
+            var new_wall = split_wall(this.wall, this.shared_corner);
+            this.new_wall = new_wall;
             g_2d.house.add(new_wall);
         }
     }
@@ -678,33 +753,8 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
             targets = getObjs('room', objs);
             if(targets.length > 0){
                 this.obj = targets[0];
-                for(var i = 0; i < this.obj.walls.length; i++){
-                    var wall = this.obj.walls[i];
-                    if(wall.rooms.length == 1){
-                        wall.remove();
-                    }
-                }
-                var rooms = g_2d.house.get('.room');
-                var corners = this.obj.getPoints();
-                for(var i = 0; i < corners.length; i++){
-                    var c = corners[i];
-                    var shared = false;
-                    for(var j = 0; j < rooms.length; j++){
-                        var r = rooms[j];
-                        if(r == this.obj){
-                            break;
-                        }
-                        var points = r.getPoints();
-                        if(points.indexOf(c) != -1){
-                            shared = true;
-                            break;
-                        }
-                    }
-                    if(!shared){
-                        c.remove();
-                    }
-                }
-                this.obj.remove();
+                this.parent = g_2d.house;
+                this.obj.moveout();
 
                 var rooms = g_2d.house.get('.room');
                 for(var i = 0; i < rooms.length; i++){

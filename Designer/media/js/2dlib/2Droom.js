@@ -167,12 +167,56 @@ Two.Room = function(corners, house, walls){
 Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
     movein: {
         value: function(p){
+            p.add(this);
 
+            var corners = this.getPoints();
+            for(var i = 0; i < corners.length; i++){
+                var c = corners;
+                p.add(c);
+            }
+            for(var i = 0; i < this.walls.length; i++){
+                var wall = this.walls[i];
+                if(wall.rooms.indexOf(this) != -1){
+                    p.add(wall);
+                }
+            }
         }
     },
     moveout: {
         value: function(){
+            this.remove();
+            for(var i = 0; i < this.walls.length; i++){
+                var wall = this.walls[i];
+                if(wall.rooms.length == 1){
+                    wall.remove();
+                }else{
+                    var index = wall.rooms.indexOf(this);
+                    wall.rooms.splice(index, 1);
+                }
+            }
 
+            var corners = this.getPoints();
+
+            var rooms = g_2d.house.get('.room');
+
+            for(var i = 0; i < corners.length; i++){
+                var c = corners[i];
+                var shared = false;
+                for(var j = 0; j < rooms.length; j++){
+                    var r = rooms[j];
+                    if(r == this.obj){
+                        break;
+                    }
+                    var points = r.getPoints();
+                    if(points.indexOf(c) != -1){
+                        shared = true;
+                        break;
+                    }
+                }
+                if(!shared){
+                    c.remove();
+                }
+            }
         }
     }
 });
