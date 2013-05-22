@@ -209,9 +209,13 @@ SceneViewer.prototype.createFloors = function() {
 }
 
 SceneViewer.prototype.createModels = function() {
+
+	this.fullProgress = threeSceneData.models.length;
+	this.loadingProgress = 0;
+
 	for (var i in threeSceneData.models) {
 		var param = threeSceneData.models[i];
-		var model = ObjectFactory.createModel(param, this.scene);
+		var model = ObjectFactory.createModel(param, this);
 	}
 }
 
@@ -330,7 +334,7 @@ ObjectFactory.createFloorMesh = function(param) {
  * @param  {[type]} param [description]
  * @return {[type]}       [description]
  */
-ObjectFactory.createModel = function(param, scene) {
+ObjectFactory.createModel = function(param, app) {
 	if (param === undefined) {
 		return;
 	}
@@ -350,7 +354,8 @@ ObjectFactory.createModel = function(param, scene) {
 
 		dae.position.set(param.position.x, param.position.y, param.position.z);
 
-		scene.add(dae);
+		app.scene.add(dae);
+		app.loadingProgress++;
 	});
 }
 
@@ -392,8 +397,14 @@ function _App() {
 		}
 	}
 
+	function getLoadingProgress() {
+		var progress = _app.loadingProgress / _app.fullProgress;
+		return progress.toFixed(2) * 100;
+	}
+
 	return {
 		startApp : startApp,
-		setControls : setControls
+		setControls : setControls,
+		getLoadingProgress : getLoadingProgress
 	}
 }

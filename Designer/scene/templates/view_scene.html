@@ -36,17 +36,6 @@ var twoEditData = {{ scene.content2|safe }};
 {% endblock %}	
 {% block content %}
 <div> 
-	<script type="text/javascript">
-		$(function(){
-			$.get(
-				'/getAllModels/',
-				{},
-				function(data){
-					$("#toolbox").append(data)
-				}
-			);
-		})
-	</script>
 	<div id="scene-title">
 		{% ifequal type 'edit' %}
 			<form class="form-horizontal" id="scene-data-form" method="post" action="/scene/save/" enctype="multipart/form-data">

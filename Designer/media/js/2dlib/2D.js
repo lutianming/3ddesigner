@@ -257,6 +257,7 @@ function exportJSON(){
         f.data_model_url = element.getAttribute('data-model-url');
         f.data_rotation = element.getAttribute('data-rotation');
         f.data_size = element.getAttribute('data-size');
+        f.data_height = element.getAttribute('data-height');
         data.furnitures.push(f);
     }
 

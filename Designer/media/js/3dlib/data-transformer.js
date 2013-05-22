@@ -819,7 +819,7 @@ function _DataTransformer() {
 
 			model.size = {
 				x : param.size.x / _CONVERT_ZOOM_FACTOR,
-				y : 10,
+				y : param.data_height,
 				z : param.size.y / _CONVERT_ZOOM_FACTOR 
 			};
 
@@ -834,9 +834,11 @@ function _DataTransformer() {
 
 			model.scale = {
 				x : model.size.x / model.originSize.x,
-				y : model.size.y / model.originSize.y,
-				z : model.size.z / model.originSize.z
+				y : model.size.z / model.originSize.z,
+				z : model.size.y / model.originSize.y
 			}
+
+			// model.scale.y = (model.scale.x + model.scale.z) / 2;
 
 			model.url = _MEDIA_PREFIX + param.data_model_url;
 
