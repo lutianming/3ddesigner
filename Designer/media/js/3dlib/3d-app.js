@@ -210,6 +210,10 @@ SceneViewer.prototype.createFloors = function() {
 
 SceneViewer.prototype.createModels = function() {
 
+	if (threeSceneData.models === undefined) {
+		return;
+	}
+
 	this.fullProgress = threeSceneData.models.length;
 	this.loadingProgress = 0;
 

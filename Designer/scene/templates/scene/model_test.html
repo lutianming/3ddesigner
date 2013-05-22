@@ -120,7 +120,7 @@
 						afterEachUpload : function(data){
 							var url = data[0].innerHTML;
 							var param = getParam(url);
-							ObjectFactory.createModel(param , app.scene);
+							ObjectFactory.createModel(param , app);
 							$('div[id^="px-form"]').remove();
 						}
 					});
