@@ -23,7 +23,14 @@ Two.redo = function(){
     }
 };
 
-Two.setCmd = function(cmd){
+Two.setCmd = function(cmd, data){
+    var c;
+    if(data){
+        c = new cmd(data);
+    }
+    else{
+        c = new cmd();
+    }
     this.cmd = cmd;
     this.undoStack.push(cmd);
 };

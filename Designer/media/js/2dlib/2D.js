@@ -1,17 +1,3 @@
-var OBJS = {
-    room: 1,
-    window: 2
-};
-
-var CMDS = {
-    normal: 1,
-    add_room: 2,
-    add_door: 3,
-    add_window: 4,
-    add_furniture: 5,
-    split_wall: 6
-};
-
 var g_2d = {
     width: 800,
     height: 600,
@@ -144,18 +130,6 @@ function onCanvasMouseMove(event){
 function scale(delta){
     g_2d.stage.setScale(g_2d.stage.getScale().x + delta);
     g_2d.stage.draw();
-}
-
-
-function setCmd(cmd, data){
-    var c;
-    if(data){
-        c = new cmd(data);
-    }
-    else{
-        c = new cmd();
-    }
-    Two.setCmd(c);
 }
 
 function have_obj(pos, name){
