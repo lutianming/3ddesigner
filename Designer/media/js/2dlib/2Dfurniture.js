@@ -5,7 +5,10 @@ function center_point(p1, p2){
 };
 
 
-Two.Furniture = function (img, pos, width, height, rotation){
+Two.Furniture = function (img, pos, rotation){
+    var width = img.width;
+    var height = img.height;
+
     Kinetic.Group.call(this, {
         name: 'furniture_group',
         offset: [width/2, height/2],
@@ -17,8 +20,6 @@ Two.Furniture = function (img, pos, width, height, rotation){
     pos.x = 0;
     pos.y = 0;
 
-    width = img.width;
-    height = img.height;
     var obj = new Kinetic.Image({
         name: 'furniture',
         x: pos.x,
@@ -33,13 +34,13 @@ Two.Furniture = function (img, pos, width, height, rotation){
 
     var w = 10;
     this.topleft = create_anchor(pos.x, pos.y,
-                                 'topleft', this, 'red');
+                                 'topleft', this);
     this.topright = create_anchor(pos.x+width, pos.y,
-                                  'topright', this, 'black');
+                                  'topright', this);
     this.bottomright = create_anchor(pos.x+width, pos.y+height,
-                                     'bottomright', this, 'blue');
+                                     'bottomright', this);
     this.bottomleft = create_anchor(pos.x, pos.y+height,
-                                    'bottomleft', this, 'black');
+                                    'bottomleft', this);
 
     var ptop = center_point(this.topleft.getPosition(),
                         this.topright.getPosition());
@@ -83,6 +84,16 @@ Two.Furniture.prototype = Object.create(Kinetic.Group.prototype, {
             this.bottom.show();
             this.left.show();
             this.getParent().draw();
+        }
+    },
+    movein : {
+      value : function(parent){
+          parent.add(this);
+      }
+    },
+    moveout : {
+        value : function(){
+            this.remove();
         }
     }
 });
@@ -231,13 +242,13 @@ Anchor.prototype = Object.create(Kinetic.Rect, {
     }
 });
 
-function create_anchor(x, y, name, group, fill){
+function create_anchor(x, y, name, group){
     var anchor = new Kinetic.Circle({
         name: name,
         x: x,
         y: y,
         radius: 4,
-        fill: fill,
+        fill: "black",
         draggable: true,
         dragOnTop: false
     });
@@ -297,8 +308,9 @@ function create_rotate_anchor(x, y, name, furniture){
     });
     anchor.on('mousedown', function(){
         this.mousehold = true;
-        g_2d.cmd = new RotationCommand(this);
-        g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
+        var cmd = new RotationCommand(this);
+        Two.cmdManager.setCmd(cmd);
+        cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     anchor.on('mousemove', function(){
         if(this.mousehold){

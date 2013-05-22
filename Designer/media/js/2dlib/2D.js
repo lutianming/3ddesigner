@@ -15,7 +15,6 @@ var CMDS = {
 var g_2d = {
     width: 800,
     height: 600,
-    cmd: null,
     current_obj: null
 };
 
@@ -94,16 +93,16 @@ function onCanvasMouseDown(event){
     if(pos == null){
         return;
     }
-    if(g_2d.cmd != null){
-        g_2d.cmd.mousedown(pos);
+    if(Two.cmdManager.cmd != null){
+        Two.cmdManager.cmd.mousedown(pos);
     }
 }
 
 function onCanvasMouseUp(event){
     var pos = g_2d.stage.getPointerPosition();
-    if(g_2d.cmd != null){
-        g_2d.cmd.mouseup(pos);
-        g_2d.cmd = null;
+    if(Two.cmdManager.cmd != null){
+        Two.cmdManager.cmd.mouseup(pos);
+        Two.cmdManager.cmd = null;
         if(g_2d.current_obj && g_2d.current_obj.getName() == 'furniture'){
             var p = g_2d.current_obj.getParent();
             if('show_anchors' in p){
@@ -137,8 +136,8 @@ function onCanvasMouseMove(event){
     if(pos == null){
         return;
     }
-    if(g_2d.cmd != null){
-        g_2d.cmd.mousemove(pos);
+    if(Two.cmdManager.cmd != null){
+        Two.cmdManager.cmd.mousemove(pos);
     }
 }
 
@@ -149,12 +148,14 @@ function scale(delta){
 
 
 function setCmd(cmd, data){
+    var c;
     if(data){
-        g_2d.cmd = new cmd(data);
+        c = new cmd(data);
     }
     else{
-        g_2d.cmd = new cmd();
+        c = new cmd();
     }
+    Two.cmdManager.setCmd(c);
 }
 
 function have_obj(pos, name){
@@ -254,7 +255,10 @@ function exportJSON(){
 
         //element info for building model
         var element = furniture.element;
+        f.data_type_id = element.getAttribute('data-type-id');
         f.data_model_url = element.getAttribute('data-model-url');
+        f.data_img_url = element.getAttribute('data-img-url');
+        f.data_scale = element.getAttribute('data-scale');
         f.data_rotation = element.getAttribute('data-rotation');
         f.data_size = element.getAttribute('data-size');
         data.furnitures.push(f);

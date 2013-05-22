@@ -1,3 +1,33 @@
+var undoStack = [];
+var redoStack = [];
+
+Two.cmdManager = {
+    cmd : null,
+    undo : function(){
+        if(undoStack.length > 0){
+            var cmd = undoStack.pop();
+            cmd.undo();
+            g_2d.layer.draw();
+            redoStack.push(cmd);
+        }
+    },
+    redo : function(){
+        if(redoStack.length > 0){
+            var cmd = redoStack.pop();
+            cmd.redo();
+            g_2d.layer.draw();
+            undoStack.push(cmd);
+        }
+    },
+    setCmd : function(cmd){
+        this.cmd = cmd;
+        undoStack.push(cmd);
+    }
+};
+
+Two.undo = Two.cmdManager.undo;
+Two.redo = Two.cmdManager.redo;
+
 function BaseCommand(){
 
 }
@@ -24,19 +54,29 @@ AddFurnitureCommand.prototype = Object.create(BaseCommand.prototype, {
             var url = this.element.getAttribute('data-icon-url');
             var img = new Image();
             img.src = url;
-            var element = this.element;
+            var that = this;
             img.onload = function(){
-                var furniture = new Two.Furniture(img, pos, 50, 50, 0);
-                furniture.element = element;
-                this.obj = furniture;
+                var furniture = new Two.Furniture(img, pos, 0);
+                furniture.element = that.element;
+                that.obj = furniture;
                 if(g_2d.current_obj && 'hide_anchors' in g_2d.current_obj){
                     g_2d.current_obj.hide_anchors();
                 }
                 g_2d.current_obj = furniture;
-                g_2d.layer.add(furniture);
+                furniture.movein(g_2d.layer);
                 g_2d.layer.draw();
 
             };
+        }
+    },
+    undo : {
+        value : function(){
+            this.obj.moveout();
+        }
+    },
+    redo : {
+        value : function(){
+            this.obj.movein(g_2d.layer);
         }
     }
 });
@@ -209,46 +249,65 @@ function AddDoorCommand(){
 
 }
 AddDoorCommand.prototype = Object.create(BaseCommand.prototype, {
-   mousedown : {
-       value : function(pos){
-           if(g_2d.house == null){
-               return;
-           }
-           var wall = have_obj(pos, 'wall');
-           if(wall != null){
-               var diret = wall.direction();
-               pos = Two.intersection_pos_wall(pos, wall);
-               this.obj = new Two.Door(pos.x, pos.y, diret);
-               g_2d.house.add(this.obj);
-               wall.doors.push(this.obj);
-               this.obj.wall = wall;
-               g_2d.layer.draw();
-           }
-       }
-   }
+    mousedown : {
+        value : function(pos){
+            if(g_2d.house == null){
+                return;
+            }
+            var wall = have_obj(pos, 'wall');
+            if(wall != null){
+                var diret = wall.direction();
+                pos = Two.intersection_pos_wall(pos, wall);
+                this.obj = new Two.Door(pos.x, pos.y, diret);
+                this.wall = wall;
+                this.obj.movein(g_2d.house, this.wall);
+                g_2d.layer.draw();
+            }
+        }
+    },
+    undo : {
+        value : function(){
+            this.obj.moveout();
+        }
+    },
+    redo : {
+        value : function(){
+            this.obj.movein(g_2d.house, this.wall);
+        }
+    }
+
 });
 
 function AddWindowCommand(){
 
 }
 AddWindowCommand.prototype = Object.create(BaseCommand.prototype, {
-   mousedown : {
-       value : function(pos){
-           if(g_2d.house == null){
-               return;
-           }
-           var wall = have_obj(pos, 'wall');
-           if(wall != null){
-               var diret = wall.direction();
-               pos = Two.intersection_pos_wall(pos, wall);
-               this.obj = new Two.Window(pos.x, pos.y, diret);
-               g_2d.house.add(this.obj);
-               wall.windows.push(this.obj);
-               this.obj.wall = wall;
-               g_2d.layer.draw();
-           }
-       }
-   }
+    mousedown : {
+        value : function(pos){
+            if(g_2d.house == null){
+                return;
+            }
+            var wall = have_obj(pos, 'wall');
+            if(wall != null){
+                var diret = wall.direction();
+                pos = Two.intersection_pos_wall(pos, wall);
+                this.obj = new Two.Window(pos.x, pos.y, diret);
+                this.wall = wall;
+                this.obj.movein(g_2d.house, this.wall);
+                g_2d.layer.draw();
+            }
+        }
+    },
+    undo: {
+        value: function(){
+            this.obj.moveout();
+        }
+    },
+    redo: {
+        value: function(){
+            this.obj.movein(g_2d.house, this.wall);
+        }
+    }
 
 });
 //move obj command
@@ -295,6 +354,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             this.startPos = this.anchor.getPosition();
             this.prePos = this.startPos;
             this.center = this.obj.getOffset();
+            this.startDeg = this.obj.getRotation();
             this.obj.setDraggable(false);
         }
     },
@@ -311,6 +371,7 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
           this.obj.getParent().draw();
           this.endPos = pos;
           this.obj.setDraggable(true);
+          this.endDeg = this.obj.getRotation();
       }
     },
     rotate : {
@@ -329,21 +390,29 @@ RotationCommand.prototype = Object.create(BaseCommand.prototype, {
             this.obj.rotate(deg2-deg1);
             this.prePos = pos;
         }
+    },
+    undo: {
+        value: function(){
+            this.obj.setRotation(this.startDeg);
+        }
+    },
+    redo: {
+        value: function(){
+            this.obj.setRotation(this.endDeg);
+        }
     }
 });
 
 function DragWallCommand(wall){
     this.obj = wall;
+    this.deltax = 0;
+    this.deltay = 0;
 }
 
 DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
     _update_house : {
-        value : function(){
+        value : function(deltax, deltay){
             var wall = this.obj;
-            var position = wall.getPosition();
-
-            var deltax = position.x - this.prePos.x;
-            var deltay = position.y - this.prePos.y;
 
             var points = wall.getPoints();
             points[0].x += deltax;
@@ -352,21 +421,30 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
             points[1].y += deltay;
             wall.setPoints(points);
 
-            this.prePos = wall.getPosition();
             wall.setPosition(0, 0);
 
             //update doors and windows on this wall
+            this._update_doors(wall, deltax, deltay);
+            this._update_windows(wall, deltax, deltay);
+        }
+    },
+    _update_doors: {
+        value: function(wall, dx, dy){
             for(var i = 0; i < wall.doors.length; i++){
                 var door = wall.doors[i];
                 var x = door.getX();
                 var y = door.getY();
-                door.setPosition(x+deltax, y+deltay);
+                door.setPosition(x+dx, y+dy);
             }
+        }
+    },
+    _update_windows: {
+        value: function(wall, dx, dy){
             for(var i = 0; i < wall.windows.length; i++){
                 var window = wall.windows[i];
                 var x = window.getX();
                 var y = window.getY();
-                window.setPosition(x+deltax, y+deltay);
+                window.setPosition(x+dx, y+dy);
             }
         }
     },
@@ -411,14 +489,35 @@ DragWallCommand.prototype = Object.create(BaseCommand.prototype, {
     },
     mousemove : {
         value : function(pos){
-            this._update_house();
+            var wall = this.obj;
+            var position = wall.getPosition();
+            var deltax = position.x - this.prePos.x;
+            var deltay = position.y - this.prePos.y;
+
+            this.deltax += deltax;
+            this.deltay += deltay;
+
+            this.prePos = position;
+
+            this._update_house(deltax, deltay);
+
             var layer = this.obj.getLayer();
             layer.draw();
         }
     },
     mouseup : {
         value : function(pos){
-
+            this.endPos = pos;
+        }
+    },
+    undo: {
+        value: function(){
+            this._update_house(-this.deltax, -this.deltay);
+        }
+    },
+    redo: {
+        value: function(){
+            this._update_house(this.deltax, this.deltay);
         }
     }
 });
@@ -432,8 +531,9 @@ function DragDoorWindowCommand(obj){
 DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
     mousedown: {
         value: function(pos){
-            this.startPos = obj.getPosition();
-            this.lastPos = this.startPos;
+            this.startWall = this.obj.wall;
+            this.startPos = this.obj.getPosition();
+            this.startRotation = this.obj.getRotation();
             this.obj.moveToTop();
         }
     },
@@ -442,6 +542,7 @@ DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
             if(this.obj.wall == null){
                 var wall = have_obj(pos, 'wall');
                 if(wall != null){
+                    this.wallChanged = true;
                     var diret = wall.direction();
                     this.obj.setRotationDeg(diret);
                     pos = Two.intersection_pos_wall(pos, wall);
@@ -453,20 +554,69 @@ DragDoorWindowCommand.prototype = Object.create(BaseCommand.prototype, {
                     this.obj.wall = wall;
                 }
             }
-            else{
-                this.lastPos = pos;
-            }
         }
     },
     mouseup: {
         value: function(pos){
+            this.endPos = this.obj.getPosition();
+            this.endRotation = this.obj.getRotation();
+            this.endWall = this.obj.wall;
+        }
+    },
+    undo: {
+        value: function(){
+            this.obj.setPosition(this.startPos);
+            this.obj.setRotation(this.startRotation);
+            if(this.startWall != this.endWall){
+                if(this.obj.getName == "door"){
+                    var wall = this.obj.wall;
+                    var index = wall.doors.indexOf(this.obj);
+                    wall.doors.splice(index, 0, 1);
 
+                    this.startWall.doors.push(this.obj);
+                    this.obj.wall = this.startWall;
+                }else{
+                    var wall = this.obj.wall;
+                    var index = wall.windows.indexOf(this.obj);
+                    wall.windows.splice(index, 0, 1);
+
+                    this.startWall.windows.push(this.obj);
+                    this.obj.wall = this.startWall;
+
+                }
+            }
+        }
+    },
+    redo: {
+        value: function(){
+            this.obj.setPosition(this.endPos);
+            this.obj.setRotation(this.endRotation);
+            if(this.startWall != this.endWall){
+                if(this.obj.getName == "door"){
+                    var wall = this.obj.wall;
+                    var index = wall.doors.indexOf(this.obj);
+                    wall.doors.splice(index, 0, 1);
+
+                    this.endWall.doors.push(this.obj);
+                    this.obj.wall = this.endWall;
+                }else{
+                    var wall = this.obj.wall;
+                    var index = wall.windows.indexOf(this.obj);
+                    wall.windows.splice(index, 0, 1);
+
+                    this.endWall.windows.push(this.obj);
+                    this.obj.wall = this.endWall;
+
+                }
+            }
         }
     }
 });
 
 function DeleteCommand(){
-
+    this.obj = null;
+    this.parent = null;
+    this.data = null;
 }
 DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
     mouseup : {
@@ -486,12 +636,11 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
                 }
                 return g;
             };
-            var obj = null;
             var targets = getObjs('furniture', objs);
             if(targets.length > 0){
-                obj = targets[0];
-                var g = obj.getParent();
-                g.remove();
+                this.obj = targets[0].getParent();
+                this.parent = g_2d.layer;
+                this.obj.moveout();
                 g_2d.layer.draw();
                 g_2d.current_obj = null;
                 return;
@@ -499,43 +648,43 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
 
             targets = getObjs('door', objs);
             if(targets.length > 0){
-                obj = targets[0];
-                var wall = obj.wall;
-                var index = wall.doors.indexOf(obj);
-                wall.doors.splice(index, 1);
-                obj.remove();
+                this.obj = targets[0];
+                var wall = this.obj.wall;
+                this.data = wall;
+                this.parent = g_2d.house;
+                this.obj.moveout();
                 g_2d.layer.draw();
                 return;
             }
 
             targets = getObjs('window', objs);
             if(targets.length > 0){
-                obj = targets[0];
-                var wall = obj.wall;
-                var index = wall.windows.indexOf(obj);
-                wall.windows.splice(index, 1);
-                obj.remove();
+                this.obj = targets[0];
+                var wall = this.obj.wall;
+                this.data = wall;
+                this.parent = g_2d.house;
+                this.obj.moveout();
                 g_2d.layer.draw();
                 return;
             }
 
             targets = getObjs('room', objs);
             if(targets.length > 0){
-                obj = targets[0];
-                for(var i = 0; i < obj.walls.length; i++){
-                    var wall = obj.walls[i];
+                this.obj = targets[0];
+                for(var i = 0; i < this.obj.walls.length; i++){
+                    var wall = this.obj.walls[i];
                     if(wall.rooms.length == 1){
                         wall.remove();
                     }
                 }
                 var rooms = g_2d.house.get('.room');
-                var corners = obj.getPoints();
+                var corners = this.obj.getPoints();
                 for(var i = 0; i < corners.length; i++){
                     var c = corners[i];
                     var shared = false;
                     for(var j = 0; j < rooms.length; j++){
                         var r = rooms[j];
-                        if(r == obj){
+                        if(r == this.obj){
                             break;
                         }
                         var points = r.getPoints();
@@ -548,7 +697,7 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
                         c.remove();
                     }
                 }
-                obj.remove();
+                this.obj.remove();
 
                 var rooms = g_2d.house.get('.room');
                 for(var i = 0; i < rooms.length; i++){
@@ -567,6 +716,16 @@ DeleteCommand.prototype = Object.create(BaseCommand.prototype, {
                 }
                 g_2d.layer.draw();
             }
+        }
+    },
+    undo: {
+        value: function(){
+            this.obj.movein(this.parent, this.data);
+        }
+    },
+    redo: {
+        value: function(){
+            this.obj.moveout();
         }
     }
 });

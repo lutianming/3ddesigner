@@ -69,8 +69,9 @@ Two.Wall = function(corner1, corner2){
 
 
     this.on('dragstart', function(){
-        g_2d.cmd = new DragWallCommand(this);
-        g_2d.cmd.mousedown(g_2d.stage.getPointerPosition());
+        var cmd = new DragWallCommand(this);
+        Two.cmdManager.setCmd(cmd);
+        cmd.mousedown(g_2d.stage.getPointerPosition());
     });
     this.on('dragmove', function(){
 
@@ -164,7 +165,16 @@ Two.Room = function(corners, house, walls){
     }
 };
 Two.Room.prototype = Object.create(Kinetic.Polygon.prototype, {
+    movein: {
+        value: function(p){
 
+        }
+    },
+    moveout: {
+        value: function(){
+
+        }
+    }
 });
 
 function update_length_mark(text, p1, p2){
@@ -216,11 +226,27 @@ Two.Door = function(x, y, deg, width){
         }
     });
     this.on('dragstart', function(){
-        g_2d.cmd = new DragDoorWindowCommand(this);
+        var cmd = new DragDoorWindowCommand(this);
+        Two.cmdManager.setCmd(cmd);
+        cmd.mousedown();
     });
 };
 Two.Door.prototype = Object.create(Kinetic.Wedge.prototype, {
-
+    movein: {
+        value: function(p, wall){
+            p.add(this);
+            wall.doors.push(this);
+            this.wall = wall;
+        }
+    },
+    moveout: {
+        value: function(){
+            var wall = this.wall;
+            var index = wall.doors.indexOf(this);
+            wall.doors.splice(index, 1);
+            this.remove();
+        }
+    }
 });
 
 Two.Window = function(x, y, deg, width){
@@ -255,12 +281,28 @@ Two.Window = function(x, y, deg, width){
         }
     });
     this.on('dragstart', function(){
-        g_2d.cmd = new DragDoorWindowCommand(this);
+        var cmd = new DragDoorWindowCommand(this);
+        Two.cmdManager.setCmd(cmd);
+        cmd.mousedown();
     });
 
 };
 Two.Window.prototype = Object.create(Kinetic.Line.prototype, {
-
+    movein: {
+        value: function(p, wall){
+            p.add(this);
+            wall.windows.push(this);
+            this.wall = wall;
+        }
+    },
+    moveout: {
+        value: function(){
+            var wall = this.wall;
+            var index = wall.windows.indexOf(this);
+            wall.windows.splice(index, 1);
+            this.remove();
+        }
+    }
 });
 
 function merge_walls(w1, w2)
