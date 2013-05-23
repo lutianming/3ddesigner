@@ -819,8 +819,9 @@ function _DataTransformer() {
 
 			model.size = {
 				x : param.size.x / _CONVERT_ZOOM_FACTOR,
-				y : param.data_height,
-				z : param.size.y / _CONVERT_ZOOM_FACTOR 
+				
+				y : param.size.y / _CONVERT_ZOOM_FACTOR,
+				z : param.data_height
 			};
 
 

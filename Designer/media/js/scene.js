@@ -23,6 +23,7 @@ $(function(){
 
 		$('#v-container').focus();
 
+		$('#loading-box').hide();
 		// updateProgress(globalApp, loadingBox);
 	});
 

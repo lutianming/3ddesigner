@@ -13,12 +13,13 @@
 }
 
 #v-container{
-	width:940px; 
-	height:600px; 
+	width:840px; 
+	height:500px; 
 	background-color:#eee;
 	display: block;
 	border : 1px solid #c09853;
-	margin-bottom: 10px;
+	margin-bottom: 10px auto;
+
 }
 
 #vc-pannel {
