@@ -249,6 +249,7 @@ function create_anchor(x, y, name, group){
         y: y,
         radius: 4,
         fill: "black",
+	visible: false,
         draggable: true,
         dragOnTop: false
     });
@@ -287,6 +288,7 @@ function create_rotate_anchor(x, y, name, furniture){
         x: x,
         y: y,
         radius: 4,
+	visible: false,
         fill: 'black'
     });
     anchor.mousehold = false;
