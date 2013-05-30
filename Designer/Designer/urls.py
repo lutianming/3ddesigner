@@ -54,5 +54,8 @@ urlpatterns = patterns('',
     url(r'^getAllModels/$',getModels),
     url(r'^scene/delete/(?P<id>\d+)$',deleteScene),
     url(r'^manage/testModel/$',testModel),
-    url(r'^manage/ajaxUploadModel/$',ajaxUploadModel)
+    url(r'^manage/ajaxUploadModel/$',ajaxUploadModel),
+    url(r'^scene/getdrafts/$',getUserDrafts),
+    url(r'^scene/draft/(?P<id>\d+)$',edit_scene_draft),
+    url(r'^scene/deleteDraft/(?P<id>\d+)$',deleteDraft)
 )

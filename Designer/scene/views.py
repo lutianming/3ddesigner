@@ -42,6 +42,15 @@ def edit_scene(request , id):
 	return render_to_response('view_scene.html',context_instance = context)
 
 
+def edit_scene_draft(request,id):
+	draft = get_object_or_404(SceneDraft, id=id)
+	context = RequestContext(request,{
+			'type' : 'edit',
+			'scene' : draft,
+			'modelMap' : getAllModels()
+		})
+	return render_to_response('view_scene.html',context_instance = context)
+
 @login_required
 @csrf_exempt
 def save_scene(request):
@@ -59,6 +68,7 @@ def save_scene(request):
 		if isDraft == 'true' :
 			sceneDraft = SceneDraft(title=title , time=time , description=description , content3=content3 , content2=content2 , author_id=authorId , scene_id=sceneId)
 			sceneDraft.save()
+
 			json = {'code':1, 'draftId':sceneDraft.id}
 			return HttpResponse(simplejson.dumps(json))
 
@@ -125,6 +135,12 @@ def deleteScene(request , id):
 		scene.delete()
 	return HttpResponseRedirect('/user/profile/' + request.user.username)
 
+
+def deleteDraft(request,id):
+	draft = get_object_or_404(SceneDraft, id=id)
+	if draft.author_id == request.user.id :
+		draft.delete()
+	return HttpResponseRedirect('/user/profile/' + request.user.username)
 
 def testModel(request) :
 	return render_to_response('scene/model_test.html')

@@ -42,5 +42,37 @@
 		<!--  <div class="more"><a href="/user/{{username}}/work">More...</a></div>-->
 	</div>
 	
+	<div id="userDrafts" class="hero-unit">
+		<div class='purpleband'> 
+			<div class='left'><img alt="Purpleband-left" src="/site_media/img/purpleband-left1.png" /></div> 
+			<div class='center'>
+				<h2>
+					{{username}}'s drafts
+				</h2>
+			</div>
+			<div class='right'><img alt="Purpleband-right" src="/site_media/img/purpleband-right1.png" /></div> 
+			<div class='clear'></div> 
+		</div>
+		<div>
+			<div id="draftDiv">
+			</div>
+		</div>
+		<script type="text/javascript" src="/site_media/js/home/home.js"></script>
+		<!--  <div class="more"><a href="/user/{{username}}/work">More...</a></div>-->
+		<script type="text/javascript">
+		$(function(){
+			$.get(
+				'/scene/getdrafts/',
+				{},
+				function(data){
+					$('#draftDiv').html(data);
+				}
+			);
+		});
+		</script>
+	</div>
+
 	<div style="clear:both"></div>
 {% endblock %}
+
+

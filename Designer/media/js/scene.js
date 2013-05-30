@@ -40,7 +40,7 @@ $(function(){
 	});
 
 	$('#save-draft-btn').on('click',function(event){
-		saveDraft();
+		saveDraft(false);
 	});
 
 	// init controls by cookie data
@@ -77,7 +77,7 @@ $(function(){
 		globalApp.setControls(1);
 	});
 
-	function saveDraft() {
+	function saveDraft(quite) {
 		var content3 = exportJSON();
 		var content2 = Two.save();
 		var title = $('#inputSceneTitle').val();
@@ -98,10 +98,17 @@ $(function(){
 				title : title,
 				description : description,
 				sceneId : sceneId,
-				draft : draft
+				draft : draft,
+				imageUrl : ''
 			},
 			function(data) {
-				alert(data);
+				if ( !quite ) {
+					var result = JSON.parse(data);
+					if (result.code==1) {
+						alert("save successfully");
+					}	
+				}
+				
 			}
 		);
 	}
@@ -128,4 +135,5 @@ $(function(){
 	}
 
 	
+	setInterval('saveDraft(true)',300000);
 });

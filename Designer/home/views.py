@@ -100,3 +100,20 @@ def get_scene_list(user_id,page):
         if len(scene.title) > 12 :
             scene.htitle += '...'
     return sceneList
+
+def getUserDrafts(request):
+
+    user_id = request.user.id
+    draftList = SceneDraft.objects.filter(author_id = user_id)
+    
+    for draft in draftList:
+        draft.htitle = draft.title[:12]
+        if len(draft.title) > 12 :
+            draft.htitle += '...'
+
+    context = RequestContext(request,{
+            'draftList' : draftList
+        })
+
+    return render_to_response('profile/draft_list.html',context)
+

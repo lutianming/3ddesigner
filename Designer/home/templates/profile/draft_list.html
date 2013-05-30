@@ -1,0 +1,26 @@
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>ID</th>
+		<th>title</th>
+		<th>Date</th>
+		<th>scene</th>
+		<th>Operation</th>
+	</tr>
+</thead>
+<tbody>
+{% for draft in draftList %}
+	<tr>
+		<td>{{ draft.id }}</td>
+		<td>{{ draft.htitle }}</td>
+		<td>{{ draft.time }}</td>
+		<td><a href="/scene/{{ draft.scene_id }}">{{draft.scene_id}}</a></td>
+		<td>
+			<a href="/scene/deleteDraft/{{ draft.id }}">DELETE</a>&nbsp;|&nbsp;
+			<a href="/scene/draft/{{ draft.id }}">EDIT</a>
+		</td>
+	</tr>
+{% endfor %}
+</tbody>
+
+</table>

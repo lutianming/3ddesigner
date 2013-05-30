@@ -56,7 +56,7 @@ var twoEditData = {{ scene.content2|safe }};
 					
 					<input type="hidden" id="sceneImageUrlData" name="imageUrl"/>
 						
-					<input type="hidden" id="sceneId" name="sceneId" value="{{scene.id}}"/>
+					<input type="hidden" id="sceneId" name="sceneId" value="{%if scene.scene_id%}{{ scene.scene_id }}{%else%}{{scene.id}}{%endif%}"/>
 					<input type="hidden" id="sceneContentData" name="contentthree" value=""/>
 					<input type="hidden" id="towContentData"  name="contenttwo" value=""/>
 					<input type="hidden" id="isDraft" name="draft" value="false"/>
